@@ -14,7 +14,7 @@ QUICKNODE_RPC_URL = os.getenv("QUICKNODE_RPC_URL")
 if GEMINI_API_KEY:
     genai.configure(api_key=GEMINI_API_KEY)
 
-def get_gemini_model(model_name="gemini-1.5-flash"):
+def get_gemini_model(model_name="gemini-2.0-flash"):
     """Returns a configured Gemini model instance."""
     if not GEMINI_API_KEY:
         raise ValueError("GEMINI_API_KEY not found in environment variables.")

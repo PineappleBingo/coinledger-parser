@@ -22,6 +22,37 @@ def smart_csv_load(file_path: str) -> pd.DataFrame:
     # If not, use Gemini to map columns
     mapping = infer_schema_with_gemini(list(df.columns))
     
+    # Fallback: If Gemini fails (empty mapping), try manual mapping for common headers
+    if not mapping:
+        print("Gemini inference failed or returned empty. Trying manual fallback...")
+        common_mappings = {
+            "date (utc)": "timestamp",
+            "date": "timestamp",
+            "time": "timestamp",
+            "coin": "asset",
+            "asset": "asset",
+            "symbol": "asset",
+            "amount": "amount",
+            "balance": "amount",
+            "transaction fee": "fee",
+            "fee": "fee",
+            "transaction hash": "tx_id",
+            "txid": "tx_id",
+            "hash": "tx_id",
+            "type": "tx_type",
+            "transaction type": "tx_type",
+            "price": "price_krw",
+            "krw": "price_krw"
+        }
+        
+        mapping = {}
+        for col in df.columns:
+            col_lower = col.lower().strip()
+            if col_lower in common_mappings:
+                mapping[col] = common_mappings[col_lower]
+        
+        print(f"Manual fallback mapping: {mapping}")
+
     # Rename columns based on mapping
     df = df.rename(columns=mapping)
     return df
