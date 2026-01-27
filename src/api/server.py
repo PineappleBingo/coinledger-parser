@@ -89,24 +89,58 @@ async def upload_file(file: UploadFile = File(...)):
 
 class FetchRequest(BaseModel):
     wallet_address: str
-    chain: str = "ethereum"
+    chain: str = "bitcoin"  # Default to bitcoin for this project
+    from_date: Optional[str] = None  # Format: YYYY-MM-DD
+    to_date: Optional[str] = None    # Format: YYYY-MM-DD
 
 @app.post("/api/fetch-blockchain")
 async def fetch_blockchain(req: FetchRequest):
     """
     Fetches blockchain data and returns it for preview.
+    Supports optional date range filtering.
     """
     try:
         client = BlockchainClient()
         state.source_b = client.fetch_transactions(req.wallet_address, req.chain)
         
+        # Filter by date range if provided
+        if req.from_date or req.to_date:
+            from datetime import datetime
+            import pytz
+            
+            filtered_txs = []
+            for tx in state.source_b:
+                # Parse date range
+                if req.from_date:
+                    from_dt = datetime.strptime(req.from_date, "%Y-%m-%d").replace(tzinfo=pytz.UTC)
+                    if tx.timestamp < from_dt:
+                        continue
+                
+                if req.to_date:
+                    # Add 1 day to include the entire to_date
+                    to_dt = datetime.strptime(req.to_date, "%Y-%m-%d").replace(hour=23, minute=59, second=59, tzinfo=pytz.UTC)
+                    if tx.timestamp > to_dt:
+                        continue
+                
+                filtered_txs.append(tx)
+            
+            state.source_b = filtered_txs
+            print(f"Filtered to {len(filtered_txs)} transactions between {req.from_date} and {req.to_date}")
+        
+        # Convert UnifiedTransaction objects to dicts for JSON serialization
+        blockchain_data = [tx.to_dict() for tx in state.source_b]
+        
         return {
             "message": "Blockchain data fetched successfully",
-            "count": len(state.source_b),
-            "data": state.source_b
+            "count": len(blockchain_data),
+            "data": blockchain_data
         }
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        import traceback
+        error_details = traceback.format_exc()
+        print(f"Fetch blockchain error: {str(e)}")
+        print(f"Traceback:\n{error_details}")
+        raise HTTPException(status_code=500, detail=f"Fetch failed: {str(e)}")
 
 @app.post("/api/analyze")
 async def analyze():

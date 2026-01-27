@@ -7,6 +7,8 @@ import TransactionList from './components/TransactionList';
 function App() {
   const [file, setFile] = useState<File | null>(null);
   const [wallet, setWallet] = useState('');
+  const [fromDate, setFromDate] = useState('2025-01-01');
+  const [toDate, setToDate] = useState(new Date().toISOString().split('T')[0]); // Today
   const [loading, setLoading] = useState(false);
 
   // Data States
@@ -47,19 +49,40 @@ function App() {
   };
 
   const handleFetchBlockchain = async () => {
-    if (!wallet) {
-      alert("Please enter a wallet address");
+    // Parse wallet addresses (comma or line break separated)
+    const addresses = wallet
+      .split(/[,\n]+/)
+      .map(addr => addr.trim())
+      .filter(addr => addr.length > 0);
+
+    if (addresses.length === 0) {
+      alert("Please enter at least one wallet address");
       return;
     }
 
     try {
       setLoading(true);
-      const res = await axios.post('http://localhost:8000/api/fetch-blockchain', {
-        wallet_address: wallet,
-        chain: 'ethereum'
-      });
-      setSourceB(res.data.data);
-      setFetchStatus(`Fetched ${res.data.count} transactions successfully!`);
+      setFetchStatus('');
+
+      // Fetch transactions for all addresses
+      let allTransactions: any[] = [];
+
+      for (const address of addresses) {
+        console.log(`Fetching transactions for: ${address}`);
+        const res = await axios.post('http://localhost:8000/api/fetch-blockchain', {
+          wallet_address: address,
+          chain: 'bitcoin',
+          from_date: fromDate,
+          to_date: toDate
+        });
+        allTransactions = [...allTransactions, ...res.data.data];
+      }
+
+      // Sort all transactions by timestamp descending
+      allTransactions.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+
+      setSourceB(allTransactions);
+      setFetchStatus(`Fetched ${allTransactions.length} transactions from ${addresses.length} address(es) successfully!`);
     } catch (error) {
       console.error(error);
       setFetchStatus('Fetch failed.');
@@ -124,14 +147,42 @@ function App() {
           <div className={`bg-white p-6 rounded-xl shadow-sm border-t-4 ${sourceA.length > 0 ? 'border-indigo-500' : 'border-gray-300 opacity-75'}`}>
             <h2 className="text-lg font-semibold mb-4">2. Fetch Blockchain Data</h2>
             <div className="space-y-4">
-              <input
-                type="text"
-                placeholder="Wallet Address (0x...)"
-                value={wallet}
-                onChange={(e) => setWallet(e.target.value)}
-                disabled={sourceA.length === 0}
-                className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none"
-              />
+              <div>
+                <label className="block text-xs text-gray-600 mb-1">
+                  Bitcoin Wallet Address(es)
+                  <span className="text-gray-400 ml-1">(separate with comma or line break)</span>
+                </label>
+                <textarea
+                  placeholder="bc1pf3n2ka7tpwv4tc4yzflclspjgq9yjvhek6cjnd4x2lzdd7k5lqfs327cql&#10;bc1qeezvh8psmu32tylqxlkpwjf3854n8cp6vv5lk8&#10;383pcVpTUPdTcj4pPnYhhqQds6JLh25rpy"
+                  value={wallet}
+                  onChange={(e) => setWallet(e.target.value)}
+                  disabled={sourceA.length === 0}
+                  rows={3}
+                  className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none resize-none font-mono text-sm"
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs text-gray-600 mb-1">From Date</label>
+                  <input
+                    type="date"
+                    value={fromDate}
+                    onChange={(e) => setFromDate(e.target.value)}
+                    disabled={sourceA.length === 0}
+                    className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none text-sm"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs text-gray-600 mb-1">To Date</label>
+                  <input
+                    type="date"
+                    value={toDate}
+                    onChange={(e) => setToDate(e.target.value)}
+                    disabled={sourceA.length === 0}
+                    className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none text-sm"
+                  />
+                </div>
+              </div>
               <button
                 onClick={handleFetchBlockchain}
                 disabled={sourceA.length === 0 || loading}
