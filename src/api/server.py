@@ -29,6 +29,7 @@ app.add_middleware(
 class AppState:
     source_a: List[UnifiedTransaction] = []
     source_b: List[UnifiedTransaction] = []
+    original_csv_data: List[dict] = []  # Store original CSV rows for preview
     matched: pd.DataFrame = pd.DataFrame()
     conflicts: pd.DataFrame = pd.DataFrame()
     missing_in_b: pd.DataFrame = pd.DataFrame()
@@ -42,7 +43,10 @@ async def upload_file(file: UploadFile = File(...)):
     Uploads and parses a CEX export file (CSV or MHTML).
     Returns the parsed transactions for preview.
     """
-    temp_path = f"data/temp_{file.filename}"
+    # Extract just the filename without any directory path
+    import os as os_module
+    filename = os_module.path.basename(file.filename)
+    temp_path = f"data/temp_{filename}"
     os.makedirs("data", exist_ok=True)
     
     with open(temp_path, "wb") as buffer:
@@ -52,20 +56,33 @@ async def upload_file(file: UploadFile = File(...)):
         if file.filename.endswith(".mhtml") or file.filename.endswith(".html"):
             df = extract_transactions_from_mhtml(temp_path)
             state.source_a = normalize_mhtml_data(df)
+            # Store original data for preview
+            state.original_csv_data = df.to_dict('records')
         elif file.filename.endswith(".csv"):
+            # Read original CSV for preview
+            original_df = pd.read_csv(temp_path)
+            # Replace NaN with empty string for JSON serialization
+            original_df = original_df.fillna('')
+            state.original_csv_data = original_df.to_dict('records')
+            
+            # Process for reconciliation
             df = smart_csv_load(temp_path)
             state.source_a = normalize_csv_data(df)
         else:
             raise HTTPException(status_code=400, detail="Unsupported file format")
             
-        # Return the data for preview
+        # Return the original data for preview
         return {
             "message": "File uploaded successfully", 
-            "count": len(state.source_a),
-            "data": state.source_a
+            "count": len(state.original_csv_data),
+            "data": state.original_csv_data
         }
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        import traceback
+        error_details = traceback.format_exc()
+        print(f"Upload error: {str(e)}")
+        print(f"Traceback:\n{error_details}")
+        raise HTTPException(status_code=500, detail=f"Upload failed: {str(e)}")
     finally:
         if os.path.exists(temp_path):
             os.remove(temp_path)

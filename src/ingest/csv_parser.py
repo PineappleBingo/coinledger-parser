@@ -8,8 +8,36 @@ import pytz
 def smart_csv_load(file_path: str) -> pd.DataFrame:
     """
     Loads a CSV file and uses Gemini to infer the schema if standard columns are not found.
+    Handles special cases like Xverse wallet format with separate Date/Time columns.
     """
     df = pd.read_csv(file_path)
+    
+    # Special handling for Xverse format: combine Date and Time columns
+    if 'Date' in df.columns and 'Time' in df.columns:
+        print("Detected Xverse format with separate Date and Time columns. Combining...")
+        df['timestamp'] = df['Date'] + ' ' + df['Time']
+        df = df.drop(columns=['Date', 'Time'])
+    
+    # Special handling for Xverse: extract currency from Amount column if needed
+    if 'Amount' in df.columns and 'Currency' in df.columns:
+        print("Processing Xverse Amount and Currency columns...")
+        for idx, row in df.iterrows():
+            amount_val = str(row['Amount'])
+            currency_val = str(row['Currency'])
+            
+            # If Currency is empty but Amount contains currency info
+            if (pd.isna(row['Currency']) or currency_val.strip() == '' or currency_val == 'nan'):
+                # Check if amount has currency embedded (e.g., "0.00052,BTC" or "0.00052 BTC")
+                if ',' in amount_val and len(amount_val.split(',')) == 2:
+                    parts = amount_val.split(',')
+                    df.at[idx, 'Amount'] = parts[0].strip()
+                    df.at[idx, 'Currency'] = parts[1].strip()
+                elif ' ' in amount_val:
+                    parts = amount_val.rsplit(' ', 1)  # Split from right to get last word
+                    if len(parts) == 2 and parts[1].isalpha():
+                        df.at[idx, 'Amount'] = parts[0].strip()
+                        df.at[idx, 'Currency'] = parts[1].strip()
+
     
     # Standard columns we look for
     standard_columns = ['timestamp', 'asset', 'amount', 'fee', 'tx_id', 'tx_type']
@@ -28,19 +56,24 @@ def smart_csv_load(file_path: str) -> pd.DataFrame:
         common_mappings = {
             "date (utc)": "timestamp",
             "date": "timestamp",
+            "datetime": "timestamp",
             "time": "timestamp",
             "coin": "asset",
             "asset": "asset",
             "symbol": "asset",
+            "currency": "asset",
             "amount": "amount",
             "balance": "amount",
+            "quantity": "amount",
             "transaction fee": "fee",
             "fee": "fee",
             "transaction hash": "tx_id",
             "txid": "tx_id",
             "hash": "tx_id",
+            "tx hash": "tx_id",
             "type": "tx_type",
             "transaction type": "tx_type",
+            "action": "tx_type",
             "price": "price_krw",
             "krw": "price_krw"
         }
@@ -94,6 +127,7 @@ def infer_schema_with_gemini(headers: list[str]) -> dict:
 def normalize_csv_data(df: pd.DataFrame) -> list[UnifiedTransaction]:
     """
     Normalizes the DataFrame into UnifiedTransaction objects.
+    Handles edge cases like empty amounts, scientific notation, and missing tx_id.
     """
     transactions = []
     
@@ -103,8 +137,18 @@ def normalize_csv_data(df: pd.DataFrame) -> list[UnifiedTransaction]:
         print(f"Missing required columns: {[c for c in required_cols if c not in df.columns]}")
         return []
 
-    for _, row in df.iterrows():
+    for idx, row in df.iterrows():
         try:
+            # Skip rows with empty amounts
+            if pd.isna(row['amount']) or str(row['amount']).strip() == '':
+                print(f"Skipping row {idx}: empty amount")
+                continue
+            
+            # Skip rows with empty or invalid assets
+            if pd.isna(row['asset']) or str(row['asset']).strip() == '':
+                print(f"Skipping row {idx}: empty asset")
+                continue
+                
             # Parse Timestamp
             ts = row['timestamp']
             if isinstance(ts, str):
@@ -117,19 +161,47 @@ def normalize_csv_data(df: pd.DataFrame) -> list[UnifiedTransaction]:
             else:
                 timestamp = timestamp.astimezone(pytz.UTC)
 
+            # Parse amount (handle scientific notation and commas)
+            amount_str = str(row['amount']).replace(',', '').strip()
+            try:
+                amount = float(amount_str)
+            except ValueError:
+                print(f"Skipping row {idx}: invalid amount '{amount_str}'")
+                continue
+            
+            # Parse fee (handle empty/missing values)
+            fee_val = row.get('fee', 0)
+            if pd.isna(fee_val) or str(fee_val).strip() == '':
+                fee = 0.0
+            else:
+                try:
+                    fee = float(str(fee_val).replace(',', ''))
+                except ValueError:
+                    fee = 0.0
+            
+            # Parse tx_id (generate placeholder if missing)
+            tx_id_val = row.get('tx_id', '')
+            if pd.isna(tx_id_val) or str(tx_id_val).strip() == '':
+                # Generate a unique ID based on timestamp and amount
+                tx_id = f"XVERSE_{timestamp.strftime('%Y%m%d%H%M%S')}_{abs(amount)}"
+            else:
+                tx_id = str(tx_id_val)
+
             tx = UnifiedTransaction(
                 timestamp=timestamp,
-                asset=str(row['asset']),
-                amount=float(str(row['amount']).replace(',', '')),
-                fee=float(str(row.get('fee', 0)).replace(',', '')),
-                tx_id=str(row.get('tx_id', '')),
+                asset=str(row['asset']).strip(),
+                amount=amount,
+                fee=fee,
+                tx_id=tx_id,
                 tx_type=str(row.get('tx_type', 'UNKNOWN')),
                 source='CEX',
-                price_krw=float(str(row.get('price_krw', 0)).replace(',', '')) if 'price_krw' in row else None
+                price_krw=float(str(row.get('price_krw', 0)).replace(',', '')) if 'price_krw' in row and not pd.isna(row.get('price_krw')) else None
             )
             transactions.append(tx)
         except Exception as e:
-            print(f"Error parsing CSV row: {e}")
+            print(f"Error parsing CSV row {idx}: {e}")
             continue
             
+    print(f"Successfully parsed {len(transactions)} transactions from {len(df)} rows")
     return transactions
+
