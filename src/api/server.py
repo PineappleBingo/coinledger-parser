@@ -143,9 +143,9 @@ async def fetch_blockchain(req: FetchRequest):
         raise HTTPException(status_code=500, detail=f"Fetch failed: {str(e)}")
 
 @app.post("/api/analyze")
-async def analyze():
+async def analyze(wallet_addresses: Optional[List[str]] = None):
     """
-    Runs reconciliation on the already loaded source_a and source_b.
+    Runs Ordinals/Runes-aware reconciliation and returns correction suggestions.
     """
     if not state.source_a:
         raise HTTPException(status_code=400, detail="No CEX data found. Please upload a file.")
@@ -153,26 +153,102 @@ async def analyze():
         raise HTTPException(status_code=400, detail="No blockchain data found. Please fetch blockchain data.")
         
     try:
-        # Run Reconciliation
-        engine = ReconciliationEngine()
-        state.matched, state.conflicts, state.missing_in_b = engine.reconcile(state.source_a, state.source_b)
+        print(f"Starting Ordinals/Runes pattern detection with {len(state.source_a)} CEX transactions and {len(state.source_b)} blockchain transactions")
         
-        # Detect Anomalies
-        all_txs = state.source_a + state.source_b
-        detector = AnomalyDetector(all_txs)
-        state.anomalies = detector.detect_anomalies()
+        # Get wallet addresses from request or use empty list
+        my_wallets = wallet_addresses if wallet_addresses else []
+        
+        # Run enhanced reconciliation with pattern detection
+        engine = ReconciliationEngine()
+        results = engine.reconcile_with_corrections(state.source_a, state.source_b, my_wallets)
+        
+        # Format correction suggestions for frontend
+        formatted_suggestions = []
+        for suggestion in results["correction_suggestions"]:
+            formatted = {
+                "pattern": suggestion["pattern"],
+                "confidence": suggestion["confidence"],
+                "severity": suggestion["severity"],
+                "tax_impact": suggestion["tax_impact"],
+                "affected_transactions": [],
+                "recommended_actions": []
+            }
+            
+            # Format affected transactions
+            for tx in suggestion.get("affected_transactions", []):
+                formatted["affected_transactions"].append({
+                    "date": tx.timestamp.strftime("%Y-%m-%d"),
+                    "time": tx.timestamp.strftime("%H:%M:%S"),
+                    "type": tx.tx_type,
+                    "amount": tx.amount,
+                    "asset": tx.asset,
+                    "tx_id": tx.tx_id,
+                    "source": tx.source
+                })
+            
+            # Format recommended actions
+            for correction in suggestion.get("corrections", []):
+                action = {
+                    "action_type": correction["action"],
+                    "reason": correction.get("reason", "")
+                }
+                
+                # Add transaction details
+                if "tx" in correction:
+                    tx = correction["tx"]
+                    action["transaction"] = {
+                        "date": tx.timestamp.strftime("%Y-%m-%d"),
+                        "time": tx.timestamp.strftime("%H:%M:%S"),
+                        "type": tx.tx_type,
+                        "amount": tx.amount,
+                        "tx_id": tx.tx_id
+                    }
+                
+                # Add action-specific details
+                if correction["action"] == "IGNORE":
+                    action["warning"] = correction.get("warning", "")
+                
+                elif correction["action"] == "CHANGE_TO_TRADE":
+                    action["sent_asset"] = correction.get("sent_asset", "")
+                    action["sent_amount"] = correction.get("sent_amount", "")
+                    action["received_asset"] = correction.get("received_asset", "")
+                    action["received_quantity"] = correction.get("received_quantity", 1)
+                    action["ordiscan_link"] = correction.get("ordiscan_link", "")
+                    action["requires_ordiscan"] = correction.get("requires_ordiscan", False)
+                
+                elif correction["action"] == "CHANGE_TO_FEE":
+                    pass  # No additional details needed
+                
+                elif correction["action"] == "MERGE_AS_TRANSFER":
+                    if "txs" in correction:
+                        action["transactions"] = [{
+                            "date": tx.timestamp.strftime("%Y-%m-%d"),
+                            "time": tx.timestamp.strftime("%H:%M:%S"),
+                            "type": tx.tx_type,
+                            "amount": tx.amount,
+                            "tx_id": tx.tx_id
+                        } for tx in correction["txs"]]
+                
+                formatted["recommended_actions"].append(action)
+            
+            formatted_suggestions.append(formatted)
+        
+        print(f"Pattern detection complete: {results['summary']['total_issues']} issues found")
+        print(f"By severity: {results['summary']['by_severity']}")
+        print(f"By pattern: {results['summary']['by_pattern']}")
         
         return {
             "status": "completed",
-            "stats": {
-                "matched": len(state.matched),
-                "conflicts": len(state.conflicts),
-                "missing_in_blockchain": len(state.missing_in_b),
-                "anomalies": len(state.anomalies)
-            }
+            "correction_suggestions": formatted_suggestions,
+            "summary": results["summary"]
         }
+        
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        import traceback
+        error_details = traceback.format_exc()
+        print(f"Analysis error: {str(e)}")
+        print(f"Traceback:\n{error_details}")
+        raise HTTPException(status_code=500, detail=f"Analysis failed: {str(e)}")
 
 @app.get("/api/results")
 async def get_results():

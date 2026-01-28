@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { Upload, RefreshCw, FileText, Activity } from 'lucide-react';
-import ReconciliationTable from './components/ReconciliationTable';
+import CorrectionReport from './components/CorrectionReport';
 import TransactionList from './components/TransactionList';
 
 function App() {
@@ -20,8 +20,10 @@ function App() {
   const [fetchStatus, setFetchStatus] = useState('');
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      setFile(e.target.files[0]);
+    if (e.target.files && e.target.files[0]) {
+      const selectedFile = e.target.files[0];
+      console.log('File selected:', selectedFile.name);
+      setFile(selectedFile);
       setSourceA([]); // Reset on new file
       setResults(null);
     }
@@ -38,11 +40,21 @@ function App() {
       const res = await axios.post('http://localhost:8000/api/upload', formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
-      setSourceA(res.data.data);
-      setUploadStatus(`Uploaded ${res.data.count} transactions successfully!`);
-    } catch (error) {
-      console.error(error);
-      setUploadStatus('Upload failed.');
+
+      console.log('Upload response:', res.data);
+      console.log('Data field:', res.data.data);
+
+      // Set source A with the data from response
+      if (res.data.data && Array.isArray(res.data.data)) {
+        setSourceA(res.data.data);
+        setUploadStatus(`Uploaded ${res.data.count} transactions successfully!`);
+      } else {
+        console.error('Invalid data format:', res.data);
+        setUploadStatus('Upload succeeded but data format is invalid');
+      }
+    } catch (error: any) {
+      console.error('Upload error:', error);
+      setUploadStatus(`Upload failed: ${error.response?.data?.detail || error.message}`);
     } finally {
       setLoading(false);
     }
@@ -67,15 +79,33 @@ function App() {
       // Fetch transactions for all addresses
       let allTransactions: any[] = [];
 
-      for (const address of addresses) {
-        console.log(`Fetching transactions for: ${address}`);
+      // Number emojis for wallet identification
+      const walletEmojis = ['1️⃣', '2️⃣', '3️⃣', '4️⃣', '5️⃣', '6️⃣', '7️⃣', '8️⃣', '9️⃣', '🔟'];
+
+      for (let i = 0; i < addresses.length; i++) {
+        const address = addresses[i];
+        const walletId = walletEmojis[i] || `${i + 1}️⃣`;
+
+        console.log(`Fetching transactions for wallet ${walletId}: ${address}`);
         const res = await axios.post('http://localhost:8000/api/fetch-blockchain', {
           wallet_address: address,
           chain: 'bitcoin',
           from_date: fromDate,
           to_date: toDate
         });
-        allTransactions = [...allTransactions, ...res.data.data];
+
+        // Add wallet identifier and split date/time for each transaction
+        const txsWithWallet = res.data.data.map((tx: any) => {
+          const date = new Date(tx.timestamp);
+          return {
+            ...tx,
+            Wallet: walletId,
+            Date: date.toISOString().split('T')[0], // YYYY-MM-DD
+            Time: date.toTimeString().split(' ')[0] // HH:MM:SS
+          };
+        });
+
+        allTransactions = [...allTransactions, ...txsWithWallet];
       }
 
       // Sort all transactions by timestamp descending
@@ -95,10 +125,11 @@ function App() {
     try {
       setLoading(true);
       const res = await axios.post('http://localhost:8000/api/analyze');
+      console.log('Analysis results:', res.data);
       setResults(res.data);
-    } catch (error) {
-      console.error(error);
-      alert("Analysis failed");
+    } catch (error: any) {
+      console.error('Analysis error:', error);
+      alert(`Analysis failed: ${error.response?.data?.detail || error.message}`);
     } finally {
       setLoading(false);
     }
@@ -230,20 +261,21 @@ function App() {
 
         {/* Results Area */}
         {results && (
-          <div className="bg-white p-6 rounded-xl shadow-sm animate-fade-in">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-bold text-gray-800">Reconciliation Report</h2>
-              <button
-                onClick={() => setResults(null)}
-                className="text-sm text-gray-500 hover:text-gray-700 underline"
-              >
-                Back to Preview
-              </button>
+          <div className="animate-fade-in">
+            <div className="bg-white p-4 rounded-xl shadow-sm mb-4">
+              <div className="flex items-center justify-between">
+                <h2 className="text-2xl font-bold text-gray-800">Tax Correction Report</h2>
+                <button
+                  onClick={() => setResults(null)}
+                  className="text-sm text-gray-500 hover:text-gray-700 underline"
+                >
+                  Back to Preview
+                </button>
+              </div>
             </div>
-            <ReconciliationTable
-              matched={results.matched}
-              conflicts={results.conflicts}
-              missing={results.missing_in_blockchain}
+            <CorrectionReport
+              suggestions={results.correction_suggestions || []}
+              summary={results.summary || { total_issues: 0, by_severity: { HIGH: 0, MEDIUM: 0, LOW: 0 }, by_pattern: {} }}
             />
           </div>
         )}

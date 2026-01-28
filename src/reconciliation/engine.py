@@ -4,13 +4,76 @@ from datetime import timedelta
 from typing import List, Tuple, Dict
 from src.models import UnifiedTransaction
 from src.config import get_gemini_model
+from src.reconciliation.ordinals_detector import (
+    group_transactions_by_txid,
+    group_transactions_by_time,
+    detect_patterns
+)
 
 class ReconciliationEngine:
     def __init__(self):
         pass
+    
+    def reconcile_with_corrections(self, source_a: List[UnifiedTransaction], source_b: List[UnifiedTransaction], my_wallets: List[str] = None) -> Dict:
+        """
+        Enhanced reconciliation with Ordinals/Runes pattern detection
+        
+        Returns correction suggestions for tax reporting
+        """
+        if my_wallets is None:
+            my_wallets = []
+        
+        # Combine both sources for pattern detection
+        all_transactions = source_a + source_b
+        
+        # Group by TxID first (highest confidence)
+        groups_by_txid = group_transactions_by_txid(all_transactions)
+        
+        # Group remaining by time window
+        ungrouped = [tx for tx in all_transactions if not tx.tx_id]
+        groups_by_time = group_transactions_by_time(ungrouped)
+        
+        # Combine all groups
+        all_groups = {**groups_by_txid, **groups_by_time}
+        
+        # Detect patterns in each group
+        correction_suggestions = []
+        for group_key, tx_group in all_groups.items():
+            pattern = detect_patterns(tx_group, my_wallets)
+            if pattern:
+                correction_suggestions.append(pattern)
+        
+        # Generate summary statistics
+        summary = self._generate_summary(correction_suggestions)
+        
+        return {
+            "correction_suggestions": correction_suggestions,
+            "summary": summary
+        }
+    
+    def _generate_summary(self, suggestions: List[Dict]) -> Dict:
+        """Generate summary statistics for correction suggestions"""
+        total = len(suggestions)
+        
+        by_severity = {"HIGH": 0, "MEDIUM": 0, "LOW": 0}
+        by_pattern = {}
+        
+        for suggestion in suggestions:
+            severity = suggestion.get("severity", "MEDIUM")
+            pattern = suggestion.get("pattern", "UNKNOWN")
+            
+            by_severity[severity] = by_severity.get(severity, 0) + 1
+            by_pattern[pattern] = by_pattern.get(pattern, 0) + 1
+        
+        return {
+            "total_issues": total,
+            "by_severity": by_severity,
+            "by_pattern": by_pattern
+        }
 
     def reconcile(self, source_a: List[UnifiedTransaction], source_b: List[UnifiedTransaction]) -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
         """
+        Original reconciliation method (kept for backward compatibility)
         Reconciles two lists of transactions.
         Source A: CEX Data (CoinLedger)
         Source B: Blockchain Data
@@ -72,7 +135,7 @@ class ReconciliationEngine:
                 if row_a['amount'] == 0: continue
                 
                 diff = abs(row_a['amount'] - row_b['amount'])
-                deviation = diff / row_a['amount']
+                deviation = diff / abs(row_a['amount'])
                 
                 if deviation <= 0.001: # 0.1%
                     confidence = 1.0 - (deviation * 100) # Simple confidence score
