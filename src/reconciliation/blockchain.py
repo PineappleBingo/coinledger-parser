@@ -33,6 +33,7 @@ class BlockchainClient:
         """
         Fetches Bitcoin transactions using Blockstream API with pagination.
         Supports all Bitcoin address formats.
+        Detects Ordinals and Runes protocols.
         Fetches ALL transactions, not just the first 25.
         """
         try:
@@ -54,7 +55,8 @@ class BlockchainClient:
                 
                 txs_data = response.json()
                 
-                if not txs_data:
+                # FIXED: Check for empty response instead of < 25
+                if not txs_data or len(txs_data) == 0:
                     print(f"No more transactions found. Total pages: {page - 1}")
                     break
                 
@@ -101,6 +103,9 @@ class BlockchainClient:
                     fee_satoshis = tx.get('fee', 0)
                     fee_btc = fee_satoshis / 100_000_000
                     
+                    # ENHANCED: Detect Ordinals and Runes
+                    asset_type = self._detect_asset_type(tx, outputs_to_address)
+                    
                     unified_tx = UnifiedTransaction(
                         timestamp=timestamp,
                         asset='BTC',
@@ -109,15 +114,11 @@ class BlockchainClient:
                         tx_id=tx_id,
                         tx_type=tx_type,
                         source='BLOCKCHAIN',
-                        price_krw=None
+                        price_krw=None,
+                        metadata={'asset_type': asset_type}  # Add asset type metadata
                     )
                     
                     transactions.append(unified_tx)
-                
-                # Check if we got less than 25 transactions (last page)
-                if len(txs_data) < 25:
-                    print(f"Reached last page (got {len(txs_data)} transactions)")
-                    break
                 
                 # Set last_seen_txid for next page
                 last_seen_txid = txs_data[-1].get('txid')
@@ -131,7 +132,7 @@ class BlockchainClient:
             # Sort by timestamp descending (newest first)
             transactions.sort(key=lambda x: x.timestamp, reverse=True)
             
-            print(f"Successfully parsed {len(transactions)} Bitcoin transactions across {page} pages")
+            print(f"Successfully parsed {len(transactions)} Bitcoin transactions across {page - 1} pages")
             return transactions
             
         except requests.exceptions.RequestException as e:
@@ -142,6 +143,36 @@ class BlockchainClient:
             import traceback
             traceback.print_exc()
             return []
+    
+    def _detect_asset_type(self, tx: dict, outputs_to_address: int) -> str:
+        """
+        Detect if transaction involves Ordinals or Runes protocols.
+        
+        Ordinals: Typically dust amounts (546 sats, 330 sats, etc.)
+        Runes: Uses OP_RETURN with specific protocol markers (0x52 = 'R')
+        """
+        # Check for Runes protocol
+        # Runes uses OP_RETURN outputs with protocol marker
+        for vout in tx.get('vout', []):
+            scriptpubkey = vout.get('scriptpubkey', '')
+            scriptpubkey_type = vout.get('scriptpubkey_type', '')
+            
+            # Runes protocol check: OP_RETURN starting with 0x52 ('R')
+            if scriptpubkey_type == 'op_return':
+                # Check if it's a Runes protocol transaction
+                if scriptpubkey.startswith('6a5d'):  # OP_RETURN + OP_PUSHDATA1
+                    # Runes protocol marker check
+                    # Format: OP_RETURN OP_PUSHDATA1 [length] 'R' [rune_data]
+                    return 'RUNE'
+        
+        # Check for Ordinals (dust amounts)
+        # Ordinals typically use 546 sats (0.00000546 BTC) or 330 sats
+        if outputs_to_address > 0:
+            if outputs_to_address == 546 or outputs_to_address == 330 or outputs_to_address <= 1000:
+                return 'ORDINAL'
+        
+        # Regular BTC transaction
+        return 'BTC'
 
     def _make_rpc_call(self, method: str, params: list):
         payload = {

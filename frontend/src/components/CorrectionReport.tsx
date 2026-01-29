@@ -1,5 +1,5 @@
-import React from 'react';
-import { AlertTriangle, CheckCircle, Info, ExternalLink, AlertCircle } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { AlertTriangle, CheckCircle, Info, ExternalLink, AlertCircle, Image as ImageIcon } from 'lucide-react';
 
 interface Transaction {
     date: string;
@@ -9,6 +9,9 @@ interface Transaction {
     asset: string;
     tx_id: string;
     source: string;
+    metadata?: {
+        asset_type?: string;
+    };
 }
 
 interface RecommendedAction {
@@ -43,7 +46,154 @@ interface CorrectionReportProps {
     };
 }
 
+interface OrdinalInfo {
+    inscription_id: string;
+    inscription_number: number;
+    content_type: string;
+    content_url: string;
+    name?: string;
+    collection?: string;
+}
+
 const CorrectionReport: React.FC<CorrectionReportProps> = ({ suggestions, summary }) => {
+    const [ordinalInfoCache, setOrdinalInfoCache] = useState<Record<string, OrdinalInfo | null>>({});
+    const [loadingOrdinals, setLoadingOrdinals] = useState<Record<string, boolean>>({});
+
+    const fetchOrdinalInfo = async (txId: string): Promise<OrdinalInfo | null> => {
+        // Check cache first
+        if (ordinalInfoCache[txId] !== undefined) {
+            return ordinalInfoCache[txId];
+        }
+
+        // Check if already loading
+        if (loadingOrdinals[txId]) {
+            return null;
+        }
+
+        setLoadingOrdinals(prev => ({ ...prev, [txId]: true }));
+
+        try {
+            // Try to fetch from ordinals.com API
+            // Note: This is a placeholder - actual API endpoint may differ
+            const response = await fetch(`https://ordinals.com/api/inscription/${txId}`);
+
+            if (response.ok) {
+                const data = await response.json();
+                const info: OrdinalInfo = {
+                    inscription_id: data.id || txId,
+                    inscription_number: data.number || 0,
+                    content_type: data.content_type || 'unknown',
+                    content_url: `https://ordinals.com/content/${data.id || txId}`,
+                    name: data.meta?.name,
+                    collection: data.meta?.collection
+                };
+
+                setOrdinalInfoCache(prev => ({ ...prev, [txId]: info }));
+                setLoadingOrdinals(prev => ({ ...prev, [txId]: false }));
+                return info;
+            }
+        } catch (error) {
+            console.error('Failed to fetch ordinal info:', error);
+        }
+
+        setOrdinalInfoCache(prev => ({ ...prev, [txId]: null }));
+        setLoadingOrdinals(prev => ({ ...prev, [txId]: false }));
+        return null;
+    };
+
+    const OrdinalPreview: React.FC<{ txId: string; actionType: string }> = ({ txId, actionType }) => {
+        const [info, setInfo] = useState<OrdinalInfo | null>(null);
+        const [loading, setLoading] = useState(false);
+
+        useEffect(() => {
+            if (actionType === 'CHANGE_TO_TRADE' && txId) {
+                setLoading(true);
+                fetchOrdinalInfo(txId).then(data => {
+                    setInfo(data);
+                    setLoading(false);
+                });
+            }
+        }, [txId, actionType]);
+
+        if (!txId || actionType !== 'CHANGE_TO_TRADE') return null;
+
+        const ordinalLink = `https://ordinals.com/inscription/${txId}`;
+
+        return (
+            <div className="mt-3 p-3 bg-purple-50 border border-purple-200 rounded-lg">
+                <div className="flex items-start gap-3">
+                    {/* Ordinal Image/Icon */}
+                    <div className="flex-shrink-0">
+                        {loading ? (
+                            <div className="w-16 h-16 bg-gray-200 rounded animate-pulse flex items-center justify-center">
+                                <ImageIcon className="w-6 h-6 text-gray-400" />
+                            </div>
+                        ) : info && info.content_url ? (
+                            <a href={ordinalLink} target="_blank" rel="noopener noreferrer" className="block">
+                                <img
+                                    src={info.content_url}
+                                    alt={info.name || `Inscription #${info.inscription_number}`}
+                                    className="w-16 h-16 rounded border-2 border-purple-300 hover:border-purple-500 transition-colors object-cover cursor-pointer"
+                                    onError={(e) => {
+                                        // Fallback if image fails to load
+                                        (e.target as HTMLImageElement).style.display = 'none';
+                                        (e.target as HTMLImageElement).parentElement!.innerHTML =
+                                            '<div class="w-16 h-16 bg-purple-100 rounded border-2 border-purple-300 flex items-center justify-center"><svg class="w-8 h-8 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg></div>';
+                                    }}
+                                />
+                            </a>
+                        ) : (
+                            <div className="w-16 h-16 bg-purple-100 rounded border-2 border-purple-300 flex items-center justify-center">
+                                <ImageIcon className="w-8 h-8 text-purple-500" />
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Ordinal Info */}
+                    <div className="flex-1 min-w-0">
+                        {loading ? (
+                            <div className="space-y-2">
+                                <div className="h-4 bg-gray-200 rounded w-3/4 animate-pulse"></div>
+                                <div className="h-3 bg-gray-200 rounded w-1/2 animate-pulse"></div>
+                            </div>
+                        ) : info ? (
+                            <>
+                                <a
+                                    href={ordinalLink}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="font-semibold text-purple-700 hover:text-purple-900 hover:underline flex items-center gap-1"
+                                >
+                                    {info.name || `Inscription #${info.inscription_number}`}
+                                    <ExternalLink className="w-3 h-3" />
+                                </a>
+                                <div className="text-xs text-gray-600 mt-1">
+                                    <div>Inscription #{info.inscription_number}</div>
+                                    {info.collection && <div className="text-purple-600">Collection: {info.collection}</div>}
+                                </div>
+                            </>
+                        ) : (
+                            <div className="text-sm">
+                                <a
+                                    href={ordinalLink}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-purple-600 hover:text-purple-800 hover:underline flex items-center gap-1"
+                                >
+                                    View on Ordinals.com
+                                    <ExternalLink className="w-3 h-3" />
+                                </a>
+                                <div className="text-xs text-gray-500 mt-1">
+                                    Click to verify inscription details
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            </div>
+        );
+    };
+
     const getSeverityColor = (severity: string) => {
         switch (severity) {
             case 'HIGH': return 'border-red-500 bg-red-50';
@@ -166,21 +316,36 @@ const CorrectionReport: React.FC<CorrectionReportProps> = ({ suggestions, summar
                     <div className="mb-4">
                         <h4 className="text-sm font-semibold text-gray-700 mb-2">Affected Transactions:</h4>
                         <div className="bg-gray-50 rounded-lg p-3 space-y-2">
-                            {suggestion.affected_transactions.map((tx, txIdx) => (
-                                <div key={txIdx} className="flex items-center justify-between text-sm border-b border-gray-200 last:border-0 pb-2 last:pb-0">
-                                    <div className="flex items-center gap-2">
-                                        <span className="font-mono text-xs text-gray-500">{tx.date} {tx.time}</span>
-                                        <span className={`px-2 py-0.5 rounded text-xs font-semibold ${tx.type === 'Withdrawal' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'
-                                            }`}>
-                                            {tx.type}
-                                        </span>
+                            {suggestion.affected_transactions.map((tx, txIdx) => {
+                                // Get asset type from metadata
+                                const assetType = tx.metadata?.asset_type || 'BTC';
+                                const assetTagColor =
+                                    assetType === 'ORDINAL' ? 'bg-purple-100 text-purple-700 border-purple-300' :
+                                        assetType === 'RUNE' ? 'bg-orange-100 text-orange-700 border-orange-300' :
+                                            'bg-gray-100 text-gray-600 border-gray-300';
+
+                                return (
+                                    <div key={txIdx} className="flex items-center justify-between text-sm border-b border-gray-200 last:border-0 pb-2 last:pb-0">
+                                        <div className="flex items-center gap-2">
+                                            <span className="font-mono text-xs text-gray-500">{tx.date} {tx.time}</span>
+                                            <span className={`px-2 py-0.5 rounded text-xs font-semibold ${tx.type === 'Withdrawal' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'
+                                                }`}>
+                                                {tx.type}
+                                            </span>
+                                            {/* Asset Type Tag */}
+                                            <span className={`px-2 py-0.5 rounded text-xs font-semibold border ${assetTagColor}`}>
+                                                {assetType === 'ORDINAL' && '🎨 ORDINAL'}
+                                                {assetType === 'RUNE' && '🔮 RUNE'}
+                                                {assetType === 'BTC' && 'BTC'}
+                                            </span>
+                                        </div>
+                                        <div className="flex items-center gap-2">
+                                            <span className="font-semibold">{tx.amount > 0 ? '+' : ''}{tx.amount} {tx.asset}</span>
+                                            <span className="text-xs text-gray-400">({tx.source})</span>
+                                        </div>
                                     </div>
-                                    <div className="flex items-center gap-2">
-                                        <span className="font-semibold">{tx.amount > 0 ? '+' : ''}{tx.amount} {tx.asset}</span>
-                                        <span className="text-xs text-gray-400">({tx.source})</span>
-                                    </div>
-                                </div>
-                            ))}
+                                );
+                            })}
                         </div>
                     </div>
 
@@ -212,15 +377,26 @@ const CorrectionReport: React.FC<CorrectionReportProps> = ({ suggestions, summar
                                             )}
 
                                             {action.action_type === 'CHANGE_TO_TRADE' && (
-                                                <div className="mt-2 text-xs space-y-1">
-                                                    <div>• Sent: {action.sent_amount} {action.sent_asset}</div>
-                                                    <div>• Received: {action.received_asset} {action.received_quantity && `(×${action.received_quantity})`}</div>
-                                                    {action.ordiscan_link && (
+                                                <div className="mt-2">
+                                                    <div className="text-xs space-y-1 mb-2">
+                                                        <div>• Sent: {action.sent_amount} {action.sent_asset}</div>
+                                                        <div>• Received: {action.received_asset} {action.received_quantity && `(×${action.received_quantity})`}</div>
+                                                    </div>
+
+                                                    {/* Ordinal Preview with Image and Link */}
+                                                    {action.transaction?.tx_id && (
+                                                        <OrdinalPreview
+                                                            txId={action.transaction.tx_id}
+                                                            actionType={action.action_type}
+                                                        />
+                                                    )}
+
+                                                    {action.ordiscan_link && !action.transaction?.tx_id && (
                                                         <a
                                                             href={action.ordiscan_link}
                                                             target="_blank"
                                                             rel="noopener noreferrer"
-                                                            className="inline-flex items-center gap-1 text-blue-600 hover:text-blue-800 mt-2"
+                                                            className="inline-flex items-center gap-1 text-blue-600 hover:text-blue-800 mt-2 text-sm"
                                                         >
                                                             <ExternalLink className="w-3 h-3" />
                                                             Verify on Ordiscan

@@ -1,6 +1,6 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Optional
+from typing import Optional, Dict, Any
 
 @dataclass
 class UnifiedTransaction:
@@ -15,6 +15,7 @@ class UnifiedTransaction:
     tx_type: str
     source: str  # 'CEX' or 'BLOCKCHAIN'
     price_krw: Optional[float] = None
+    metadata: Dict[str, Any] = field(default_factory=dict)  # For asset_type, etc.
     
     def to_dict(self):
         return {
@@ -25,5 +26,6 @@ class UnifiedTransaction:
             "tx_id": self.tx_id,
             "tx_type": self.tx_type,
             "source": self.source,
-            "price_krw": self.price_krw
+            "price_krw": self.price_krw,
+            "metadata": self.metadata
         }
