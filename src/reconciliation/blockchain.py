@@ -106,6 +106,21 @@ class BlockchainClient:
                     # ENHANCED: Detect Ordinals and Runes
                     asset_type = self._detect_asset_type(tx, outputs_to_address)
                     
+                    # Build metadata with asset type and additional info
+                    metadata = {'asset_type': asset_type}
+                    
+                    # Extract inscription ID for Ordinals
+                    if asset_type == 'ORDINAL':
+                        inscription_id = self._extract_inscription_id(tx, address)
+                        if inscription_id:
+                            metadata['inscription_id'] = inscription_id
+                    
+                    # Extract Rune token name for Runes
+                    if asset_type == 'RUNE':
+                        rune_name = self._extract_rune_name(tx)
+                        if rune_name:
+                            metadata['rune_name'] = rune_name
+                    
                     unified_tx = UnifiedTransaction(
                         timestamp=timestamp,
                         asset='BTC',
@@ -115,7 +130,7 @@ class BlockchainClient:
                         tx_type=tx_type,
                         source='BLOCKCHAIN',
                         price_krw=None,
-                        metadata={'asset_type': asset_type}  # Add asset type metadata
+                        metadata=metadata
                     )
                     
                     transactions.append(unified_tx)
@@ -173,6 +188,59 @@ class BlockchainClient:
         
         # Regular BTC transaction
         return 'BTC'
+    
+    def _extract_inscription_id(self, tx: dict, address: str) -> Optional[str]:
+        """
+        Extract inscription ID from transaction outputs.
+        Inscription ID format: {txid}i{vout_index}
+        
+        Ordinals inscriptions are typically in outputs with dust amounts.
+        """
+        tx_id = tx.get('txid', '')
+        
+        for idx, vout in enumerate(tx.get('vout', [])):
+            # Check if this output goes to the address
+            if vout.get('scriptpubkey_address') == address:
+                # Check for dust amount (likely inscription)
+                value = vout.get('value', 0)
+                if value <= 10000:  # 10,000 sats or less
+                    return f"{tx_id}i{idx}"
+        
+        return None
+    
+    def _extract_rune_name(self, tx: dict) -> Optional[str]:
+        """
+        Extract Rune token name from OP_RETURN data.
+        Runes protocol embeds token info in OP_RETURN output.
+        
+        Format: OP_RETURN (0x6a) + OP_PUSHDATA1 (0x5d) + length + 'R' + rune_data
+        """
+        for vout in tx.get('vout', []):
+            if vout.get('scriptpubkey_type') == 'op_return':
+                scriptpubkey = vout.get('scriptpubkey', '')
+                
+                # Runes protocol: 6a5d + data
+                if scriptpubkey.startswith('6a5d'):
+                    try:
+                        # Skip OP_RETURN (6a) and OP_PUSHDATA1 (5d)
+                        # Next byte is length, then data starts
+                        # For now, extract a generic identifier
+                        # Full Runes decoding would require varint parsing
+                        
+                        # Extract hex data after 6a5d
+                        data_hex = scriptpubkey[4:]  # Skip 6a5d
+                        
+                        # Try to decode as ASCII (simplified)
+                        # Real implementation would need proper Runes protocol parsing
+                        if len(data_hex) >= 4:
+                            # Return a placeholder with transaction reference
+                            # In production, this would decode the actual Rune name
+                            return f"RUNE_{tx.get('txid', '')[:8]}"
+                    except Exception as e:
+                        print(f"Error extracting Rune name: {e}")
+                        return "RUNE_UNKNOWN"
+        
+        return None
 
     def _make_rpc_call(self, method: str, params: list):
         payload = {

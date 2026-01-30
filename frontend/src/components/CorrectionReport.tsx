@@ -11,6 +11,8 @@ interface Transaction {
     source: string;
     metadata?: {
         asset_type?: string;
+        inscription_id?: string;
+        rune_name?: string;
     };
 }
 
@@ -101,23 +103,26 @@ const CorrectionReport: React.FC<CorrectionReportProps> = ({ suggestions, summar
         return null;
     };
 
-    const OrdinalPreview: React.FC<{ txId: string; actionType: string }> = ({ txId, actionType }) => {
+    const OrdinalPreview: React.FC<{ transaction: Transaction; actionType: string }> = ({ transaction, actionType }) => {
         const [info, setInfo] = useState<OrdinalInfo | null>(null);
         const [loading, setLoading] = useState(false);
 
+        // Use inscription_id from metadata if available, otherwise fall back to tx_id
+        const inscriptionId = transaction.metadata?.inscription_id || transaction.tx_id;
+
         useEffect(() => {
-            if (actionType === 'CHANGE_TO_TRADE' && txId) {
+            if (actionType === 'CHANGE_TO_TRADE' && inscriptionId) {
                 setLoading(true);
-                fetchOrdinalInfo(txId).then(data => {
+                fetchOrdinalInfo(inscriptionId).then(data => {
                     setInfo(data);
                     setLoading(false);
                 });
             }
-        }, [txId, actionType]);
+        }, [inscriptionId, actionType]);
 
-        if (!txId || actionType !== 'CHANGE_TO_TRADE') return null;
+        if (!inscriptionId || actionType !== 'CHANGE_TO_TRADE') return null;
 
-        const ordinalLink = `https://ordinals.com/inscription/${txId}`;
+        const ordinalLink = `https://ordinals.com/inscription/${inscriptionId}`;
 
         return (
             <div className="mt-3 p-3 bg-purple-50 border border-purple-200 rounded-lg">
@@ -188,6 +193,35 @@ const CorrectionReport: React.FC<CorrectionReportProps> = ({ suggestions, summar
                                 </div>
                             </div>
                         )}
+                    </div>
+                </div>
+            </div>
+        );
+    };
+
+    // Rune Preview Component
+    const RunePreview: React.FC<{ runeName: string; txId: string }> = ({ runeName, txId }) => {
+        return (
+            <div className="mt-3 p-3 bg-orange-50 border border-orange-200 rounded-lg">
+                <div className="flex items-center gap-3">
+                    <div className="flex-shrink-0">
+                        <div className="w-12 h-12 bg-orange-100 rounded-full border-2 border-orange-300 flex items-center justify-center">
+                            <span className="text-2xl">🔮</span>
+                        </div>
+                    </div>
+                    <div className="flex-1">
+                        <div className="font-semibold text-orange-700">{runeName}</div>
+                        <div className="text-xs text-gray-600 mt-1">
+                            <a
+                                href={`https://ordinals.com/rune/${runeName}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-orange-600 hover:text-orange-800 hover:underline flex items-center gap-1"
+                            >
+                                View on Ordinals.com
+                                <ExternalLink className="w-3 h-3" />
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -363,8 +397,24 @@ const CorrectionReport: React.FC<CorrectionReportProps> = ({ suggestions, summar
                                             </div>
 
                                             {action.transaction && (
-                                                <div className="text-xs text-gray-600 mb-2">
-                                                    Transaction: {action.transaction.date} {action.transaction.time} - {action.transaction.type} ({action.transaction.amount} BTC)
+                                                <div className="text-xs text-gray-600 mb-2 flex items-center gap-2 flex-wrap">
+                                                    <span>Transaction: {action.transaction.date} {action.transaction.time}</span>
+                                                    <span className={`px-2 py-0.5 rounded text-xs font-semibold ${action.transaction.type === 'Withdrawal' ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'
+                                                        }`}>
+                                                        {action.transaction.type}
+                                                    </span>
+                                                    {/* Asset Type Tag */}
+                                                    {action.transaction.metadata?.asset_type && (
+                                                        <span className={`px-2 py-0.5 rounded text-xs font-semibold border ${action.transaction.metadata.asset_type === 'ORDINAL' ? 'bg-purple-100 text-purple-700 border-purple-300' :
+                                                            action.transaction.metadata.asset_type === 'RUNE' ? 'bg-orange-100 text-orange-700 border-orange-300' :
+                                                                'bg-gray-100 text-gray-600 border-gray-300'
+                                                            }`}>
+                                                            {action.transaction.metadata.asset_type === 'ORDINAL' && '🎨 ORDINAL'}
+                                                            {action.transaction.metadata.asset_type === 'RUNE' && '🔮 RUNE'}
+                                                            {action.transaction.metadata.asset_type === 'BTC' && 'BTC'}
+                                                        </span>
+                                                    )}
+                                                    <span>({action.transaction.amount} BTC)</span>
                                                 </div>
                                             )}
 
@@ -384,10 +434,18 @@ const CorrectionReport: React.FC<CorrectionReportProps> = ({ suggestions, summar
                                                     </div>
 
                                                     {/* Ordinal Preview with Image and Link */}
-                                                    {action.transaction?.tx_id && (
+                                                    {action.transaction && action.transaction.metadata?.asset_type === 'ORDINAL' && (
                                                         <OrdinalPreview
-                                                            txId={action.transaction.tx_id}
+                                                            transaction={action.transaction}
                                                             actionType={action.action_type}
+                                                        />
+                                                    )}
+
+                                                    {/* Rune Preview */}
+                                                    {action.transaction?.metadata?.rune_name && (
+                                                        <RunePreview
+                                                            runeName={action.transaction.metadata.rune_name}
+                                                            txId={action.transaction.tx_id}
                                                         />
                                                     )}
 

@@ -23,18 +23,59 @@ class ReconciliationEngine:
         if my_wallets is None:
             my_wallets = []
         
-        # Combine both sources for pattern detection
-        all_transactions = source_a + source_b
+        print(f"Reconciling {len(source_a)} CEX transactions with {len(source_b)} blockchain transactions")
         
-        # Group by TxID first (highest confidence)
-        groups_by_txid = group_transactions_by_txid(all_transactions)
+        # Strategy: Group CEX transactions (source_a) by exact timestamp
+        # Then match with blockchain transactions (source_b) that have TxIDs
         
-        # Group remaining by time window
-        ungrouped = [tx for tx in all_transactions if not tx.tx_id]
-        groups_by_time = group_transactions_by_time(ungrouped)
+        # Step 1: Group CEX transactions by exact timestamp (down to the minute)
+        cex_groups = {}
+        for tx in source_a:
+            # Create time key: YYYY-MM-DD HH:MM
+            time_key = tx.timestamp.strftime("%Y-%m-%d %H:%M")
+            if time_key not in cex_groups:
+                cex_groups[time_key] = []
+            cex_groups[time_key].append(tx)
         
-        # Combine all groups
-        all_groups = {**groups_by_txid, **groups_by_time}
+        print(f"Created {len(cex_groups)} CEX transaction groups by timestamp")
+        
+        # Step 2: For each CEX group, try to find matching blockchain transactions
+        all_groups = {}
+        for time_key, cex_txs in cex_groups.items():
+            # Find blockchain transactions within ±2 minutes of this timestamp
+            from datetime import datetime, timedelta
+            import pytz
+            
+            target_time = datetime.strptime(time_key, "%Y-%m-%d %H:%M").replace(tzinfo=pytz.UTC)
+            time_window = timedelta(minutes=2)
+            
+            matching_blockchain_txs = []
+            for tx in source_b:
+                if abs((tx.timestamp - target_time).total_seconds()) <= time_window.total_seconds():
+                    matching_blockchain_txs.append(tx)
+            
+            # Combine CEX and blockchain transactions for this time window
+            combined_group = cex_txs + matching_blockchain_txs
+            all_groups[time_key] = combined_group
+            
+            if matching_blockchain_txs:
+                print(f"  {time_key}: {len(cex_txs)} CEX + {len(matching_blockchain_txs)} blockchain = {len(combined_group)} total")
+        
+        # Step 3: Also add blockchain-only groups (transactions not matched to CEX)
+        matched_blockchain_txids = set()
+        for group in all_groups.values():
+            for tx in group:
+                if tx.source == 'BLOCKCHAIN' and tx.tx_id:
+                    matched_blockchain_txids.add(tx.tx_id)
+        
+        # Group unmatched blockchain transactions by TxID
+        unmatched_blockchain = [tx for tx in source_b if tx.tx_id and tx.tx_id not in matched_blockchain_txids]
+        blockchain_groups = group_transactions_by_txid(unmatched_blockchain)
+        
+        # Merge blockchain-only groups
+        all_groups.update(blockchain_groups)
+        
+        print(f"Total groups for pattern detection: {len(all_groups)}")
         
         # Detect patterns in each group
         correction_suggestions = []
