@@ -449,7 +449,7 @@ const CorrectionReport: React.FC<CorrectionReportProps> = ({ suggestions, summar
                                                         />
                                                     )}
 
-                                                    {action.ordiscan_link && !action.transaction?.tx_id && (
+                                                    {action.ordiscan_link && (
                                                         <a
                                                             href={action.ordiscan_link}
                                                             target="_blank"

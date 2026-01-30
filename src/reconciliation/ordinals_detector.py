@@ -186,6 +186,21 @@ def detect_sale_pattern(tx_group: List[UnifiedTransaction], my_wallets: List[str
     # Check pattern: deposit only, not dust, not from own wallet
     if deposits and not withdrawals:
         if not is_dust(deposits[0].amount):
+            # Try to extract asset name from metadata
+            deposit_tx = deposits[0]
+            asset_name = "ORDINAL/RUNE (specify which asset was sold)"
+            
+            # Check if we have metadata about what was sold
+            if hasattr(deposit_tx, 'metadata') and deposit_tx.metadata:
+                if deposit_tx.metadata.get('inscription_id'):
+                    asset_name = f"Ordinal {deposit_tx.metadata['inscription_id'][:16]}..."
+                elif deposit_tx.metadata.get('rune_name'):
+                    asset_name = deposit_tx.metadata['rune_name']
+                elif deposit_tx.metadata.get('asset_type') == 'ORDINAL':
+                    asset_name = "Ordinal (check transaction details)"
+                elif deposit_tx.metadata.get('asset_type') == 'RUNE':
+                    asset_name = "Rune (check transaction details)"
+            
             return {
                 "pattern": "SALE",
                 "confidence": 0.7,
@@ -195,10 +210,11 @@ def detect_sale_pattern(tx_group: List[UnifiedTransaction], my_wallets: List[str
                 "corrections": [{
                     "tx": deposits[0],
                     "action": "CHANGE_TO_TRADE",
-                    "sent_asset": "ORDINAL/RUNE (specify which asset was sold)",
+                    "sent_asset": asset_name,
                     "sent_amount": "USER_INPUT_REQUIRED",
                     "received_asset": "BTC",
                     "received_amount": deposits[0].amount,
+                    "ordiscan_link": get_ordiscan_link(deposits[0].tx_id) if deposits[0].tx_id else None,
                     "requires_user_input": True,
                     "reason": "Profit from selling Ordinal/Rune - taxable event"
                 }]

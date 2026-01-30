@@ -183,7 +183,8 @@ async def analyze(wallet_addresses: Optional[List[str]] = None):
                     "amount": tx.amount,
                     "asset": tx.asset,
                     "tx_id": tx.tx_id,
-                    "source": tx.source
+                    "source": tx.source,
+                    "metadata": tx.metadata if hasattr(tx, 'metadata') and tx.metadata else {}
                 })
             
             # Format recommended actions
@@ -201,7 +202,9 @@ async def analyze(wallet_addresses: Optional[List[str]] = None):
                         "time": tx.timestamp.strftime("%H:%M:%S"),
                         "type": tx.tx_type,
                         "amount": tx.amount,
-                        "tx_id": tx.tx_id
+                        "tx_id": tx.tx_id,
+                        "source": tx.source,
+                        "metadata": tx.metadata if hasattr(tx, 'metadata') and tx.metadata else {}
                     }
                 
                 # Add action-specific details
