@@ -41,6 +41,8 @@ class ReconciliationEngine:
         
         # Step 2: For each CEX group, try to find matching blockchain transactions
         all_groups = {}
+        matched_blockchain_txs = set()  # Track which blockchain txs have been matched
+        
         for time_key, cex_txs in cex_groups.items():
             # Find blockchain transactions within ±2 minutes of this timestamp
             from datetime import datetime, timedelta
@@ -51,8 +53,13 @@ class ReconciliationEngine:
             
             matching_blockchain_txs = []
             for tx in source_b:
+                # Skip if already matched to another CEX group
+                if tx.tx_id in matched_blockchain_txs:
+                    continue
+                    
                 if abs((tx.timestamp - target_time).total_seconds()) <= time_window.total_seconds():
                     matching_blockchain_txs.append(tx)
+                    matched_blockchain_txs.add(tx.tx_id)  # Mark as matched
             
             # Combine CEX and blockchain transactions for this time window
             combined_group = cex_txs + matching_blockchain_txs
@@ -62,14 +69,10 @@ class ReconciliationEngine:
                 print(f"  {time_key}: {len(cex_txs)} CEX + {len(matching_blockchain_txs)} blockchain = {len(combined_group)} total")
         
         # Step 3: Also add blockchain-only groups (transactions not matched to CEX)
-        matched_blockchain_txids = set()
-        for group in all_groups.values():
-            for tx in group:
-                if tx.source == 'BLOCKCHAIN' and tx.tx_id:
-                    matched_blockchain_txids.add(tx.tx_id)
+        # Use the matched_blockchain_txs set we already built
         
         # Group unmatched blockchain transactions by TxID
-        unmatched_blockchain = [tx for tx in source_b if tx.tx_id and tx.tx_id not in matched_blockchain_txids]
+        unmatched_blockchain = [tx for tx in source_b if tx.tx_id and tx.tx_id not in matched_blockchain_txs]
         blockchain_groups = group_transactions_by_txid(unmatched_blockchain)
         
         # Merge blockchain-only groups

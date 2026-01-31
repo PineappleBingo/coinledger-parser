@@ -26,9 +26,24 @@ def is_dust(amount: float) -> bool:
     """Check if amount is considered dust (Ordinal/Rune wrapper)"""
     return abs(amount) <= DUST_THRESHOLDS["max"]
 
-def get_ordiscan_link(tx_id: str) -> str:
-    """Generate Ordiscan URL for transaction verification"""
-    return f"https://ordiscan.com/tx/{tx_id}"
+def get_ordiscan_link(tx_id: str) -> Optional[str]:
+    """
+    Generate Ordiscan URL for transaction verification.
+    Only returns a link for real blockchain transaction hashes.
+    Returns None for CEX-generated identifiers (e.g., XVERSE_...).
+    """
+    if not tx_id:
+        return None
+    
+    # Check if this is a fake CEX identifier
+    if tx_id.startswith('XVERSE_') or tx_id.startswith('CEX_') or '_' in tx_id[:20]:
+        return None
+    
+    # Check if it looks like a real Bitcoin tx hash (64 hex characters)
+    if len(tx_id) == 64 and all(c in '0123456789abcdefABCDEF' for c in tx_id):
+        return f"https://ordiscan.com/tx/{tx_id}"
+    
+    return None
 
 def group_transactions_by_txid(transactions: List[UnifiedTransaction]) -> Dict[str, List[UnifiedTransaction]]:
     """Group transactions by TxID for pattern detection"""
@@ -93,8 +108,9 @@ def detect_mint_buy_pattern(tx_group: List[UnifiedTransaction]) -> Optional[Dict
                         "sent_amount": abs(withdrawals[0].amount),
                         "received_asset": "ORDINAL/RUNE",
                         "received_quantity": 1,
-                        "ordiscan_link": get_ordiscan_link(withdrawals[0].tx_id) if withdrawals[0].tx_id else None,
-                        "requires_ordiscan": True
+                        "ordiscan_link": get_ordiscan_link(deposits[0].tx_id) if deposits[0].tx_id else None,
+                        "requires_ordiscan": True,
+                        "transaction": deposits[0]  # Include blockchain deposit for asset tags
                     }
                 ]
             }
@@ -115,6 +131,9 @@ def detect_bulk_mint_pattern(tx_group: List[UnifiedTransaction]) -> Optional[Dic
     # Check pattern: 1 withdrawal + multiple dust deposits
     if len(withdrawals) == 1 and len(deposits) > 1:
         if all(is_dust(d.amount) for d in deposits):
+            # Find first blockchain deposit for Ordiscan link and metadata
+            blockchain_deposit = next((d for d in deposits if d.source == 'BLOCKCHAIN'), deposits[0])
+            
             return {
                 "pattern": "BULK_MINT",
                 "confidence": 0.95,
@@ -135,8 +154,9 @@ def detect_bulk_mint_pattern(tx_group: List[UnifiedTransaction]) -> Optional[Dic
                         "sent_amount": abs(withdrawals[0].amount),
                         "received_asset": "ORDINAL/RUNE",
                         "received_quantity": len(deposits),
-                        "ordiscan_link": get_ordiscan_link(withdrawals[0].tx_id) if withdrawals[0].tx_id else None,
-                        "requires_ordiscan": True
+                        "ordiscan_link": get_ordiscan_link(blockchain_deposit.tx_id) if blockchain_deposit.tx_id else None,
+                        "requires_ordiscan": True,
+                        "transaction": blockchain_deposit  # Use blockchain deposit for asset tags
                     }
                 ]
             }
@@ -216,7 +236,8 @@ def detect_sale_pattern(tx_group: List[UnifiedTransaction], my_wallets: List[str
                     "received_amount": deposits[0].amount,
                     "ordiscan_link": get_ordiscan_link(deposits[0].tx_id) if deposits[0].tx_id else None,
                     "requires_user_input": True,
-                    "reason": "Profit from selling Ordinal/Rune - taxable event"
+                    "reason": "Profit from selling Ordinal/Rune - taxable event",
+                    "transaction": deposits[0]  # Include deposit for asset tags
                 }]
             }
     

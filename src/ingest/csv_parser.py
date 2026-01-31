@@ -201,7 +201,33 @@ def normalize_csv_data(df: pd.DataFrame) -> list[UnifiedTransaction]:
         except Exception as e:
             print(f"Error parsing CSV row {idx}: {e}")
             continue
-            
-    print(f"Successfully parsed {len(transactions)} transactions from {len(df)} rows")
-    return transactions
+    
+    # Deduplicate transactions (CSV may have duplicate rows)
+    print(f"Parsed {len(transactions)} transactions from {len(df)} rows")
+    
+    # Remove duplicates based on timestamp, type, amount, and asset
+    seen = set()
+    deduplicated = []
+    duplicates_removed = 0
+    
+    for tx in transactions:
+        # Create a signature for the transaction
+        signature = (
+            tx.timestamp.isoformat(),
+            tx.tx_type,
+            tx.amount,
+            tx.asset
+        )
+        
+        if signature not in seen:
+            seen.add(signature)
+            deduplicated.append(tx)
+        else:
+            duplicates_removed += 1
+    
+    if duplicates_removed > 0:
+        print(f"⚠️  Removed {duplicates_removed} duplicate transactions from CSV")
+    
+    print(f"Successfully parsed {len(deduplicated)} unique transactions")
+    return deduplicated
 

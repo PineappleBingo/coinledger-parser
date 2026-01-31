@@ -218,6 +218,19 @@ async def analyze(wallet_addresses: Optional[List[str]] = None):
                     action["received_quantity"] = correction.get("received_quantity", 1)
                     action["ordiscan_link"] = correction.get("ordiscan_link", "")
                     action["requires_ordiscan"] = correction.get("requires_ordiscan", False)
+                    
+                    # Add blockchain transaction metadata for asset tags
+                    if "transaction" in correction:
+                        tx = correction["transaction"]
+                        action["transaction"] = {
+                            "date": tx.timestamp.strftime("%Y-%m-%d"),
+                            "time": tx.timestamp.strftime("%H:%M:%S"),
+                            "type": tx.tx_type,
+                            "amount": tx.amount,
+                            "tx_id": tx.tx_id,
+                            "source": tx.source,
+                            "metadata": tx.metadata if hasattr(tx, 'metadata') and tx.metadata else {}
+                        }
                 
                 elif correction["action"] == "CHANGE_TO_FEE":
                     pass  # No additional details needed
