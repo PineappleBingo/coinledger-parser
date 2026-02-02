@@ -1,12 +1,13 @@
 """
 Ordinals/Runes Pattern Detection for Bitcoin Tax Correction
 
-Detects 5 specific patterns where CoinLedger misclassifies Ordinals/Runes transactions:
-1. Mint/Buy: Withdrawal + Dust Deposit
-2. Gas Fee: Small unpaired withdrawal
-3. Sale: Large unpaired deposit
-4. Self Transfer: Between own wallets
-5. Bulk Mint: 1 withdrawal + multiple dust deposits
+Detects 6 specific patterns where CoinLedger misclassifies Ordinals/Runes transactions:
+1. Bulk Mint: 1 withdrawal + multiple dust deposits
+2. Mint/Buy: Withdrawal + Dust Deposit
+3. Self Transfer: Between own wallets
+4. Gas Fee: Small unpaired withdrawal
+5. Rune/Ordinal Receive: Deposit with Rune/Ordinal metadata (NOT taxable)
+6. Sale: Large unpaired deposit (BTC payment from selling Ordinal/Rune)
 
 Reference: ENHANCED_RECONCILIATION_LOGIC.md
 """
@@ -192,7 +193,7 @@ def detect_gas_fee_pattern(tx_group: List[UnifiedTransaction]) -> Optional[Dict]
     
     return None
 
-def detect_sale_pattern(tx_group: List[UnifiedTransaction], my_wallets: List[str]) -> Optional[Dict]:
+def detect_sale_pattern(tx_group: List[UnifiedTransaction], my_wallets: List[str], all_blockchain_txs: List[UnifiedTransaction] = None) -> Optional[Dict]:
     """
     Scenario 3: Sale Pattern
     Pattern: [Deposit (large)] with no matching Withdrawal
@@ -200,6 +201,9 @@ def detect_sale_pattern(tx_group: List[UnifiedTransaction], my_wallets: List[str
     CoinLedger Error: Records as simple Deposit (not taxable)
     Reality: Proceeds from selling Ordinal/Rune
     """
+    if all_blockchain_txs is None:
+        all_blockchain_txs = []
+        
     withdrawals = [t for t in tx_group if t.tx_type in ['Withdrawal', 'Send']]
     deposits = [t for t in tx_group if t.tx_type in ['Deposit', 'Receive']]
     
@@ -209,9 +213,47 @@ def detect_sale_pattern(tx_group: List[UnifiedTransaction], my_wallets: List[str
             # Try to extract asset name from metadata
             deposit_tx = deposits[0]
             asset_name = "ORDINAL/RUNE (specify which asset was sold)"
+            deposit_time = deposit_tx.timestamp
             
-            # Check if we have metadata about what was sold
-            if hasattr(deposit_tx, 'metadata') and deposit_tx.metadata:
+            # The deposit is BTC (payment), but we need to find the outgoing Ordinal/Rune
+            # Search ALL blockchain transactions for an Ordinal withdrawal around the same time
+            ordinal_tx = None
+            
+            # First, search in the current tx_group
+            for tx in tx_group:
+                if hasattr(tx, 'metadata') and tx.metadata:
+                    if tx.metadata.get('asset_type') in ['ORDINAL', 'RUNE']:
+                        ordinal_tx = tx
+                        break
+            
+            # If not found in group, search ALL blockchain transactions within 48-hour window
+            if not ordinal_tx and all_blockchain_txs:
+                from datetime import timedelta
+                time_window = timedelta(hours=48)
+                
+                for tx in all_blockchain_txs:
+                    # Look for withdrawals with Ordinal/Rune metadata
+                    if tx.tx_type in ['Withdrawal', 'Send']:
+                        if hasattr(tx, 'metadata') and tx.metadata:
+                            if tx.metadata.get('asset_type') in ['ORDINAL', 'RUNE']:
+                                # Check if it's within the time window
+                                time_diff = abs((tx.timestamp - deposit_time).total_seconds())
+                                if time_diff < time_window.total_seconds():
+                                    ordinal_tx = tx
+                                    break
+            
+            # If we found an Ordinal/Rune transaction, use its metadata
+            if ordinal_tx and hasattr(ordinal_tx, 'metadata') and ordinal_tx.metadata:
+                if ordinal_tx.metadata.get('inscription_id'):
+                    asset_name = f"Ordinal {ordinal_tx.metadata['inscription_id'][:16]}..."
+                elif ordinal_tx.metadata.get('rune_name'):
+                    asset_name = ordinal_tx.metadata['rune_name']
+                elif ordinal_tx.metadata.get('asset_type') == 'ORDINAL':
+                    asset_name = "Ordinal (check transaction details)"
+                elif ordinal_tx.metadata.get('asset_type') == 'RUNE':
+                    asset_name = "Rune (check transaction details)"
+            # Fallback: check deposit metadata (less likely but possible)
+            elif hasattr(deposit_tx, 'metadata') and deposit_tx.metadata:
                 if deposit_tx.metadata.get('inscription_id'):
                     asset_name = f"Ordinal {deposit_tx.metadata['inscription_id'][:16]}..."
                 elif deposit_tx.metadata.get('rune_name'):
@@ -237,7 +279,7 @@ def detect_sale_pattern(tx_group: List[UnifiedTransaction], my_wallets: List[str
                     "ordiscan_link": get_ordiscan_link(deposits[0].tx_id) if deposits[0].tx_id else None,
                     "requires_user_input": True,
                     "reason": "Profit from selling Ordinal/Rune - taxable event",
-                    "transaction": deposits[0]  # Include deposit for asset tags
+                    "transaction": ordinal_tx if ordinal_tx else deposits[0]  # Use Ordinal tx if found, else deposit
                 }]
             }
     
@@ -275,7 +317,7 @@ def detect_self_transfer_pattern(tx_group: List[UnifiedTransaction], my_wallets:
     
     return None
 
-def detect_patterns(tx_group: List[UnifiedTransaction], my_wallets: List[str] = None) -> Optional[Dict]:
+def detect_patterns(tx_group: List[UnifiedTransaction], my_wallets: List[str] = None, all_blockchain_txs: List[UnifiedTransaction] = None) -> Optional[Dict]:
     """
     Main pattern detection function - tries all 5 scenarios in priority order
     
@@ -288,6 +330,8 @@ def detect_patterns(tx_group: List[UnifiedTransaction], my_wallets: List[str] = 
     """
     if my_wallets is None:
         my_wallets = []
+    if all_blockchain_txs is None:
+        all_blockchain_txs = []
     
     # Try patterns in priority order
     pattern = detect_bulk_mint_pattern(tx_group)
@@ -306,8 +350,59 @@ def detect_patterns(tx_group: List[UnifiedTransaction], my_wallets: List[str] = 
     if pattern:
         return pattern
     
-    pattern = detect_sale_pattern(tx_group, my_wallets)
+    # Check for Rune/Ordinal RECEIVE before SALE
+    # This prevents misclassifying Rune deposits as sales
+    pattern = detect_rune_receive_pattern(tx_group)
     if pattern:
         return pattern
+    
+    pattern = detect_sale_pattern(tx_group, my_wallets, all_blockchain_txs)
+    if pattern:
+        return pattern
+    
+    return None
+def detect_rune_receive_pattern(tx_group: List[UnifiedTransaction]) -> Optional[Dict]:
+    """
+    Scenario: Rune/Ordinal Receive Pattern
+    Pattern: [Deposit with Rune/Ordinal metadata] - receiving a Rune/Ordinal, not a sale
+    
+    This is NOT taxable - only taxable when sold later
+    """
+    withdrawals = [t for t in tx_group if t.tx_type in ['Withdrawal', 'Send']]
+    deposits = [t for t in tx_group if t.tx_type in ['Deposit', 'Receive']]
+    
+    # Check pattern: deposit only (no withdrawal)
+    if deposits and not withdrawals:
+        deposit_tx = deposits[0]
+        
+        # Check if this deposit has Rune/Ordinal metadata
+        if hasattr(deposit_tx, 'metadata') and deposit_tx.metadata:
+            asset_type = deposit_tx.metadata.get('asset_type')
+            
+            if asset_type in ['ORDINAL', 'RUNE']:
+                # This is receiving a Rune/Ordinal, not a sale
+                asset_name = "Unknown Asset"
+                
+                if asset_type == 'ORDINAL':
+                    inscription_id = deposit_tx.metadata.get('inscription_id', '')
+                    asset_name = f"Ordinal {inscription_id[:16]}..." if inscription_id else "Ordinal"
+                elif asset_type == 'RUNE':
+                    rune_name = deposit_tx.metadata.get('rune_name', '')
+                    asset_name = rune_name if rune_name else "Rune"
+                
+                return {
+                    "pattern": "RUNE_RECEIVE",
+                    "confidence": 0.95,
+                    "severity": "LOW",
+                    "tax_impact": "NOT_TAXABLE",
+                    "affected_transactions": tx_group,
+                    "corrections": [{
+                        "tx": deposit_tx,
+                        "action": "NO_ACTION_NEEDED",
+                        "reason": f"Received {asset_name} - not taxable until sold",
+                        "note": "This is an incoming Rune/Ordinal. No tax event occurs until you sell it.",
+                        "transaction": deposit_tx  # Include for asset tags and preview
+                    }]
+                }
     
     return None

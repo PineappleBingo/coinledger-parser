@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { AlertTriangle, CheckCircle, Info, ExternalLink, AlertCircle, Image as ImageIcon } from 'lucide-react';
+import { fetchOrdinalInfo, fetchRuneInfo, formatRuneAmount, type OrdinalInfo, type RuneInfo } from '../utils/apiClient';
 
 interface Transaction {
     date: string;
@@ -13,6 +14,8 @@ interface Transaction {
         asset_type?: string;
         inscription_id?: string;
         rune_name?: string;
+        rune_amount?: string;
+        rune_divisibility?: number;
     };
 }
 
@@ -20,14 +23,14 @@ interface RecommendedAction {
     action_type: string;
     reason: string;
     warning?: string;
-    transaction?: Transaction;
-    transactions?: Transaction[];
     sent_asset?: string;
     sent_amount?: string | number;
     received_asset?: string;
     received_quantity?: number;
     ordiscan_link?: string;
     requires_ordiscan?: boolean;
+    transaction?: Transaction;
+    transactions?: Transaction[];
 }
 
 interface CorrectionSuggestion {
@@ -48,60 +51,7 @@ interface CorrectionReportProps {
     };
 }
 
-interface OrdinalInfo {
-    inscription_id: string;
-    inscription_number: number;
-    content_type: string;
-    content_url: string;
-    name?: string;
-    collection?: string;
-}
-
 const CorrectionReport: React.FC<CorrectionReportProps> = ({ suggestions, summary }) => {
-    const [ordinalInfoCache, setOrdinalInfoCache] = useState<Record<string, OrdinalInfo | null>>({});
-    const [loadingOrdinals, setLoadingOrdinals] = useState<Record<string, boolean>>({});
-
-    const fetchOrdinalInfo = async (txId: string): Promise<OrdinalInfo | null> => {
-        // Check cache first
-        if (ordinalInfoCache[txId] !== undefined) {
-            return ordinalInfoCache[txId];
-        }
-
-        // Check if already loading
-        if (loadingOrdinals[txId]) {
-            return null;
-        }
-
-        setLoadingOrdinals(prev => ({ ...prev, [txId]: true }));
-
-        try {
-            // Try to fetch from ordinals.com API
-            // Note: This is a placeholder - actual API endpoint may differ
-            const response = await fetch(`https://ordinals.com/api/inscription/${txId}`);
-
-            if (response.ok) {
-                const data = await response.json();
-                const info: OrdinalInfo = {
-                    inscription_id: data.id || txId,
-                    inscription_number: data.number || 0,
-                    content_type: data.content_type || 'unknown',
-                    content_url: `https://ordinals.com/content/${data.id || txId}`,
-                    name: data.meta?.name,
-                    collection: data.meta?.collection
-                };
-
-                setOrdinalInfoCache(prev => ({ ...prev, [txId]: info }));
-                setLoadingOrdinals(prev => ({ ...prev, [txId]: false }));
-                return info;
-            }
-        } catch (error) {
-            console.error('Failed to fetch ordinal info:', error);
-        }
-
-        setOrdinalInfoCache(prev => ({ ...prev, [txId]: null }));
-        setLoadingOrdinals(prev => ({ ...prev, [txId]: false }));
-        return null;
-    };
 
     const OrdinalPreview: React.FC<{ transaction: Transaction; actionType: string }> = ({ transaction, actionType }) => {
         const [info, setInfo] = useState<OrdinalInfo | null>(null);
@@ -111,16 +61,16 @@ const CorrectionReport: React.FC<CorrectionReportProps> = ({ suggestions, summar
         const inscriptionId = transaction.metadata?.inscription_id || transaction.tx_id;
 
         useEffect(() => {
-            if (actionType === 'CHANGE_TO_TRADE' && inscriptionId) {
+            if (inscriptionId) {
                 setLoading(true);
                 fetchOrdinalInfo(inscriptionId).then(data => {
                     setInfo(data);
                     setLoading(false);
                 });
             }
-        }, [inscriptionId, actionType]);
+        }, [inscriptionId]);
 
-        if (!inscriptionId || actionType !== 'CHANGE_TO_TRADE') return null;
+        if (!inscriptionId) return null;
 
         const ordinalLink = `https://ordinals.com/inscription/${inscriptionId}`;
 
@@ -200,7 +150,23 @@ const CorrectionReport: React.FC<CorrectionReportProps> = ({ suggestions, summar
     };
 
     // Rune Preview Component
-    const RunePreview: React.FC<{ runeName: string; txId: string }> = ({ runeName, txId }) => {
+    const RunePreview: React.FC<{ runeName: string; txId: string; metadata?: Transaction['metadata'] }> = ({ runeName, txId, metadata }) => {
+        const [runeInfo, setRuneInfo] = useState<RuneInfo | null>(null);
+        const [loading, setLoading] = useState(false);
+
+        useEffect(() => {
+            setLoading(true);
+            fetchRuneInfo(txId, runeName).then(data => {
+                setRuneInfo(data);
+                setLoading(false);
+            });
+        }, [txId, runeName]);
+
+        // Use metadata if API fails
+        const displayName = runeInfo?.ticker || metadata?.rune_name || runeName;
+        const displayAmount = runeInfo?.amount || metadata?.rune_amount || 'Unknown';
+        const divisibility = runeInfo?.divisibility || metadata?.rune_divisibility || 0;
+
         return (
             <div className="mt-3 p-3 bg-orange-50 border border-orange-200 rounded-lg">
                 <div className="flex items-center gap-3">
@@ -210,18 +176,38 @@ const CorrectionReport: React.FC<CorrectionReportProps> = ({ suggestions, summar
                         </div>
                     </div>
                     <div className="flex-1">
-                        <div className="font-semibold text-orange-700">{runeName}</div>
-                        <div className="text-xs text-gray-600 mt-1">
-                            <a
-                                href={`https://ordinals.com/rune/${runeName}`}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-orange-600 hover:text-orange-800 hover:underline flex items-center gap-1"
-                            >
-                                View on Ordinals.com
-                                <ExternalLink className="w-3 h-3" />
-                            </a>
-                        </div>
+                        {loading ? (
+                            <div className="space-y-2">
+                                <div className="h-4 bg-gray-200 rounded w-3/4 animate-pulse"></div>
+                                <div className="h-3 bg-gray-200 rounded w-1/2 animate-pulse"></div>
+                            </div>
+                        ) : (
+                            <>
+                                <div className="font-semibold text-orange-700">{displayName}</div>
+                                <div className="text-sm text-gray-700 mt-1">
+                                    Amount: {formatRuneAmount(displayAmount, divisibility)}
+                                </div>
+                                <div className="flex gap-2 mt-2 text-xs">
+                                    <a
+                                        href={`https://ordinals.com/rune/${displayName}`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-orange-600 hover:text-orange-800 hover:underline flex items-center gap-1"
+                                    >
+                                        Ordinals.com <ExternalLink className="w-3 h-3" />
+                                    </a>
+                                    <span className="text-gray-400">|</span>
+                                    <a
+                                        href={`https://www.oklink.com/btc/tx/${txId}`}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-blue-600 hover:text-blue-800 hover:underline flex items-center gap-1"
+                                    >
+                                        OKLink <ExternalLink className="w-3 h-3" />
+                                    </a>
+                                </div>
+                            </>
+                        )}
                     </div>
                 </div>
             </div>
@@ -446,6 +432,7 @@ const CorrectionReport: React.FC<CorrectionReportProps> = ({ suggestions, summar
                                                         <RunePreview
                                                             runeName={action.transaction.metadata.rune_name}
                                                             txId={action.transaction.tx_id}
+                                                            metadata={action.transaction.metadata}
                                                         />
                                                     )}
 

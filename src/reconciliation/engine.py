@@ -83,7 +83,7 @@ class ReconciliationEngine:
         # Detect patterns in each group
         correction_suggestions = []
         for group_key, tx_group in all_groups.items():
-            pattern = detect_patterns(tx_group, my_wallets)
+            pattern = detect_patterns(tx_group, my_wallets, source_b)
             if pattern:
                 correction_suggestions.append(pattern)
         
