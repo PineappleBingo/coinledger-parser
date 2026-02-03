@@ -125,6 +125,12 @@ class BlockchainClient:
                             metadata['rune_amount'] = sum(int(r['amount']) if r['amount'].isdigit() else 0 for r in runes)
                             metadata['rune_divisibility'] = runes[0]['divisibility'] if runes else 0
                     
+                    # Extract witness data (for BRC-20 and Inscriptions)
+                    all_witness_data = []
+                    for vin in tx.get('vin', []):
+                        if 'witness' in vin:
+                            all_witness_data.extend(vin['witness'])
+                            
                     unified_tx = UnifiedTransaction(
                         timestamp=timestamp,
                         asset='BTC',
@@ -134,7 +140,9 @@ class BlockchainClient:
                         tx_type=tx_type,
                         source='BLOCKCHAIN',
                         price_krw=None,
-                        metadata=metadata
+                        metadata=metadata,
+                        witness_data=all_witness_data,
+                        raw_hex=None # Placeholder: Fetching raw hex is expensive, defer to Phase 2
                     )
                     
                     transactions.append(unified_tx)

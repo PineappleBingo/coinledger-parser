@@ -14,7 +14,9 @@ Reference: ENHANCED_RECONCILIATION_LOGIC.md
 
 from typing import List, Dict, Optional, Tuple
 from datetime import timedelta
+from datetime import timedelta
 from src.models import UnifiedTransaction
+from src.reconciliation.runestone_parser import RunestoneParser
 
 # Dust thresholds in BTC
 DUST_THRESHOLDS = {
@@ -54,8 +56,8 @@ def get_rune_links(tx_id: str, rune_name: str = None) -> Dict[str, str]:
     links = {}
     
     if tx_id and len(tx_id) == 64:
-        # OKLink transaction link
-        links['oklink'] = f"https://www.oklink.com/btc/tx/{tx_id}"
+        # UniSat transaction link (Preferred for Runes)
+        links['unisat'] = f"https://unisat.io/tx/{tx_id}"
         
         # Ordiscan link
         links['ordiscan'] = f"https://ordiscan.com/tx/{tx_id}"
@@ -65,6 +67,32 @@ def get_rune_links(tx_id: str, rune_name: str = None) -> Dict[str, str]:
         links['ordinals'] = f"https://ordinals.com/rune/{rune_name}"
     
     return links
+
+def is_potential_marketplace_tx(tx: UnifiedTransaction) -> bool:
+    """
+    Check if a blockchain transaction looks like a Marketplace/Magic Eden trade.
+    Heuristics:
+    1. Has Witness Data (SegWit/Taproot)
+    2. Multiple Inputs/Outputs (PSBT structure common in ME)
+    3. Not a simple self-transfer (1 in, 2 out)
+    """
+    if not tx.witness_data:
+        return False
+        
+    # Magic Eden / Marketplaces usually use PSBTs which result in multiple inputs signing
+    # A simple transfer usually has 1 or 2 inputs.
+    # A marketplace trade often has: Seller Input + Buyer Input + Service Fee Input?
+    # Actually, simpler heuristic:
+    # If it has witness data and is NOT a simple 1-input-2-output transfer, it's a candidate.
+    
+    # We don't have input count in UnifiedTransaction (only net amount/fee). 
+    # But we can check witness data length.
+    # Standard Taproot/Segwit spend might have 1 witness item (signature).
+    # PSBT might have more.
+    if len(tx.witness_data) >= 2:
+        return True
+        
+    return False
 
 def group_transactions_by_txid(transactions: List[UnifiedTransaction]) -> Dict[str, List[UnifiedTransaction]]:
     """Group transactions by TxID for pattern detection"""
@@ -131,7 +159,10 @@ def detect_mint_buy_pattern(tx_group: List[UnifiedTransaction]) -> Optional[Dict
                         "received_quantity": 1,
                         "ordiscan_link": get_ordiscan_link(deposits[0].tx_id) if deposits[0].tx_id else None,
                         "requires_ordiscan": True,
-                        "transaction": deposits[0]  # Include blockchain deposit for asset tags
+                        "transaction": deposits[0],  # Include blockchain deposit for asset tags
+                        "verification_links": get_ordiscan_link(deposits[0].tx_id) if deposits[0].tx_id else None,
+                        "ordiscan_link": get_ordiscan_link(deposits[0].tx_id) if deposits[0].tx_id else None,
+                        "mempool_link": f"https://mempool.space/tx/{deposits[0].tx_id}" if deposits[0].tx_id else None
                     }
                 ]
             }
@@ -177,7 +208,10 @@ def detect_bulk_mint_pattern(tx_group: List[UnifiedTransaction]) -> Optional[Dic
                         "received_quantity": len(deposits),
                         "ordiscan_link": get_ordiscan_link(blockchain_deposit.tx_id) if blockchain_deposit.tx_id else None,
                         "requires_ordiscan": True,
-                        "transaction": blockchain_deposit  # Use blockchain deposit for asset tags
+                        "transaction": blockchain_deposit,  # Use blockchain deposit for asset tags
+                        "verification_links": get_ordiscan_link(blockchain_deposit.tx_id) if blockchain_deposit.tx_id else None,
+                        "ordiscan_link": get_ordiscan_link(blockchain_deposit.tx_id) if blockchain_deposit.tx_id else None,
+                        "mempool_link": f"https://mempool.space/tx/{blockchain_deposit.tx_id}" if blockchain_deposit.tx_id else None
                     }
                 ]
             }
@@ -207,7 +241,8 @@ def detect_gas_fee_pattern(tx_group: List[UnifiedTransaction]) -> Optional[Dict]
                 "corrections": [{
                     "tx": withdrawals[0],
                     "action": "CHANGE_TO_FEE",
-                    "reason": "Network cost without asset acquisition - tax deductible expense"
+                    "reason": "Network cost without asset acquisition - tax deductible expense",
+                    "mempool_link": f"https://mempool.space/tx/{withdrawals[0].tx_id}" if withdrawals[0].tx_id else None
                 }]
             }
     
@@ -315,7 +350,8 @@ def detect_sale_pattern(tx_group: List[UnifiedTransaction], my_wallets: List[str
                     "ordinals_link": verification_links.get('ordinals'),
                     "requires_user_input": True,
                     "reason": "Profit from selling Ordinal/Rune - taxable event",
-                    "transaction": ordinal_tx if ordinal_tx else deposits[0]  # Use Ordinal tx if found, else deposit
+                    "transaction": ordinal_tx if ordinal_tx else deposits[0],  # Use Ordinal tx if found, else deposit
+                    "mempool_link": f"https://mempool.space/tx/{deposits[0].tx_id}" if deposits[0].tx_id else None
                 }]
             }
     
@@ -370,9 +406,18 @@ def detect_patterns(tx_group: List[UnifiedTransaction], my_wallets: List[str] = 
         all_blockchain_txs = []
     
     # Try patterns in priority order
+    
+    # V2 Priority 0: Fiat On-Ramp (Missing Blockchain Tx)
+    pattern = detect_fiat_onramp_pattern(tx_group)
+    if pattern: return pattern
+
+    # V2 Priority 1: Rune Cenotaph (Burn)
+    pattern = detect_runes_cenotaph_pattern(tx_group)
+    if pattern: return pattern
+
+    # V2 Priority 2: Bulk Mint (most specific)
     pattern = detect_bulk_mint_pattern(tx_group)
-    if pattern:
-        return pattern
+    if pattern: return pattern
     
     pattern = detect_mint_buy_pattern(tx_group)
     if pattern:
@@ -396,6 +441,150 @@ def detect_patterns(tx_group: List[UnifiedTransaction], my_wallets: List[str] = 
     if pattern:
         return pattern
     
+    # V2 Priority 4: BRC-20 Transfer
+    pattern = detect_brc20_transfer_pattern(tx_group)
+    if pattern: return pattern
+
+    # V2 Priority 5: Magic Eden / Marketplace Trade (Enhanced PSBT)
+    # Check this BEFORE generic PSBT detection to catch specific Buy/Sell flows
+    pattern = detect_nft_trade_pattern(tx_group)
+    if pattern: return pattern
+
+    # V2 Priority 5.5: Cross-Reference Magic Eden / Mint (Unmatched CEX + Loose Blockchain)
+    # This handles the "Unmatched CEX Deposit" that is actually a Mint/Buy payment
+    pattern = detect_magic_eden_or_mint_cross_ref(tx_group, all_blockchain_txs)
+    if pattern: return pattern
+
+    # V2 Priority 6: Generic PSBT Swap (Partial)
+    pattern = detect_psbt_pattern(tx_group)
+    if pattern: return pattern
+
+    return None
+
+def detect_fiat_onramp_pattern(tx_group: List[UnifiedTransaction]) -> Optional[Dict]:
+    """
+    V2 Pattern P0: Fiat On-Ramp
+    Scenario: CEX shows a Deposit, but no Blockchain transaction was found (Unmatched).
+    User likely bought crypto on the CEX/On-ramp.
+    """
+    # Check if this group only has CEX transactions
+    has_blockchain = any(t.source == 'BLOCKCHAIN' for t in tx_group)
+    
+    if not has_blockchain:
+        # All transactions are CEX deposits?
+        cex_deposits = [t for t in tx_group if t.source == 'CEX' and t.tx_type in ['Deposit', 'Receive', 'Buy']]
+        
+        if cex_deposits:
+            # P0 Refinement: Check asset type
+            # If asset is not BTC (e.g. ORDI, SATS, RUNE), likely an asset transfer, not fiat on-ramp
+            tx = cex_deposits[0]
+            asset = tx.asset.upper()
+            
+            # Heuristic: Known BRC-20s or generic "RUNE" logic
+            # If asset is BTC, assume potential Fiat On-Ramp
+            is_btc_like = asset in ['BTC', 'BITCOIN', 'WBTC'] 
+            
+            if is_btc_like:
+                return {
+                    "pattern": "FIAT_ONRAMP",
+                    "confidence": 0.8,
+                    "severity": "MEDIUM", 
+                    "tax_impact": "ESTABLISHES_COST_BASIS",
+                    "affected_transactions": tx_group,
+                    "corrections": [{
+                        "tx": tx,
+                        "action": "CHANGE_TO_BUY",
+                        "reason": "Deposit without blockchain source - likely Fiat On-Ramp purchase",
+                        "note": "Verify if you bought this with USD/Fiat. If so, ensure cost basis is set."
+                    }]
+                }
+            else:
+                # It's an asset (ORDI, SATS, etc.) but no blockchain tx found
+                return {
+                    "pattern": "UNMATCHED_ASSET_TRANSFER",
+                    "confidence": 0.7,
+                    "severity": "MEDIUM",
+                    "tax_impact": "REVIEW_REQUIRED",
+                    "affected_transactions": tx_group,
+                    "corrections": [{
+                        "tx": tx,
+                        "action": "REVIEW",
+                        "reason": f"Unmatched deposit of {asset}. Likely a wallet transfer, not a Fiat purchase.",
+                        "note": "CoinLedger missed the blockchain source. Check if you transferred this from another wallet."
+                    }]
+                }
+    return None
+
+def detect_runes_cenotaph_pattern(tx_group: List[UnifiedTransaction]) -> Optional[Dict]:
+    """
+    V2 Pattern P2: Runes Cenotaph
+    Scenario: Malformed Runes transaction which burns the assets.
+    """
+    blockchain_txs = [t for t in tx_group if t.source == 'BLOCKCHAIN']
+    parser = RunestoneParser()
+    
+    for tx in blockchain_txs:
+        # Placeholder logic based on Phase 2 plan (Unit tested parser availability):
+        # In a real scenario we would pass raw payload.
+        # Here we just want to ensure we return verification links if we DO match.
+        pass 
+        
+    return None
+
+def detect_brc20_transfer_pattern(tx_group: List[UnifiedTransaction]) -> Optional[Dict]:
+    """
+    V2 Pattern P4: BRC-20 Transfer Inscription
+    Scenario: Witness data contains {"p":"brc-20", "op":"transfer"}.
+    This is just the 'transfer inscription', not the actual movement.
+    """
+    for tx in tx_group:
+        if hasattr(tx, 'witness_data') and tx.witness_data:
+            for witness_item in tx.witness_data:
+                try:
+                    bytes_data = bytes.fromhex(witness_item)
+                    text = bytes_data.decode('utf-8', errors='ignore')
+                    if "brc-20" in text and "transfer" in text:
+                         return {
+                            "pattern": "BRC20_TRANSFER_INSCRIBE",
+                            "confidence": 0.95,
+                            "severity": "LOW",
+                            "tax_impact": "NOT_TAXABLE",
+                            "affected_transactions": tx_group,
+                            "corrections": [{
+                                "tx": tx,
+                                "action": "IGNORE_OR_INTERNAL",
+                                "reason": "BRC-20 Transfer Inscription - preparation step, not a taxable event yet",
+                                "mempool_link": f"https://mempool.space/tx/{tx.tx_id}",
+                                "ordiscan_link": get_ordiscan_link(tx.tx_id)
+                            }]
+                        }
+                except:
+                    continue
+    return None
+
+def detect_psbt_pattern(tx_group: List[UnifiedTransaction]) -> Optional[Dict]:
+    """
+    V2 Pattern P3: PSBT / Marketplace Swap
+    Scenario: Multiple inputs with signatures (witnesses) indicating multiple parties.
+    """
+    # Use witness data count as simple heuristic for now
+    for tx in tx_group:
+         if tx.source == 'BLOCKCHAIN' and hasattr(tx, 'witness_data') and tx.witness_data:
+             # Very rough heuristic: If we see many witness items, it *might* be multisig/PSBT
+             if len(tx.witness_data) > 4: # Arbitrary threshold for complex tx
+                 return {
+                     "pattern": "POTENTIAL_MARKETPLACE_SWAP",
+                     "confidence": 0.4, # Low confidence without deep SIGHASH analysis
+                     "severity": "MEDIUM",
+                     "tax_impact": "REVIEW_REQUIRED",
+                     "affected_transactions": tx_group,
+                     "corrections": [{
+                         "tx": tx,
+                         "action": "REVIEW",
+                         "reason": "Complex transaction with multiple signatures - potential marketplace swap",
+                         "mempool_link": f"https://mempool.space/tx/{tx.tx_id}"
+                     }]
+                 }
     return None
 def detect_rune_receive_pattern(tx_group: List[UnifiedTransaction]) -> Optional[Dict]:
     """
@@ -456,4 +645,183 @@ def detect_rune_receive_pattern(tx_group: List[UnifiedTransaction]) -> Optional[
                     }]
                 }
     
+    return None
+
+def detect_nft_trade_pattern(tx_group: List[UnifiedTransaction]) -> Optional[Dict]:
+    """
+    V2 Pattern: NFT Marketplace Trade (Magic Eden, etc.)
+    Replaces generic 'Swap' with specific 'Buy' or 'Sale' actions when clear.
+    """
+    # Needs to be a complex transaction (mix of inputs/outputs)
+    if len(tx_group) < 2:
+        return None
+        
+    # Calculate Net Changes for User
+    net_btc = 0
+    assets_received = []
+    assets_sent = []
+    
+    for tx in tx_group:
+        if tx.asset == 'BTC':
+            net_btc += tx.amount
+        else:
+            if tx.amount > 0:
+                assets_received.append(tx)
+            else:
+                assets_sent.append(tx)
+                
+    # Logic: Did we swap BTC for an Asset (Buy) or Asset for BTC (Sale)?
+    
+    # CASE 1: NFT BUY (User paid BTC, received Asset)
+    # Net BTC must be negative (payment + fee)
+    # Must have received at least one Asset
+    if net_btc < 0 and len(assets_received) > 0 and len(assets_sent) == 0:
+        asset_names = ", ".join([t.asset for t in assets_received])
+        main_asset = assets_received[0]
+        
+        return {
+            "pattern": "NFT_MARKETPLACE_BUY",
+            "confidence": 0.9,
+            "severity": "HIGH",
+            "tax_impact": "ESTABLISHES_COST_BASIS",
+            "affected_transactions": tx_group,
+            "corrections": [{
+                "tx": main_asset,
+                "action": "CHANGE_TO_BUY",
+                "reason": f"Bought {asset_names} on Marketplace (e.g. Magic Eden)",
+                "note": f"Paid {abs(net_btc):.8f} BTC. Ensure cost basis is allocated to {asset_names}.",
+                "verification_links": get_rune_links(main_asset.tx_id, main_asset.metadata.get('rune_name')) if main_asset.metadata.get('rune_name') else {},
+                "ordiscan_link": get_ordiscan_link(main_asset.tx_id),
+                "unisat_link": f"https://unisat.io/tx/{main_asset.tx_id}"
+            }]
+        }
+
+    # CASE 2: NFT SALE (User sold Asset, received BTC)
+    # Net BTC must be positive (revenue)
+    # Must have sent at least one Asset
+    if net_btc > 0 and len(assets_received) == 0 and len(assets_sent) > 0:
+        asset_names = ", ".join([t.asset for t in assets_sent])
+        main_asset = assets_sent[0]
+        
+        return {
+            "pattern": "NFT_MARKETPLACE_SALE",
+            "confidence": 0.9,
+            "severity": "HIGH",
+            "tax_impact": "TAXABLE_INCOME",
+            "affected_transactions": tx_group,
+            "corrections": [{
+                "tx": main_asset,
+                "action": "CHANGE_TO_TRADE",
+                "sent_asset": asset_names,
+                "sent_amount": abs(main_asset.amount),
+                "received_asset": "BTC",
+                "received_quantity": net_btc,
+                "reason": f"Sold {asset_names} on Marketplace (e.g. Magic Eden)",
+                "note": "Taxable event. Profit/Loss calculated against original cost basis.",
+                "verification_links": get_rune_links(main_asset.tx_id, main_asset.metadata.get('rune_name')) if main_asset.metadata.get('rune_name') else {},
+                "ordiscan_link": get_ordiscan_link(main_asset.tx_id),
+                "unisat_link": f"https://unisat.io/tx/{main_asset.tx_id}"
+            }]
+        }
+        
+    return None
+
+def detect_magic_eden_or_mint_cross_ref(tx_group: List[UnifiedTransaction], all_blockchain_txs: List[UnifiedTransaction]) -> Optional[Dict]:
+    """
+    V2 Pattern: Magic Eden / Mint Cross-Reference
+    Scenario: Unmatched CEX/Wallet transactions that align with "loose" blockchain transactions.
+    
+    Problem: CEX says "Deposit 0.01 BTC" (Unmatched). CoinLedger sees "Fiat On-Ramp".
+    Reality: It matches a nearby Blockchain "Withdrawal/Buy" (Mint or ME Buy) that wasn't grouped.
+    """
+    
+    # 1. Identify Unmatched CEX/Wallet Activity
+    # We are looking for groups that FAILED to match with blockchain initially (likely single-sided)
+    if any(t.source == 'BLOCKCHAIN' for t in tx_group):
+        return None # Already matched
+        
+    cex_txs = [t for t in tx_group if t.source != 'BLOCKCHAIN']
+    if not cex_txs:
+        return None
+        
+    main_tx = cex_txs[0]
+    
+    # We only care about Deposits (receiving asset, likely from Mint/Buy) or Withdrawals (paying for it)
+    # Actually, simpler: Look for BTC movements.
+    
+    # CASE A: CEX Withdrawal (Paying BTC) -> Linked to Blockchain Mint/Buy
+    if main_tx.tx_type in ['Withdrawal', 'Send'] and main_tx.asset == 'BTC':
+        # Search for loose blockchain transactions near this time
+        time_window = timedelta(hours=1) # 1 hour variance
+        
+        candidates = []
+        for b_tx in all_blockchain_txs:
+            if abs((b_tx.timestamp - main_tx.timestamp).total_seconds()) < time_window.total_seconds():
+                candidates.append(b_tx)
+                
+        # Analyze candidates
+        for cand in candidates:
+            # Does this candidate look like a Mint or ME interaction?
+            
+            # Sub-Case: Mint (Multiple Dust Deposits)
+            # If candidate is a complex tx producing dust, it might be the mint
+            # But 'cand' is a UnifiedTransaction, which summarizes the net effect.
+            # If net effect is small burn or fee?
+            
+            # Let's check for 'is_potential_marketplace_tx'
+            if is_potential_marketplace_tx(cand):
+                return {
+                    "pattern": "NFT_MARKETPLACE_BUY_CROSSREF",
+                    "confidence": 0.85,
+                    "severity": "HIGH",
+                    "tax_impact": "ESTABLISHES_COST_BASIS",
+                    "affected_transactions": tx_group + [cand],
+                    "corrections": [{
+                        "tx": main_tx,
+                        "action": "CHANGE_TO_BUY",
+                        "reason": "Matched CEX Payment to Magic Eden/Marketplace Transaction",
+                        "note": f"Linked to blockchain tx {cand.tx_id[:8]}...",
+                        "verification_links": get_rune_links(cand.tx_id),
+                        "ordiscan_link": get_ordiscan_link(cand.tx_id),
+                        "transaction": cand # Include blockchain tx for context
+                    }]
+                }
+
+    # CASE B: CEX Deposit (Receiving Proceeds) -> Linked to Blockchain Sale
+    # "Deposit 0.5 BTC" -> Was it a Fiat On-Ramp? Or did we sell an Ordinal?
+    if main_tx.tx_type in ['Deposit', 'Receive'] and main_tx.asset == 'BTC':
+        # Search candidates
+        time_window = timedelta(hours=6) # 6 hour variance (exchange dep can be slow)
+        
+        candidates = []
+        for b_tx in all_blockchain_txs:
+             if abs((b_tx.timestamp - main_tx.timestamp).total_seconds()) < time_window.total_seconds():
+                 # We are looking for the blockchain side where we *sent* the asset?
+                 # If we sold on ME, we might see an incoming BTC tx on-chain too?
+                 # Or maybe the CEX deposit IS the settlement.
+                 
+                 # If we see a blockchain tx that looks like a Sale (Ordinal leaving wallet), that's the trigger.
+                 if b_tx.tx_type in ['Withdrawal', 'Send'] and b_tx.metadata.get('asset_type') in ['ORDINAL', 'RUNE']:
+                     # Found an Ordinal leaving the wallet nearby!
+                     return {
+                        "pattern": "NFT_MARKETPLACE_SALE_CROSSREF",
+                        "confidence": 0.85,
+                        "severity": "HIGH",
+                        "tax_impact": "TAXABLE_INCOME",
+                        "affected_transactions": tx_group + [b_tx],
+                        "corrections": [{
+                            "tx": main_tx,
+                            "action": "CHANGE_TO_TRADE",
+                            "sent_asset": b_tx.metadata.get('rune_name') or "Ordinal/Rune",
+                            "sent_amount": 1,
+                            "received_asset": "BTC",
+                            "received_quantity": main_tx.amount,
+                            "reason": "Proceeds from Magic Eden/Marketplace Sale",
+                            "note": f"Matched BTC deposit to Ordinal sale {b_tx.tx_id[:8]}",
+                            "verification_links": get_rune_links(b_tx.tx_id, b_tx.metadata.get('rune_name')),
+                            "ordiscan_link": get_ordiscan_link(b_tx.tx_id),
+                            "transaction": b_tx
+                        }]
+                     }
+                     
     return None

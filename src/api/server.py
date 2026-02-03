@@ -332,19 +332,23 @@ async def fetch_rune_info(request: FetchRuneRequest):
         raise HTTPException(status_code=400, detail="Invalid transaction ID")
     
     try:
-        # Use UniSat Rune Events endpoint which is more reliable for transfers
-        url = "https://open-api.unisat.io/v1/indexer/runes/events"
+        # Use UniSat Rune Event endpoint (singular)
+        url = "https://open-api.unisat.io/v1/indexer/runes/event"
         headers = {
             "Accept": "application/json"
         }
         if UNISAT_API_KEY:
             headers['Authorization'] = f"Bearer {UNISAT_API_KEY}"
+            print(f"Using UniSat API Key: Yes")
+        else:
+            print(f"Using UniSat API Key: No (Rate limits may apply)")
             
         # Passing txid as query param
         params = {'txid': tx_id}
             
-        print(f"Fetching UniSat Rune info for {tx_id[:8]}...")
+        print(f"Fetching UniSat Rune info for {tx_id[:8]} from {url}...")
         response = requests.get(url, headers=headers, params=params, timeout=15)
+        print(f"UniSat Response Status: {response.status_code}")
         
         if response.status_code == 200:
             data = response.json()

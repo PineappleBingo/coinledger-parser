@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { AlertTriangle, CheckCircle, Info, ExternalLink, AlertCircle, Image as ImageIcon } from 'lucide-react';
+import { AlertTriangle, CheckCircle, Info, ExternalLink, AlertCircle, Image as ImageIcon, RefreshCw } from 'lucide-react';
 import { fetchOrdinalInfo, fetchRuneInfo, formatRuneAmount, type OrdinalInfo, type RuneInfo } from '../utils/apiClient';
 import { RuneFetchButtons } from './RuneFetchButtons';
 
@@ -32,6 +32,7 @@ interface RecommendedAction {
     received_quantity?: number;
     ordiscan_link?: string;
     oklink_link?: string;
+    unisat_link?: string;
     ordinals_link?: string;
     requires_ordiscan?: boolean;
     transaction?: Transaction;
@@ -84,15 +85,8 @@ const CorrectionReport: React.FC<CorrectionReportProps> = ({ suggestions, summar
         // Use inscription_id from metadata if available, otherwise fall back to tx_id
         const inscriptionId = transaction.metadata?.inscription_id || transaction.tx_id;
 
-        useEffect(() => {
-            if (inscriptionId) {
-                setLoading(true);
-                fetchOrdinalInfo(inscriptionId).then(data => {
-                    setInfo(data);
-                    setLoading(false);
-                });
-            }
-        }, [inscriptionId]);
+        // Auto-fetch disabled per user request
+        // useEffect(() => { ... }, [inscriptionId]);
 
         if (!inscriptionId) return null;
 
@@ -153,18 +147,31 @@ const CorrectionReport: React.FC<CorrectionReportProps> = ({ suggestions, summar
                             </>
                         ) : (
                             <div className="text-sm">
+                                <button
+                                    onClick={() => {
+                                        setLoading(true);
+                                        fetchOrdinalInfo(inscriptionId).then(data => {
+                                            setInfo(data);
+                                            setLoading(false);
+                                        });
+                                    }}
+                                    className="text-purple-600 hover:text-purple-800 hover:underline flex items-center gap-1"
+                                >
+                                    Fetch Inscription Info
+                                    <RefreshCw className="w-3 h-3 ml-1" />
+                                </button>
+                                <div className="text-xs text-gray-500 mt-1">
+                                    Click to load inscription details from API
+                                </div>
                                 <a
                                     href={ordinalLink}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="text-purple-600 hover:text-purple-800 hover:underline flex items-center gap-1"
+                                    className="text-xs text-gray-400 hover:text-gray-600 hover:underline flex items-center gap-1 mt-1"
                                 >
-                                    View on Ordinals.com
-                                    <ExternalLink className="w-3 h-3" />
+                                    Or View on Ordinals.com
+                                    <ExternalLink className="w-2 h-2" />
                                 </a>
-                                <div className="text-xs text-gray-500 mt-1">
-                                    Click to verify inscription details
-                                </div>
                             </div>
                         )}
                     </div>
@@ -319,7 +326,13 @@ const CorrectionReport: React.FC<CorrectionReportProps> = ({ suggestions, summar
             'BULK_MINT': '🎨✨ Bulk Mint Pattern',
             'GAS_FEE': '⛽ Gas Fee Pattern',
             'SALE': '💰 Sale Pattern',
-            'SELF_TRANSFER': '🔄 Self Transfer Pattern'
+            'SELF_TRANSFER': '🔄 Self Transfer Pattern',
+            'NFT_MARKETPLACE_BUY': '🖼️ NFT Marketplace Buy',
+            'NFT_MARKETPLACE_SALE': '💰 NFT Marketplace Sale',
+            'NFT_MARKETPLACE_BUY_CROSSREF': '🪄 Magic Eden Buy (Matched)',
+            'NFT_MARKETPLACE_SALE_CROSSREF': '🪄 Magic Eden Sale (Matched)',
+            'FIAT_ONRAMP': '💵 Fiat On-Ramp',
+            'UNMATCHED_ASSET_TRANSFER': '⚠️ Unmatched Asset Transfer'
         };
         return titles[pattern] || pattern;
     };
@@ -425,6 +438,9 @@ const CorrectionReport: React.FC<CorrectionReportProps> = ({ suggestions, summar
                                         assetType === 'RUNE' ? 'bg-orange-100 text-orange-700 border-orange-300' :
                                             'bg-gray-100 text-gray-600 border-gray-300';
 
+                                // Generate links if applicable
+                                const mempoolLink = tx.source === 'BLOCKCHAIN' && tx.tx_id ? `https://mempool.space/tx/${tx.tx_id}` : null;
+
                                 return (
                                     <div key={txIdx} className="flex items-center justify-between text-sm border-b border-gray-200 last:border-0 pb-2 last:pb-0">
                                         <div className="flex items-center gap-2">
@@ -440,9 +456,44 @@ const CorrectionReport: React.FC<CorrectionReportProps> = ({ suggestions, summar
                                                 {assetType === 'BTC' && 'BTC'}
                                             </span>
                                         </div>
-                                        <div className="flex items-center gap-2">
+                                        <div className="flex items-center gap-3">
                                             <span className="font-semibold">{tx.amount > 0 ? '+' : ''}{formatCurrency(tx.amount)} {tx.asset}</span>
                                             <span className="text-xs text-gray-400">({tx.source})</span>
+
+                                            {/* Verification Icon */}
+                                            {mempoolLink && (
+                                                <a
+                                                    href={mempoolLink}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="text-gray-400 hover:text-blue-600 transition-colors"
+                                                    title="View on Mempool.space"
+                                                >
+                                                    <ExternalLink className="w-4 h-4" />
+                                                </a>
+                                            )}
+                                            {assetType === 'RUNE' && tx.tx_id && (
+                                                <a
+                                                    href={`https://unisat.io/tx/${tx.tx_id}`}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="text-gray-400 hover:text-orange-600 transition-colors"
+                                                    title="View on UniSat"
+                                                >
+                                                    <ExternalLink className="w-4 h-4" />
+                                                </a>
+                                            )}
+                                            {assetType === 'ORDINAL' && tx.tx_id && (
+                                                <a
+                                                    href={`https://ordiscan.com/tx/${tx.tx_id}`}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="text-gray-400 hover:text-purple-600 transition-colors"
+                                                    title="View on Ordiscan"
+                                                >
+                                                    <ExternalLink className="w-4 h-4" />
+                                                </a>
+                                            )}
                                         </div>
                                     </div>
                                 );
@@ -534,6 +585,18 @@ const CorrectionReport: React.FC<CorrectionReportProps> = ({ suggestions, summar
                                                     >
                                                         <ExternalLink className="w-3 h-3" />
                                                         Verify on Ordiscan
+                                                    </a>
+                                                )}
+
+                                                {action.unisat_link && (
+                                                    <a
+                                                        href={action.unisat_link}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        className="inline-flex items-center gap-1 text-orange-600 hover:text-orange-800 text-sm"
+                                                    >
+                                                        <ExternalLink className="w-3 h-3" />
+                                                        Verify on UniSat
                                                     </a>
                                                 )}
 

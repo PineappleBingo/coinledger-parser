@@ -22,6 +22,7 @@ function App() {
   // Feature States
   const [showUSD, setShowUSD] = useState(false);
   const [btcPrice, setBtcPrice] = useState<number | null>(null);
+  const [progress, setProgress] = useState(0);
 
   React.useEffect(() => {
     // Fetch current BTC price
@@ -95,7 +96,8 @@ function App() {
 
     try {
       setLoading(true);
-      setFetchStatus('');
+      setFetchStatus('Initializing connection...');
+      setProgress(0);
 
       // Fetch transactions for all addresses
       let allTransactions: any[] = [];
@@ -106,6 +108,8 @@ function App() {
       for (let i = 0; i < addresses.length; i++) {
         const address = addresses[i];
         const walletId = walletEmojis[i] || `${i + 1}️⃣`;
+
+        setFetchStatus(`Fetching wallet ${i + 1}/${addresses.length}: ${address.slice(0, 8)}...`);
 
         console.log(`Fetching transactions for wallet ${walletId}: ${address}`);
         const res = await axios.post('http://localhost:8000/api/fetch-blockchain', {
@@ -128,6 +132,7 @@ function App() {
         });
 
         allTransactions = [...allTransactions, ...txsWithWallet];
+        setProgress(Math.round(((i + 1) / addresses.length) * 100));
       }
 
       // Sort all transactions by timestamp descending
@@ -137,9 +142,10 @@ function App() {
       setFetchStatus(`Fetched ${allTransactions.length} transactions from ${addresses.length} address(es) successfully!`);
     } catch (error) {
       console.error(error);
-      setFetchStatus('Fetch failed.');
+      setFetchStatus('Fetch failed. Please check backend logs.');
     } finally {
       setLoading(false);
+      setProgress(0);
     }
   };
 
@@ -160,8 +166,9 @@ function App() {
   const handleExportCSV = () => {
     if (!sourceB || sourceB.length === 0) return;
 
-    // Headers
-    const headers = ['Date', 'Time', 'Wallet', 'Address', 'Tx Hash', 'Asset Type', 'Amount', 'Fee', 'Description'];
+    // Use dynamic headers to match the Preview (TransactionList) exactly
+    // TransactionList uses Object.keys(transactions[0])
+    const headers = Object.keys(sourceB[0]);
     const csvRows = [headers.join(',')];
 
     // Data Rows
@@ -176,28 +183,33 @@ function App() {
         return str;
       };
 
-      const description = tx.metadata ?
-        (tx.metadata.rune_name || tx.metadata.inscription_id || JSON.stringify(tx.metadata).replace(/"/g, "'")) : '';
+      const row = headers.map(col => {
+        let val = tx[col];
 
-      // Determine Asset Type
-      let assetType = 'BTC';
-      if (tx.metadata) {
-        if (tx.metadata.runes) assetType = 'RUNE';
-        else if (tx.metadata.rune_name) assetType = 'RUNE';
-        else if (tx.metadata.inscription_id) assetType = 'ORDINAL';
-      }
+        // Custom transformation for Wallet: Remove emojis, keep integers
+        // "1️⃣" -> "1"
+        if (col === 'Wallet' && typeof val === 'string') {
+          // simple strip of non-ascii or specific replace
+          // The emojis are unicode. 
+          // Let's just strip non-numeric if we assume format is number+emoji
+          // Or just take the first char if it matches digit?
+          // The format in handleFetchBlockchain is: `walletEmojis[i] || ${i + 1}️⃣`
+          // '1️⃣', '2️⃣' etc. 
+          // Let's use regex to extract the number
+          const match = val.match(/(\d+)/);
+          if (match) {
+            val = match[1];
+          }
+        }
 
-      const row = [
-        escape(tx.Date),
-        escape(tx.Time),
-        escape(tx.Wallet),
-        escape(tx.WalletAddress || ''),
-        escape(tx.tx_id),
-        escape(assetType),
-        escape(tx.amount),
-        escape(tx.fee),
-        escape(description)
-      ];
+        // Handle objects (like metadata)
+        if (typeof val === 'object') {
+          return escape(JSON.stringify(val));
+        }
+
+        return escape(val);
+      });
+
       csvRows.push(row.join(','));
     });
 
@@ -295,8 +307,20 @@ function App() {
                 disabled={sourceA.length === 0 || loading}
                 className="w-full px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50 flex items-center justify-center gap-2"
               >
-                <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} /> Fetch & Preview
+                <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
+                {loading ? 'Fetching...' : 'Fetch & Preview'}
               </button>
+
+              {/* Progress Bar */}
+              {loading && sourceA.length > 0 && (
+                <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 overflow-hidden relative">
+                  <div
+                    className={`bg-indigo-600 h-2.5 rounded-full transition-all duration-500 ${progress === 0 ? 'w-1/3 animate-indeterminate' : ''}`}
+                    style={{ width: progress > 0 ? `${progress}%` : undefined }}
+                  ></div>
+
+                </div>
+              )}
 
               {sourceB.length > 0 && (
                 <button
@@ -307,7 +331,11 @@ function App() {
                 </button>
               )}
 
-              {fetchStatus && <p className="text-sm text-green-600 text-center">{fetchStatus}</p>}
+              {fetchStatus && (
+                <p className={`text-sm text-center ${fetchStatus.includes('failed') ? 'text-red-500' : 'text-green-600'}`}>
+                  {fetchStatus}
+                </p>
+              )}
             </div>
           </div>
 
@@ -329,21 +357,26 @@ function App() {
           </div>
         </div>
 
+        {/* Global Controls */}
+        {(sourceA.length > 0 || sourceB.length > 0) && (
+          <div className="flex justify-end mb-4 animate-fade-in">
+            <label className="inline-flex items-center cursor-pointer">
+              <span className="mr-2 text-sm text-gray-700">Display USD Value</span>
+              <input
+                type="checkbox"
+                checked={showUSD}
+                onChange={() => setShowUSD(!showUSD)}
+                className="sr-only peer"
+              />
+              <div className="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+            </label>
+          </div>
+        )}
+
         {/* Data Preview Area */}
         {(sourceA.length > 0 || sourceB.length > 0) && !results && (
           <div className="mb-8 animate-fade-in">
-            <div className="flex justify-end mb-2">
-              <label className="inline-flex items-center cursor-pointer">
-                <span className="mr-2 text-sm text-gray-700">Display USD Value</span>
-                <input
-                  type="checkbox"
-                  checked={showUSD}
-                  onChange={() => setShowUSD(!showUSD)}
-                  className="sr-only peer"
-                />
-                <div className="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-              </label>
-            </div>
+
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <TransactionList
