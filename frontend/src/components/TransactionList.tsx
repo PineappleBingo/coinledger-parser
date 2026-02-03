@@ -4,9 +4,11 @@ interface Props {
     title: string;
     transactions: any[];
     colorClass: string;
+    showUSD?: boolean;
+    btcPrice?: number | null;
 }
 
-const TransactionList: React.FC<Props> = ({ title, transactions, colorClass }) => {
+const TransactionList: React.FC<Props> = ({ title, transactions, colorClass, showUSD, btcPrice }) => {
     // Get all unique column names from the data
     const columns = transactions.length > 0 ? Object.keys(transactions[0]) : [];
 
@@ -14,6 +16,24 @@ const TransactionList: React.FC<Props> = ({ title, transactions, colorClass }) =
         // Handle null/undefined/empty
         if (value === null || value === undefined || value === '') {
             return '-';
+        }
+
+        // Handle USD Conversion for Amount columns
+        const colLower = col.toLowerCase();
+        if (showUSD && btcPrice && (colLower === 'amount' || colLower === 'volume' || colLower === 'fee' || colLower === 'cost_basis' || colLower === 'proceeds')) {
+            const numVal = parseFloat(value);
+            if (!isNaN(numVal)) {
+                // Determine if it's likely BTC (Source B is usually BTC)
+                // If value is huge (like sats), this might be wrong, but backend usually returns decimal BTC.
+                // Assuming value is in BTC.
+                const usdVal = numVal * btcPrice;
+                const formattedUsd = usdVal.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+                return (
+                    <span>
+                        {value} <span className="text-gray-500 text-xs ml-1">({formattedUsd})</span>
+                    </span>
+                );
+            }
         }
 
         // Special handling for metadata column

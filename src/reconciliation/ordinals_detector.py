@@ -46,6 +46,26 @@ def get_ordiscan_link(tx_id: str) -> Optional[str]:
     
     return None
 
+def get_rune_links(tx_id: str, rune_name: str = None) -> Dict[str, str]:
+    """
+    Generate Rune verification URLs for transaction.
+    Returns links to Ordinals.com and OKLink for Rune verification.
+    """
+    links = {}
+    
+    if tx_id and len(tx_id) == 64:
+        # OKLink transaction link
+        links['oklink'] = f"https://www.oklink.com/btc/tx/{tx_id}"
+        
+        # Ordiscan link
+        links['ordiscan'] = f"https://ordiscan.com/tx/{tx_id}"
+    
+    if rune_name and not rune_name.startswith('RUNE_'):
+        # Ordinals.com Rune page (only if we have real Rune name, not placeholder)
+        links['ordinals'] = f"https://ordinals.com/rune/{rune_name}"
+    
+    return links
+
 def group_transactions_by_txid(transactions: List[UnifiedTransaction]) -> Dict[str, List[UnifiedTransaction]]:
     """Group transactions by TxID for pattern detection"""
     groups = {}
@@ -263,6 +283,20 @@ def detect_sale_pattern(tx_group: List[UnifiedTransaction], my_wallets: List[str
                 elif deposit_tx.metadata.get('asset_type') == 'RUNE':
                     asset_name = "Rune (check transaction details)"
             
+            # Generate verification links
+            verification_links = {}
+            tx_for_links = ordinal_tx if ordinal_tx else deposits[0]
+            
+            if ordinal_tx and hasattr(ordinal_tx, 'metadata') and ordinal_tx.metadata:
+                asset_type = ordinal_tx.metadata.get('asset_type')
+                if asset_type == 'RUNE':
+                    rune_name = ordinal_tx.metadata.get('rune_name', '')
+                    verification_links = get_rune_links(ordinal_tx.tx_id, rune_name)
+                elif asset_type == 'ORDINAL':
+                    ordiscan_link = get_ordiscan_link(ordinal_tx.tx_id)
+                    if ordiscan_link:
+                        verification_links['ordiscan'] = ordiscan_link
+            
             return {
                 "pattern": "SALE",
                 "confidence": 0.7,
@@ -276,7 +310,9 @@ def detect_sale_pattern(tx_group: List[UnifiedTransaction], my_wallets: List[str
                     "sent_amount": "USER_INPUT_REQUIRED",
                     "received_asset": "BTC",
                     "received_amount": deposits[0].amount,
-                    "ordiscan_link": get_ordiscan_link(deposits[0].tx_id) if deposits[0].tx_id else None,
+                    "ordiscan_link": verification_links.get('ordiscan') or get_ordiscan_link(deposits[0].tx_id),
+                    "oklink_link": verification_links.get('oklink'),
+                    "ordinals_link": verification_links.get('ordinals'),
                     "requires_user_input": True,
                     "reason": "Profit from selling Ordinal/Rune - taxable event",
                     "transaction": ordinal_tx if ordinal_tx else deposits[0]  # Use Ordinal tx if found, else deposit
@@ -390,6 +426,17 @@ def detect_rune_receive_pattern(tx_group: List[UnifiedTransaction]) -> Optional[
                     rune_name = deposit_tx.metadata.get('rune_name', '')
                     asset_name = rune_name if rune_name else "Rune"
                 
+                # Generate verification links
+                verification_links = {}
+                if asset_type == 'RUNE':
+                    rune_name = deposit_tx.metadata.get('rune_name', '')
+                    verification_links = get_rune_links(deposit_tx.tx_id, rune_name)
+                elif asset_type == 'ORDINAL':
+                    # For Ordinals, use ordiscan link
+                    ordiscan_link = get_ordiscan_link(deposit_tx.tx_id)
+                    if ordiscan_link:
+                        verification_links['ordiscan'] = ordiscan_link
+                
                 return {
                     "pattern": "RUNE_RECEIVE",
                     "confidence": 0.95,
@@ -401,7 +448,11 @@ def detect_rune_receive_pattern(tx_group: List[UnifiedTransaction]) -> Optional[
                         "action": "NO_ACTION_NEEDED",
                         "reason": f"Received {asset_name} - not taxable until sold",
                         "note": "This is an incoming Rune/Ordinal. No tax event occurs until you sell it.",
-                        "transaction": deposit_tx  # Include for asset tags and preview
+                        "transaction": deposit_tx,  # Include for asset tags and preview
+                        "verification_links": verification_links,  # Add verification links
+                        "ordiscan_link": verification_links.get('ordiscan'),  # For compatibility
+                        "oklink_link": verification_links.get('oklink'),
+                        "ordinals_link": verification_links.get('ordinals')
                     }]
                 }
     

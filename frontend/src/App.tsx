@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { Upload, RefreshCw, FileText, Activity } from 'lucide-react';
+import { Upload, RefreshCw, FileText, Activity, Download } from 'lucide-react';
 import CorrectionReport from './components/CorrectionReport';
 import TransactionList from './components/TransactionList';
 
@@ -18,6 +18,27 @@ function App() {
 
   const [uploadStatus, setUploadStatus] = useState('');
   const [fetchStatus, setFetchStatus] = useState('');
+
+  // Feature States
+  const [showUSD, setShowUSD] = useState(false);
+  const [btcPrice, setBtcPrice] = useState<number | null>(null);
+
+  React.useEffect(() => {
+    // Fetch current BTC price
+    const fetchPrice = async () => {
+      try {
+        const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd');
+        const data = await response.json();
+        if (data.bitcoin && data.bitcoin.usd) {
+          setBtcPrice(data.bitcoin.usd);
+          console.log('Fetched BTC Price:', data.bitcoin.usd);
+        }
+      } catch (err) {
+        console.error('Failed to fetch BTC price:', err);
+      }
+    };
+    fetchPrice();
+  }, []);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -101,7 +122,8 @@ function App() {
             ...tx,
             Wallet: walletId,
             Date: date.toISOString().split('T')[0], // YYYY-MM-DD
-            Time: date.toTimeString().split(' ')[0] // HH:MM:SS
+            Time: date.toTimeString().split(' ')[0], // HH:MM:SS
+            WalletAddress: address
           };
         });
 
@@ -133,6 +155,60 @@ function App() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleExportCSV = () => {
+    if (!sourceB || sourceB.length === 0) return;
+
+    // Headers
+    const headers = ['Date', 'Time', 'Wallet', 'Address', 'Tx Hash', 'Asset Type', 'Amount', 'Fee', 'Description'];
+    const csvRows = [headers.join(',')];
+
+    // Data Rows
+    sourceB.forEach((tx) => {
+      // Escape CSV values
+      const escape = (val: any) => {
+        if (val === null || val === undefined) return '';
+        const str = String(val);
+        if (str.includes(',') || str.includes('\n') || str.includes('"')) {
+          return `"${str.replace(/"/g, '""')}"`;
+        }
+        return str;
+      };
+
+      const description = tx.metadata ?
+        (tx.metadata.rune_name || tx.metadata.inscription_id || JSON.stringify(tx.metadata).replace(/"/g, "'")) : '';
+
+      // Determine Asset Type
+      let assetType = 'BTC';
+      if (tx.metadata) {
+        if (tx.metadata.runes) assetType = 'RUNE';
+        else if (tx.metadata.rune_name) assetType = 'RUNE';
+        else if (tx.metadata.inscription_id) assetType = 'ORDINAL';
+      }
+
+      const row = [
+        escape(tx.Date),
+        escape(tx.Time),
+        escape(tx.Wallet),
+        escape(tx.WalletAddress || ''),
+        escape(tx.tx_id),
+        escape(assetType),
+        escape(tx.amount),
+        escape(tx.fee),
+        escape(description)
+      ];
+      csvRows.push(row.join(','));
+    });
+
+    const csvString = csvRows.join('\n');
+    const blob = new Blob([csvString], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `blockchain_export_${new Date().toISOString().split('T')[0]}.csv`;
+    a.click();
+    window.URL.revokeObjectURL(url);
   };
 
   return (
@@ -221,6 +297,16 @@ function App() {
               >
                 <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} /> Fetch & Preview
               </button>
+
+              {sourceB.length > 0 && (
+                <button
+                  onClick={handleExportCSV}
+                  className="w-full px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 flex items-center justify-center gap-2"
+                >
+                  <Download className="w-4 h-4" /> Export Results to CSV
+                </button>
+              )}
+
               {fetchStatus && <p className="text-sm text-green-600 text-center">{fetchStatus}</p>}
             </div>
           </div>
@@ -245,17 +331,36 @@ function App() {
 
         {/* Data Preview Area */}
         {(sourceA.length > 0 || sourceB.length > 0) && !results && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8 animate-fade-in">
-            <TransactionList
-              title="Source A: CEX Export"
-              transactions={sourceA}
-              colorClass="text-blue-700"
-            />
-            <TransactionList
-              title="Source B: Blockchain"
-              transactions={sourceB}
-              colorClass="text-indigo-700"
-            />
+          <div className="mb-8 animate-fade-in">
+            <div className="flex justify-end mb-2">
+              <label className="inline-flex items-center cursor-pointer">
+                <span className="mr-2 text-sm text-gray-700">Display USD Value</span>
+                <input
+                  type="checkbox"
+                  checked={showUSD}
+                  onChange={() => setShowUSD(!showUSD)}
+                  className="sr-only peer"
+                />
+                <div className="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+              </label>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <TransactionList
+                title="Source A: CEX Export"
+                transactions={sourceA}
+                colorClass="text-blue-700"
+                showUSD={showUSD}
+                btcPrice={btcPrice}
+              />
+              <TransactionList
+                title="Source B: Blockchain"
+                transactions={sourceB}
+                colorClass="text-indigo-700"
+                showUSD={showUSD}
+                btcPrice={btcPrice}
+              />
+            </div>
           </div>
         )}
 
@@ -276,6 +381,8 @@ function App() {
             <CorrectionReport
               suggestions={results.correction_suggestions || []}
               summary={results.summary || { total_issues: 0, by_severity: { HIGH: 0, MEDIUM: 0, LOW: 0 }, by_pattern: {} }}
+              showUSD={showUSD}
+              btcPrice={btcPrice}
             />
           </div>
         )}

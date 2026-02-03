@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { AlertTriangle, CheckCircle, Info, ExternalLink, AlertCircle, Image as ImageIcon } from 'lucide-react';
 import { fetchOrdinalInfo, fetchRuneInfo, formatRuneAmount, type OrdinalInfo, type RuneInfo } from '../utils/apiClient';
+import { RuneFetchButtons } from './RuneFetchButtons';
 
 interface Transaction {
     date: string;
@@ -16,18 +17,22 @@ interface Transaction {
         rune_name?: string;
         rune_amount?: string;
         rune_divisibility?: number;
+        runes?: Array<{ name: string; amount: string; divisibility: number }>;
     };
 }
 
 interface RecommendedAction {
     action_type: string;
     reason: string;
+    note?: string;
     warning?: string;
     sent_asset?: string;
     sent_amount?: string | number;
     received_asset?: string;
     received_quantity?: number;
     ordiscan_link?: string;
+    oklink_link?: string;
+    ordinals_link?: string;
     requires_ordiscan?: boolean;
     transaction?: Transaction;
     transactions?: Transaction[];
@@ -49,11 +54,30 @@ interface CorrectionReportProps {
         by_severity: { HIGH: number; MEDIUM: number; LOW: number };
         by_pattern: Record<string, number>;
     };
+    showUSD?: boolean;
+    btcPrice?: number | null;
 }
 
-const CorrectionReport: React.FC<CorrectionReportProps> = ({ suggestions, summary }) => {
+const CorrectionReport: React.FC<CorrectionReportProps> = ({ suggestions, summary, showUSD, btcPrice }) => {
 
-    const OrdinalPreview: React.FC<{ transaction: Transaction; actionType: string }> = ({ transaction, actionType }) => {
+    const formatCurrency = (amount: any, isWrapper = true) => {
+        if (!amount) return '-';
+        const num = parseFloat(amount);
+        if (isNaN(num)) return amount;
+
+        if (showUSD && btcPrice) {
+            const usdVal = num * btcPrice;
+            const formatted = usdVal.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+            return isWrapper ? (
+                <span>
+                    {amount} <span className="text-gray-500 text-xs">({formatted})</span>
+                </span>
+            ) : formatted;
+        }
+        return amount;
+    };
+
+    const OrdinalPreview: React.FC<{ transaction: Transaction }> = ({ transaction }) => {
         const [info, setInfo] = useState<OrdinalInfo | null>(null);
         const [loading, setLoading] = useState(false);
 
@@ -151,61 +175,117 @@ const CorrectionReport: React.FC<CorrectionReportProps> = ({ suggestions, summar
 
     // Rune Preview Component
     const RunePreview: React.FC<{ runeName: string; txId: string; metadata?: Transaction['metadata'] }> = ({ runeName, txId, metadata }) => {
-        const [runeInfo, setRuneInfo] = useState<RuneInfo | null>(null);
+        // Now storing an array of RuneInfo
+        const [runeInfos, setRuneInfos] = useState<RuneInfo[]>([]);
         const [loading, setLoading] = useState(false);
+        const [manuallyFetchedRunes, setManuallyFetchedRunes] = useState<Array<{ name: string; amount: string; divisibility: number }>>([]);
+        const [fetchSource, setFetchSource] = useState<string | null>(null);
 
         useEffect(() => {
             setLoading(true);
             fetchRuneInfo(txId, runeName).then(data => {
-                setRuneInfo(data);
+                if (data && data.length > 0) {
+                    setRuneInfos(data);
+                }
                 setLoading(false);
             });
         }, [txId, runeName]);
 
-        // Use metadata if API fails
-        const displayName = runeInfo?.ticker || metadata?.rune_name || runeName;
-        const displayAmount = runeInfo?.amount || metadata?.rune_amount || 'Unknown';
-        const divisibility = runeInfo?.divisibility || metadata?.rune_divisibility || 0;
+        // Handle manually fetched Rune data (from buttons)
+        const handleRuneFetched = (runes: Array<{ name: string; amount: string; divisibility: number }>, source: string) => {
+            setManuallyFetchedRunes(runes);
+            setFetchSource(source);
+            console.log(`✅ Fetched ${runes.length} Rune(s) from ${source}`);
+        };
+
+        // Determine list of runes to display
+        // Priority: Manually fetched > API fetched > Metadata (runes list) > Metadata (single rune)
+        const runesToDisplay: Array<{ name: string; amount: string; divisibility: number }> = [];
+
+        if (manuallyFetchedRunes.length > 0) {
+            runesToDisplay.push(...manuallyFetchedRunes);
+        } else if (runeInfos.length > 0) {
+            runesToDisplay.push(...runeInfos.map(r => ({ name: r.rune_name, amount: r.amount, divisibility: r.divisibility })));
+        } else if (metadata?.runes && metadata.runes.length > 0) {
+            runesToDisplay.push(...metadata.runes);
+        } else {
+            // Fallback to single rune props/metadata
+            runesToDisplay.push({
+                name: metadata?.rune_name || runeName,
+                amount: metadata?.rune_amount || 'Unknown',
+                divisibility: metadata?.rune_divisibility || 0
+            });
+        }
+
+        // Check if Rune name is placeholder (only relevant if single rune and it looks like a placeholder)
+        const isPlaceholder = runesToDisplay.length === 1 && runesToDisplay[0].name.startsWith('RUNE_') && !manuallyFetchedRunes.length;
 
         return (
             <div className="mt-3 p-3 bg-orange-50 border border-orange-200 rounded-lg">
-                <div className="flex items-center gap-3">
-                    <div className="flex-shrink-0">
+                <div className="flex items-start gap-3">
+                    <div className="flex-shrink-0 mt-1">
                         <div className="w-12 h-12 bg-orange-100 rounded-full border-2 border-orange-300 flex items-center justify-center">
                             <span className="text-2xl">🔮</span>
                         </div>
                     </div>
-                    <div className="flex-1">
-                        {loading ? (
+                    <div className="flex-1 w-full">
+                        {loading && runesToDisplay.length === 0 ? (
                             <div className="space-y-2">
                                 <div className="h-4 bg-gray-200 rounded w-3/4 animate-pulse"></div>
                                 <div className="h-3 bg-gray-200 rounded w-1/2 animate-pulse"></div>
                             </div>
                         ) : (
                             <>
-                                <div className="font-semibold text-orange-700">{displayName}</div>
-                                <div className="text-sm text-gray-700 mt-1">
-                                    Amount: {formatRuneAmount(displayAmount, divisibility)}
+                                {/* Render retrieved runes list */}
+                                <div className="space-y-3">
+                                    {runesToDisplay.map((rune, idx) => (
+                                        <div key={idx} className={idx > 0 ? "pt-2 border-t border-orange-200" : ""}>
+                                            <div className="font-semibold text-orange-700 break-all">{rune.name}</div>
+                                            <div className="text-sm text-gray-700 mt-0.5">
+                                                Amount: <span className="font-mono bg-orange-100 px-1 rounded">{formatRuneAmount(rune.amount, rune.divisibility)}</span>
+                                            </div>
+                                            {/* Link for individual rune */}
+                                            <div className="mt-1 text-xs">
+                                                <a
+                                                    href={`https://ordinals.com/rune/${rune.name}`}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="text-orange-600 hover:text-orange-800 hover:underline inline-flex items-center gap-1"
+                                                >
+                                                    Ordinals.com <ExternalLink className="w-2.5 h-2.5" />
+                                                </a>
+                                            </div>
+                                        </div>
+                                    ))}
                                 </div>
-                                <div className="flex gap-2 mt-2 text-xs">
+
+                                {/* Shared Links / Buttons */}
+                                <div className="mt-3 pt-2 border-t border-orange-200 flex flex-wrap gap-2 text-xs items-center">
+                                    <span className="text-gray-500">Transaction:</span>
                                     <a
-                                        href={`https://ordinals.com/rune/${displayName}`}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="text-orange-600 hover:text-orange-800 hover:underline flex items-center gap-1"
-                                    >
-                                        Ordinals.com <ExternalLink className="w-3 h-3" />
-                                    </a>
-                                    <span className="text-gray-400">|</span>
-                                    <a
-                                        href={`https://www.oklink.com/btc/tx/${txId}`}
+                                        href={`https://mempool.space/tx/${txId}`}
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         className="text-blue-600 hover:text-blue-800 hover:underline flex items-center gap-1"
                                     >
-                                        OKLink <ExternalLink className="w-3 h-3" />
+                                        Mempool.space <ExternalLink className="w-3 h-3" />
                                     </a>
                                 </div>
+
+                                {/* Show fetch buttons if Rune needs to be fetched (placeholder or user wants to retry/verify) or if explicitly requested */}
+                                {(isPlaceholder || (!loading && runesToDisplay.some(r => r.name.startsWith('RUNE_')))) && (
+                                    <RuneFetchButtons
+                                        txId={txId}
+                                        onRuneFetched={handleRuneFetched}
+                                    />
+                                )}
+
+                                {/* Show success message if fetched */}
+                                {fetchSource && (
+                                    <div className="mt-2 text-xs text-green-600 bg-green-50 border border-green-200 rounded px-2 py-1">
+                                        ✅ Successfully fetched {manuallyFetchedRunes.length} Rune(s) from {fetchSource}
+                                    </div>
+                                )}
                             </>
                         )}
                     </div>
@@ -213,6 +293,7 @@ const CorrectionReport: React.FC<CorrectionReportProps> = ({ suggestions, summar
             </div>
         );
     };
+
 
     const getSeverityColor = (severity: string) => {
         switch (severity) {
@@ -360,7 +441,7 @@ const CorrectionReport: React.FC<CorrectionReportProps> = ({ suggestions, summar
                                             </span>
                                         </div>
                                         <div className="flex items-center gap-2">
-                                            <span className="font-semibold">{tx.amount > 0 ? '+' : ''}{tx.amount} {tx.asset}</span>
+                                            <span className="font-semibold">{tx.amount > 0 ? '+' : ''}{formatCurrency(tx.amount)} {tx.asset}</span>
                                             <span className="text-xs text-gray-400">({tx.source})</span>
                                         </div>
                                     </div>
@@ -406,6 +487,11 @@ const CorrectionReport: React.FC<CorrectionReportProps> = ({ suggestions, summar
 
                                             <div className="text-sm text-gray-700">{action.reason}</div>
 
+                                            {/* Display note if present */}
+                                            {action.note && (
+                                                <div className="text-xs text-gray-600 mt-1 italic">{action.note}</div>
+                                            )}
+
                                             {action.warning && (
                                                 <div className="mt-2 bg-yellow-100 border border-yellow-300 rounded p-2 text-xs text-yellow-800">
                                                     {action.warning}
@@ -418,37 +504,63 @@ const CorrectionReport: React.FC<CorrectionReportProps> = ({ suggestions, summar
                                                         <div>• Sent: {action.sent_amount} {action.sent_asset}</div>
                                                         <div>• Received: {action.received_asset} {action.received_quantity && `(×${action.received_quantity})`}</div>
                                                     </div>
-
-                                                    {/* Ordinal Preview with Image and Link */}
-                                                    {action.transaction && action.transaction.metadata?.asset_type === 'ORDINAL' && (
-                                                        <OrdinalPreview
-                                                            transaction={action.transaction}
-                                                            actionType={action.action_type}
-                                                        />
-                                                    )}
-
-                                                    {/* Rune Preview */}
-                                                    {action.transaction?.metadata?.rune_name && (
-                                                        <RunePreview
-                                                            runeName={action.transaction.metadata.rune_name}
-                                                            txId={action.transaction.tx_id}
-                                                            metadata={action.transaction.metadata}
-                                                        />
-                                                    )}
-
-                                                    {action.ordiscan_link && (
-                                                        <a
-                                                            href={action.ordiscan_link}
-                                                            target="_blank"
-                                                            rel="noopener noreferrer"
-                                                            className="inline-flex items-center gap-1 text-blue-600 hover:text-blue-800 mt-2 text-sm"
-                                                        >
-                                                            <ExternalLink className="w-3 h-3" />
-                                                            Verify on Ordiscan
-                                                        </a>
-                                                    )}
                                                 </div>
                                             )}
+
+                                            {/* Ordinal Preview with Image and Link - Show for ALL action types */}
+                                            {action.transaction && action.transaction.metadata?.asset_type === 'ORDINAL' && (
+                                                <OrdinalPreview
+                                                    transaction={action.transaction}
+                                                />
+                                            )}
+
+                                            {/* Rune Preview - Show for ALL action types */}
+                                            {action.transaction?.metadata?.rune_name && (
+                                                <RunePreview
+                                                    runeName={action.transaction.metadata.rune_name}
+                                                    txId={action.transaction.tx_id}
+                                                    metadata={action.transaction.metadata}
+                                                />
+                                            )}
+
+                                            {/* Verification Links - Show for ALL action types */}
+                                            <div className="mt-2 flex flex-wrap gap-2">
+                                                {action.ordiscan_link && (
+                                                    <a
+                                                        href={action.ordiscan_link}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        className="inline-flex items-center gap-1 text-blue-600 hover:text-blue-800 text-sm"
+                                                    >
+                                                        <ExternalLink className="w-3 h-3" />
+                                                        Verify on Ordiscan
+                                                    </a>
+                                                )}
+
+                                                {action.oklink_link && (
+                                                    <a
+                                                        href={action.oklink_link}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        className="inline-flex items-center gap-1 text-blue-600 hover:text-blue-800 text-sm"
+                                                    >
+                                                        <ExternalLink className="w-3 h-3" />
+                                                        Verify on OKLink
+                                                    </a>
+                                                )}
+
+                                                {action.ordinals_link && (
+                                                    <a
+                                                        href={action.ordinals_link}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        className="inline-flex items-center gap-1 text-orange-600 hover:text-orange-800 text-sm"
+                                                    >
+                                                        <ExternalLink className="w-3 h-3" />
+                                                        View Rune on Ordinals.com
+                                                    </a>
+                                                )}
+                                            </div>
 
                                             {action.action_type === 'MERGE_AS_TRANSFER' && action.transactions && (
                                                 <div className="mt-2 text-xs">

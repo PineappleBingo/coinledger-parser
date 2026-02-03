@@ -1,18 +1,17 @@
 # Analysis Logic Documentation
 
 **Document Created:** 2026-01-27  
-**Version:** 1.0  
-**Last Updated:** 2026-01-27 17:03 EST
+**Last Updated:** 2026-02-03 (Updated to reflect actual v2 implementation)
 
 ---
 
 ## Objective
 
-The reconciliation system compares two transaction data sources to identify matches, conflicts, and discrepancies:
-- **Source A (CEX Export):** Transaction data from CoinLedger export (CSV/MHTML)
-- **Source B (Blockchain):** On-chain transaction data fetched from Bitcoin blockchain via Blockstream API
+The reconciliation system compares two transaction data sources to identify matches, conflicts, and specialized Bitcoin patterns (Ordinals/Runes):
+- **Source A (CEX Export):** Transaction data from CoinLedger export (CSV).
+- **Source B (Blockchain):** On-chain transaction data fetched from Bitcoin blockchain/UniSat.
 
-**Goal:** Ensure all CEX-reported transactions are accurately reflected on the blockchain and identify any discrepancies for tax reporting accuracy.
+**Goal:** Accurately reconcile CEX records with On-Chain reality, specifically correctly classifying complex events like Ordinal Mints, Rune Transfers, and self-transfers that CEXs often misreport.
 
 ---
 
@@ -20,233 +19,96 @@ The reconciliation system compares two transaction data sources to identify matc
 
 ```mermaid
 graph TD
-    A[User Uploads CEX Export] --> B[Parse & Normalize Source A]
-    B --> C[Store UnifiedTransaction Objects]
-    C --> D[User Enters Wallet Addresses]
-    D --> E[Fetch Blockchain Data]
-    E --> F[Parse & Normalize Source B]
-    F --> G[Store UnifiedTransaction Objects]
-    G --> H[User Clicks Analyze]
-    H --> I[ReconciliationEngine.reconcile]
-    I --> J[Tier 1: Exact TxID Match]
-    J --> K[Tier 2: Fuzzy Time+Amount Match]
-    K --> L[Tier 3: Mark as Conflict]
-    L --> M[AnomalyDetector.detect_anomalies]
-    M --> N[Return Results]
-    N --> O[Display Reconciliation Report]
-```
-
----
-
-## Data Model: UnifiedTransaction
-
-All transactions from both sources are normalized into a common format:
-
-```python
-@dataclass
-class UnifiedTransaction:
-    timestamp: datetime      # Transaction date/time (UTC)
-    asset: str              # Cryptocurrency symbol (e.g., 'BTC')
-    amount: float           # Net amount (positive = deposit, negative = withdrawal)
-    fee: float              # Transaction fee
-    tx_id: str              # Blockchain transaction ID
-    tx_type: str            # Type: Deposit, Withdrawal, Trade, etc.
-    source: str             # 'CEX' or 'BLOCKCHAIN'
-    price_krw: Optional[float]  # Price in KRW (optional)
+    A[User Uploads CEX Export] --> B[Parse Source A]
+    C[User Enters Wallet Addresses] --> D[Fetch Source B (Blockchain/UniSat)]
+    B & D --> E[ReconciliationEngine.reconcile_with_corrections]
+    E --> F[Group by Timestamp (±2 min)]
+    F --> G[Detect Patterns (Ordinals/Runes)]
+    G --> H[Detect Anomalies]
+    H --> I[Generate Correction Report]
 ```
 
 ---
 
 ## Reconciliation Logic
 
-### Phase 1: Data Preparation
+The core logic resides in `src/reconciliation/engine.py` and `src/reconciliation/ordinals_detector.py`.
 
-1. **Source A Processing:**
-   - Parse CSV/MHTML file
-   - Use AI (Gemini) to infer column mappings
-   - Fallback to manual mapping if AI fails
-   - Handle special formats (e.g., Xverse wallet exports)
-   - Convert to `UnifiedTransaction` objects
+### Phase 1: Grouping Strategy
+Instead of complex fuzzy matching, the system uses a **Time-Based Bucket Strategy** to group related transactions.
 
-2. **Source B Processing:**
-   - Fetch transactions from Blockstream API for each wallet address
-   - Support pagination to get complete history
-   - Calculate net amount per transaction (outputs - inputs)
-   - Determine transaction type (Deposit/Withdrawal/Internal)
-   - Convert to `UnifiedTransaction` objects
+1.  **CEX Grouping:** Source A transactions are grouped by minute-level timestamp.
+2.  **Blockchain Matching:** For each CEX group, the system searches Source B for transactions within a **±2 minute window**.
+3.  **Blockchain-Only Groups:** Any remaining blockchain transactions (unmatched) are grouped by their TxID.
 
-### Phase 2: Matching Algorithm
+This results in "Transaction Groups" that likely represent single logical events (e.g., a withdrawal on CEX corresponding to a deposit on-chain).
 
-The reconciliation engine uses a **3-tier matching strategy**:
+### Phase 2: Pattern Detection (Ordinals & Runes)
+Each transaction group is analyzed against 6 specific patterns defined in `ordinals_detector.py`. These patterns identify where CoinLedger's default classification fails.
 
-#### **Tier 1: Exact Transaction ID Match**
-- **Criteria:** `source_a.tx_id == source_b.tx_id`
-- **Confidence:** 1.0 (100%)
-- **Match Type:** `EXACT_TXID`
-- **Logic:**
-  ```python
-  if row_a['tx_id'] and row_a['tx_id'] == row_b['tx_id']:
-      # Perfect match found
-      mark_as_matched(confidence=1.0)
-  ```
+| Priority | Pattern Name | Scenario | CoinLedger Error | System Correction |
+| :--- | :--- | :--- | :--- | :--- |
+| 1 | **BULK MINT** | 1 Withdrawal + Multiple Dust Deposits | Taxed as multiple income events | Merge into single Trade (Mint) |
+| 2 | **MINT / BUY** | 1 Withdrawal + 1 Dust Deposit | Taxed as separate Income + Withdrawal | Merge into single Trade |
+| 3 | **SELF TRANSFER** | Withdrawal + Deposit (Same Amount) | Taxed as Disposed + Indcome | Merge as Self-Transfer (Non-taxable) |
+| 4 | **GAS FEE** | Small Withdrawal (<50k sats) | Taxed as taxable Withdrawal | Reclassify as Fee (Deductible) |
+| 5 | **RUNE RECEIVE** | Deposit with Rune Metadata | Taxed as Income | Mark as Non-Taxable Receive |
+| 6 | **SALE** | Large Deposit (No Withdrawal) | Taxed as simple Deposit (Cost Basis lost) | Reclassify as Trade (Sale of Asset) ms |
 
-#### **Tier 2: Fuzzy Time + Amount Match**
-- **Criteria:** 
-  - Time window: ±30 minutes from Source A timestamp
-  - Amount deviation: ≤0.1% difference
-- **Confidence:** 0.9 - 1.0 (based on deviation)
-- **Match Type:** `FUZZY_TIME_AMOUNT`
-- **Logic:**
-  ```python
-  time_window = timedelta(minutes=30)
-  candidates = source_b.filter(
-      timestamp between (row_a.timestamp - 30min, row_a.timestamp + 30min)
-  )
-  
-  for candidate in candidates:
-      deviation = abs(row_a.amount - candidate.amount) / row_a.amount
-      if deviation <= 0.001:  # 0.1%
-          confidence = 1.0 - (deviation * 100)
-          if confidence >= 0.9:
-              mark_as_matched(confidence)
-  ```
+*   **Dust Threshold:** Transactions <= 10,000 sats (0.0001 BTC) are flagged as potential "Dust" (wrappers for artifacts).
+*   **Verification:** Links to Ordiscan, OKLink, and Ordinals.com are generated for verification.
 
-#### **Tier 3: Unmatched / Conflict**
-- **Criteria:** No match found in Tier 1 or Tier 2
-- **Issue:** `MISSING_IN_BLOCKCHAIN`
-- **Action:** Mark as conflict for manual review
-- **Logic:**
-  ```python
-  if not matched:
-      conflicts.append({
-          'source_a': row_a,
-          'source_b': None,
-          'issue': 'MISSING_IN_BLOCKCHAIN'
-      })
-  ```
+### Phase 3: Anomaly Detection
+The `AnomalyDetector` (`src/reconciliation/anomaly.py`) runs a final pass to catch data quality issues:
 
-### Phase 3: Identify Missing Transactions
-
-After matching, identify transactions present in Source B but not matched to Source A:
-
-```python
-missing_in_a = source_b_transactions - matched_transactions
-```
-
-These represent blockchain transactions not reported in the CEX export.
-
----
-
-## Current Limitations & Future Enhancements
-
-### Current Limitations:
-1. **No Semantic Matching:** Tier 3 doesn't use AI to understand transaction context
-2. **Single Asset Only:** Currently optimized for Bitcoin only
-3. **Time Window Fixed:** 30-minute window may miss some valid matches
-4. **No Fee Reconciliation:** Fees are not compared during matching
-5. **No Multi-Hop Detection:** Complex transactions (e.g., swaps) not handled
-
-### Planned Enhancements:
-1. **Tier 3 Gemini Semantic Match:**
-   - Use AI to analyze transaction descriptions
-   - Match based on context and patterns
-   - Handle complex transaction types
-
-2. **Configurable Matching Parameters:**
-   - User-adjustable time window
-   - Customizable amount deviation threshold
-   - Asset-specific matching rules
-
-3. **Multi-Asset Support:**
-   - Extend to Ethereum, other chains
-   - Handle token transfers
-   - Support DEX transactions
-
-4. **Advanced Anomaly Detection:**
-   - Detect wash trading patterns
-   - Identify suspicious timing
-   - Flag unusual fee amounts
-
----
-
-## Anomaly Detection
-
-After reconciliation, the `AnomalyDetector` scans all transactions for suspicious patterns:
-
-### Detection Rules:
-1. **Duplicate Transactions:** Same amount, asset, and timestamp
-2. **Unusual Timing:** Transactions at odd hours or rapid succession
-3. **Fee Anomalies:** Fees significantly higher/lower than normal
-4. **Amount Patterns:** Round numbers or suspicious patterns
+1.  **High Fee:** Transaction Fee > 10% of the transaction Amount.
+2.  **Duplicate TxID:** Multiple transactions sharing the same Hash (critical data error).
+3.  **Out of Range:** Transactions outside the target Tax Year (e.g., 2025).
 
 ---
 
 ## Output Format
 
-### Matched Transactions
-```json
-{
-  "source_a": { /* UnifiedTransaction from CEX */ },
-  "source_b": { /* UnifiedTransaction from Blockchain */ },
-  "confidence": 0.95,
-  "match_type": "FUZZY_TIME_AMOUNT"
-}
-```
+The analysis produces a **Correction Report** JSON structure:
 
-### Conflicts
 ```json
 {
-  "source_a": { /* UnifiedTransaction from CEX */ },
-  "source_b": null,
-  "issue": "MISSING_IN_BLOCKCHAIN"
-}
-```
-
-### Missing in A (Present in Blockchain only)
-```json
-{
-  "timestamp": "2025-01-15T10:30:00Z",
-  "asset": "BTC",
-  "amount": 0.001,
-  "tx_id": "abc123...",
-  /* ... other fields */
+  "correction_suggestions": [
+    {
+      "pattern": "MINT_BUY",
+      "confidence": 0.9,
+      "severity": "HIGH",
+      "affected_transactions": [ ... ],
+      "corrections": [
+        {
+          "action": "IGNORE",
+          "reason": "Dust wrapper..."
+        },
+        {
+          "action": "CHANGE_TO_TRADE",
+          "received_asset": "ORDINAL/RUNE"
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "total_issues": 12,
+    "by_pattern": { "MINT_BUY": 5, "GAS_FEE": 7 }
+  }
 }
 ```
 
 ---
 
-## Performance Considerations
+## Data Sources
 
-- **Time Complexity:** O(n × m) where n = Source A size, m = Source B size
-- **Optimization:** Early exit on exact TxID match reduces average case
-- **Memory:** All transactions loaded into memory (acceptable for typical use cases)
-- **API Rate Limits:** Blockstream API has no strict limits but recommend delays between requests
-
----
-
-## Testing & Validation
-
-### Test Cases:
-1. ✅ Exact TxID match
-2. ✅ Fuzzy time+amount match within 30 minutes
-3. ✅ Amount deviation within 0.1%
-4. ✅ Missing transactions in blockchain
-5. ✅ Multiple wallet addresses
-6. ✅ Date range filtering
-
-### Known Edge Cases:
-- **Scientific Notation:** Handled in CSV parser
-- **Empty Amounts:** Skipped during normalization
-- **Multiple Currencies:** Separated by asset type
-- **Unconfirmed Transactions:** Timestamp set to current time
+1.  **Blockstream / Mempool.space**: For standard Bitcoin transaction data.
+2.  **UniSat API**: specifically used to fetch **Rune** and **Ordinal** metadata (`rune_name`, `inscription_id`).
+    *   *Endpoint:* `/v1/indexer/runes/events` (for transfers) and `/v1/indexer/tx/{txid}`.
 
 ---
 
-## Version History
+## Limitations
 
-### v1.0 (2026-01-27)
-- Initial documentation
-- 3-tier matching system
-- Bitcoin blockchain support
-- Multi-wallet support
-- Date range filtering
+1.  **Time Window Sensitivity:** The ±2 minute window is hardcoded. Clock drift > 2 mins between CEX and Blockchain will cause missed matches.
+2.  **Exchange Support:** Heuristics are tuned for how CoinLedger imports data; other tax tools may format exports differently.

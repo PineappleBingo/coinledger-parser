@@ -9,6 +9,8 @@ load_dotenv()
 DEPLOYMENT_TIER = os.getenv("DEPLOYMENT_TIER", "development")
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 QUICKNODE_RPC_URL = os.getenv("QUICKNODE_RPC_URL")
+OKLINK_API_KEY = os.getenv("OKLINK_API_KEY")
+UNISAT_API_KEY = os.getenv("UNISAT_API_KEY")
 
 # Gemini Configuration
 if GEMINI_API_KEY:

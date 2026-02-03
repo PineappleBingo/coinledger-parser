@@ -217,7 +217,30 @@ async def analyze(wallet_addresses: Optional[List[str]] = None):
                     action["received_asset"] = correction.get("received_asset", "")
                     action["received_quantity"] = correction.get("received_quantity", 1)
                     action["ordiscan_link"] = correction.get("ordiscan_link", "")
+                    action["oklink_link"] = correction.get("oklink_link", "")
+                    action["ordinals_link"] = correction.get("ordinals_link", "")
                     action["requires_ordiscan"] = correction.get("requires_ordiscan", False)
+                    
+                    # Add blockchain transaction metadata for asset tags
+                    if "transaction" in correction:
+                        tx = correction["transaction"]
+                        action["transaction"] = {
+                            "date": tx.timestamp.strftime("%Y-%m-%d"),
+                            "time": tx.timestamp.strftime("%H:%M:%S"),
+                            "type": tx.tx_type,
+                            "amount": tx.amount,
+                            "tx_id": tx.tx_id,
+                            "source": tx.source,
+                            "metadata": tx.metadata if hasattr(tx, 'metadata') and tx.metadata else {}
+                        }
+                
+                elif correction["action"] == "NO_ACTION_NEEDED":
+                    # For RUNE_RECEIVE and other non-action patterns
+                    # Pass through note and verification links
+                    action["note"] = correction.get("note", "")
+                    action["ordiscan_link"] = correction.get("ordiscan_link", "")
+                    action["oklink_link"] = correction.get("oklink_link", "")
+                    action["ordinals_link"] = correction.get("ordinals_link", "")
                     
                     # Add blockchain transaction metadata for asset tags
                     if "transaction" in correction:
@@ -290,3 +313,118 @@ async def get_results():
         "missing_in_blockchain": df_to_records(state.missing_in_b),
         "anomalies": state.anomalies
     }
+
+class FetchRuneRequest(BaseModel):
+    tx_id: str
+    api_source: str  # "oklink" or "unisat"
+
+@app.post("/api/fetch-rune-info")
+async def fetch_rune_info(request: FetchRuneRequest):
+    """
+    Fetch Rune information for a specific transaction using UniSat API.
+    """
+    import requests
+    from src.config import UNISAT_API_KEY
+    
+    tx_id = request.tx_id
+    
+    if not tx_id or len(tx_id) != 64:
+        raise HTTPException(status_code=400, detail="Invalid transaction ID")
+    
+    try:
+        # Use UniSat Rune Events endpoint which is more reliable for transfers
+        url = "https://open-api.unisat.io/v1/indexer/runes/events"
+        headers = {
+            "Accept": "application/json"
+        }
+        if UNISAT_API_KEY:
+            headers['Authorization'] = f"Bearer {UNISAT_API_KEY}"
+            
+        # Passing txid as query param
+        params = {'txid': tx_id}
+            
+        print(f"Fetching UniSat Rune info for {tx_id[:8]}...")
+        response = requests.get(url, headers=headers, params=params, timeout=15)
+        
+        if response.status_code == 200:
+            data = response.json()
+            if data.get('code') == 0 and data.get('data'):
+                # 'data' should be a list of events or an object containing 'detail'
+                event_list = data['data']
+                if isinstance(event_list, dict) and 'detail' in event_list:
+                     event_list = event_list['detail']
+                
+                if not isinstance(event_list, list):
+                    event_list = [event_list] if event_list else []
+
+                found_runes = []
+                seen_runes = set()
+
+                for event in event_list:
+                    # Check for rune info in event
+                    # Structure might vary, checking common fields
+                    rune_name = event.get('rune') or event.get('runeName') or event.get('symbol')
+                    amount = event.get('amount')
+                    divisibility = event.get('divisibility', 0)
+                    
+                    if rune_name and amount:
+                        if rune_name not in seen_runes:
+                            seen_runes.add(rune_name)
+                            found_runes.append({
+                                "name": rune_name,
+                                "amount": str(amount),
+                                "divisibility": int(divisibility)
+                            })
+                
+                if found_runes:
+                    return {
+                        "success": True,
+                        "source": "unisat",
+                        "runes": found_runes,
+                        "tx_id": tx_id
+                    }
+                else:
+                    print(f"No Rune events found in parsed data from events endpoint: {str(event_list)[:200]}")
+            else:
+                 print(f"UniSat events API returned code != 0 or empty data: {data}")
+                    
+        # Fallback to standard TX endpoint if events endpoint fails or returns nothing
+        print("Fallback to standard UniSat TX endpoint...")
+        url_fallback = f"https://open-api.unisat.io/v1/indexer/tx/{tx_id}"
+        response = requests.get(url_fallback, headers=headers, timeout=10)
+        
+        if response.status_code == 200:
+             data = response.json()
+             if data.get('code') == 0 and data.get('data'):
+                tx_data = data['data']
+                
+                found_runes = []
+                if 'vout' in tx_data:
+                    for vout in tx_data['vout']:
+                        if 'runes' in vout and len(vout['runes']) > 0:
+                            for r in vout['runes']:
+                                found_runes.append({
+                                    "name": r.get('runeName') or r.get('name'),
+                                    "amount": r.get('amount', '0'),
+                                    "divisibility": int(r.get('divisibility', 0))
+                                })
+                
+                if found_runes:
+                    return {
+                        "success": True,
+                        "source": "unisat",
+                        "runes": found_runes,
+                        "tx_id": tx_id
+                    }
+
+        # If we reach here, neither endpoint worked
+        print(f"UniSat API Failed. Status: {response.status_code}, Body: {response.text[:200]}")
+        raise HTTPException(status_code=404, detail="Rune data not found on UniSat")
+
+    except requests.Timeout:
+        raise HTTPException(status_code=504, detail="UniSat API timeout")
+    except requests.RequestException as e:
+        raise HTTPException(status_code=502, detail=f"UniSat API error: {str(e)}")
+    except Exception as e:
+        print(f"Exception in fetch_rune_info: {e}")
+        raise HTTPException(status_code=500, detail=f"Error fetching Rune info: {str(e)}")

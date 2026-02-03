@@ -131,7 +131,11 @@ export const fetchOrdinalInfo = async (inscriptionId: string): Promise<OrdinalIn
  * Fetch Rune metadata with automatic API fallback
  * Tries: OKLink → Hiro → UniSat
  */
-export const fetchRuneInfo = async (txId: string, runeName?: string): Promise<RuneInfo | null> => {
+/**
+ * Fetch Rune metadata with automatic API fallback
+ * Tries: OKLink → Hiro → UniSat
+ */
+export const fetchRuneInfo = async (txId: string, runeName?: string): Promise<RuneInfo[]> => {
     // Try OKLink API first (best for Runes)
     if (!rateLimitedAPIs.has('oklink-runes')) {
         try {
@@ -148,13 +152,22 @@ export const fetchRuneInfo = async (txId: string, runeName?: string): Promise<Ru
                 console.log('[API] OKLink Runes success:', txId);
 
                 if (data.data && data.data.length > 0) {
-                    const rune = data.data[0];
-                    return {
-                        rune_name: rune.runeName || runeName || 'Unknown Rune',
-                        ticker: rune.runeSymbol || rune.runeName || 'RUNE',
-                        amount: rune.amount || '0',
-                        divisibility: parseInt(rune.divisibility) || 0
-                    };
+                    const runes: RuneInfo[] = [];
+                    const foundRunes = new Set<string>();
+
+                    for (const rune of data.data) {
+                        const name = rune.runeName || runeName || 'Unknown Rune';
+                        if (!foundRunes.has(name)) {
+                            foundRunes.add(name);
+                            runes.push({
+                                rune_name: name,
+                                ticker: rune.runeSymbol || name || 'RUNE',
+                                amount: rune.amount || '0',
+                                divisibility: parseInt(rune.divisibility) || 0
+                            });
+                        }
+                    }
+                    return runes;
                 }
             }
         } catch (error) {
@@ -162,7 +175,7 @@ export const fetchRuneInfo = async (txId: string, runeName?: string): Promise<Ru
         }
     }
 
-    // Try Hiro API as fallback
+    // Try Hiro API as fallback (Note: Hiro usually fetches by name, not txId in this endpoint)
     if (!rateLimitedAPIs.has('hiro-runes')) {
         try {
             const response = await fetch(
@@ -177,12 +190,12 @@ export const fetchRuneInfo = async (txId: string, runeName?: string): Promise<Ru
                 const data = await response.json();
                 console.log('[API] Hiro Runes success:', runeName);
 
-                return {
+                return [{
                     rune_name: data.name || runeName || 'Unknown Rune',
                     ticker: data.symbol || data.name || 'RUNE',
                     amount: data.total_mints || '0',
                     divisibility: data.divisibility || 0
-                };
+                }];
             }
         } catch (error) {
             console.error('[API] Hiro Runes error:', error);
@@ -192,16 +205,16 @@ export const fetchRuneInfo = async (txId: string, runeName?: string): Promise<Ru
     // Fallback to metadata if all APIs fail
     if (runeName) {
         console.warn('[API] All Rune APIs failed, using metadata fallback');
-        return {
+        return [{
             rune_name: runeName,
             ticker: runeName,
             amount: 'Unknown',
             divisibility: 0
-        };
+        }];
     }
 
     console.error('[API] All Rune APIs failed for tx:', txId);
-    return null;
+    return [];
 };
 
 /**
