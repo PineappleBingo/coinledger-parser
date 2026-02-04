@@ -35,3 +35,4 @@ data/*
 # IDE
 .vscode/
 .idea/
+credentials.json

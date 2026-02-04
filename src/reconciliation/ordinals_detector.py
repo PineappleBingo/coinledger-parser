@@ -405,60 +405,105 @@ def detect_patterns(tx_group: List[UnifiedTransaction], my_wallets: List[str] = 
     if all_blockchain_txs is None:
         all_blockchain_txs = []
     
+    # DEBUG: Log what group we're analyzing
+    with open("debug_log.txt", "a") as f:
+        f.write(f"\n=== detect_patterns CALLED ===\n")
+        f.write(f"tx_group has {len(tx_group)} transactions:\n")
+        for tx in tx_group:
+            metadata_str = str(tx.metadata) if tx.metadata else "None"
+            witness_len = len(tx.witness_data) if tx.witness_data else 0
+            f.write(f"  - {tx.source}: {tx.tx_type} {tx.amount} {tx.asset} | metadata={metadata_str} | witness_len={witness_len}\n")
+    
     # Try patterns in priority order
     
-    # V2 Priority 0: Fiat On-Ramp (Missing Blockchain Tx)
-    pattern = detect_fiat_onramp_pattern(tx_group)
-    if pattern: return pattern
-
-    # V2 Priority 1: Rune Cenotaph (Burn)
-    pattern = detect_runes_cenotaph_pattern(tx_group)
-    if pattern: return pattern
-
-    # V2 Priority 2: Bulk Mint (most specific)
-    pattern = detect_bulk_mint_pattern(tx_group)
-    if pattern: return pattern
+    # Priority 0a: Cross-Reference Magic Eden / Mint (Unmatched CEX + Loose Blockchain)
+    # Check this FIRST to override generic "Fiat On-Ramp" logic for unmatched deposits
+    pattern = detect_magic_eden_or_mint_cross_ref(tx_group, all_blockchain_txs)
+    if pattern: 
+        with open("debug_log.txt", "a") as f:
+            f.write(f"  -> MATCHED: {pattern.get('pattern')}\n")
+        return pattern
     
+    # Priority 1: Bulk Mint (most specific - CEX Withdrawal + Multiple Dust Deposits)
+    # MUST run before FIAT_ONRAMP to catch mint transactions
+    pattern = detect_bulk_mint_pattern(tx_group)
+    if pattern:
+        with open("debug_log.txt", "a") as f:
+            f.write(f"  -> MATCHED: {pattern.get('pattern')}\n")
+        return pattern
+    
+    # Priority 2: Mint/Buy (CEX Withdrawal + Single Dust Deposit)
+    # MUST run before FIAT_ONRAMP to catch mint transactions
     pattern = detect_mint_buy_pattern(tx_group)
     if pattern:
+        with open("debug_log.txt", "a") as f:
+            f.write(f"  -> MATCHED: {pattern.get('pattern')}\n")
+        return pattern
+
+    # Priority 3: Rune Cenotaph (Burn)
+    pattern = detect_runes_cenotaph_pattern(tx_group)
+    if pattern:
+        with open("debug_log.txt", "a") as f:
+            f.write(f"  -> MATCHED: {pattern.get('pattern')}\n")
+        return pattern
+    
+    # Priority 4: Fiat On-Ramp (Missing Blockchain Tx)
+    # Now only catches truly unmatched deposits/withdrawals that aren't mints
+    pattern = detect_fiat_onramp_pattern(tx_group)
+    if pattern:
+        with open("debug_log.txt", "a") as f:
+            f.write(f"  -> MATCHED: {pattern.get('pattern')}\n")
         return pattern
     
     pattern = detect_self_transfer_pattern(tx_group, my_wallets)
     if pattern:
+        with open("debug_log.txt", "a") as f:
+            f.write(f"  -> MATCHED: {pattern.get('pattern')}\n")
         return pattern
     
     pattern = detect_gas_fee_pattern(tx_group)
     if pattern:
+        with open("debug_log.txt", "a") as f:
+            f.write(f"  -> MATCHED: {pattern.get('pattern')}\n")
         return pattern
     
     # Check for Rune/Ordinal RECEIVE before SALE
     # This prevents misclassifying Rune deposits as sales
     pattern = detect_rune_receive_pattern(tx_group)
     if pattern:
+        with open("debug_log.txt", "a") as f:
+            f.write(f"  -> MATCHED: {pattern.get('pattern')}\n")
         return pattern
     
     pattern = detect_sale_pattern(tx_group, my_wallets, all_blockchain_txs)
     if pattern:
+        with open("debug_log.txt", "a") as f:
+            f.write(f"  -> MATCHED: {pattern.get('pattern')}\n")
         return pattern
     
-    # V2 Priority 4: BRC-20 Transfer
+    # BRC-20 Transfer
     pattern = detect_brc20_transfer_pattern(tx_group)
-    if pattern: return pattern
+    if pattern:
+        with open("debug_log.txt", "a") as f:
+            f.write(f"  -> MATCHED: {pattern.get('pattern')}\n")
+        return pattern
 
-    # V2 Priority 5: Magic Eden / Marketplace Trade (Enhanced PSBT)
-    # Check this BEFORE generic PSBT detection to catch specific Buy/Sell flows
+    # Magic Eden / Marketplace Trade (Enhanced PSBT)
     pattern = detect_nft_trade_pattern(tx_group)
-    if pattern: return pattern
+    if pattern:
+        with open("debug_log.txt", "a") as f:
+            f.write(f"  -> MATCHED: {pattern.get('pattern')}\n")
+        return pattern
 
-    # V2 Priority 5.5: Cross-Reference Magic Eden / Mint (Unmatched CEX + Loose Blockchain)
-    # This handles the "Unmatched CEX Deposit" that is actually a Mint/Buy payment
-    pattern = detect_magic_eden_or_mint_cross_ref(tx_group, all_blockchain_txs)
-    if pattern: return pattern
-
-    # V2 Priority 6: Generic PSBT Swap (Partial)
+    # Generic PSBT Swap (Partial)
     pattern = detect_psbt_pattern(tx_group)
-    if pattern: return pattern
+    if pattern:
+        with open("debug_log.txt", "a") as f:
+            f.write(f"  -> MATCHED: {pattern.get('pattern')}\n")
+        return pattern
 
+    with open("debug_log.txt", "a") as f:
+        f.write(f"  -> NO MATCH (returning None)\n")
     return None
 
 def detect_fiat_onramp_pattern(tx_group: List[UnifiedTransaction]) -> Optional[Dict]:
@@ -735,41 +780,64 @@ def detect_magic_eden_or_mint_cross_ref(tx_group: List[UnifiedTransaction], all_
     Reality: It matches a nearby Blockchain "Withdrawal/Buy" (Mint or ME Buy) that wasn't grouped.
     """
     
+    # DEBUG: Log entry point
+    with open("debug_log.txt", "a") as f:
+        f.write(f"\n=== detect_magic_eden_or_mint_cross_ref CALLED ===\n")
+        f.write(f"tx_group has {len(tx_group)} transactions\n")
+        for tx in tx_group:
+            f.write(f"  - {tx.source}: {tx.tx_type} {tx.amount} {tx.asset} @ {tx.timestamp}\n")
+        f.write(f"all_blockchain_txs has {len(all_blockchain_txs)} transactions\n")
+    
     # 1. Identify Unmatched CEX/Wallet Activity
     # We are looking for groups that FAILED to match with blockchain initially (likely single-sided)
-    if any(t.source == 'BLOCKCHAIN' for t in tx_group):
+    has_blockchain = any(t.source == 'BLOCKCHAIN' for t in tx_group)
+    
+    with open("debug_log.txt", "a") as f:
+        f.write(f"has_blockchain in tx_group: {has_blockchain}\n")
+    
+    if has_blockchain:
+        with open("debug_log.txt", "a") as f:
+            f.write(f"SKIPPING: tx_group already has blockchain tx\n")
         return None # Already matched
         
     cex_txs = [t for t in tx_group if t.source != 'BLOCKCHAIN']
     if not cex_txs:
+        with open("debug_log.txt", "a") as f:
+            f.write(f"SKIPPING: No CEX transactions in tx_group\n")
         return None
         
     main_tx = cex_txs[0]
     
-    # We only care about Deposits (receiving asset, likely from Mint/Buy) or Withdrawals (paying for it)
-    # Actually, simpler: Look for BTC movements.
+    with open("debug_log.txt", "a") as f:
+        f.write(f"main_tx: {main_tx.tx_type} {main_tx.amount} {main_tx.asset}\n")
     
     # CASE A: CEX Withdrawal (Paying BTC) -> Linked to Blockchain Mint/Buy
     if main_tx.tx_type in ['Withdrawal', 'Send'] and main_tx.asset == 'BTC':
+        with open("debug_log.txt", "a") as f:
+            f.write(f"CASE A: CEX Withdrawal detected\n")
+        
         # Search for loose blockchain transactions near this time
         time_window = timedelta(hours=1) # 1 hour variance
         
         candidates = []
         for b_tx in all_blockchain_txs:
-            if abs((b_tx.timestamp - main_tx.timestamp).total_seconds()) < time_window.total_seconds():
+            diff = abs((b_tx.timestamp - main_tx.timestamp).total_seconds())
+            if diff < time_window.total_seconds():
                 candidates.append(b_tx)
+                with open("debug_log.txt", "a") as f:
+                    f.write(f"  Candidate: {b_tx.tx_id[:8]} diff={diff}s type={b_tx.tx_type}\n")
+                
+        with open("debug_log.txt", "a") as f:
+            f.write(f"  Found {len(candidates)} candidates within 1 hour\n")
                 
         # Analyze candidates
         for cand in candidates:
-            # Does this candidate look like a Mint or ME interaction?
+            is_marketplace = is_potential_marketplace_tx(cand)
+            with open("debug_log.txt", "a") as f:
+                f.write(f"  Checking candidate {cand.tx_id[:8]}: is_potential_marketplace_tx={is_marketplace}\n")
+                f.write(f"    witness_data length: {len(cand.witness_data) if cand.witness_data else 0}\n")
             
-            # Sub-Case: Mint (Multiple Dust Deposits)
-            # If candidate is a complex tx producing dust, it might be the mint
-            # But 'cand' is a UnifiedTransaction, which summarizes the net effect.
-            # If net effect is small burn or fee?
-            
-            # Let's check for 'is_potential_marketplace_tx'
-            if is_potential_marketplace_tx(cand):
+            if is_marketplace:
                 return {
                     "pattern": "NFT_MARKETPLACE_BUY_CROSSREF",
                     "confidence": 0.85,
@@ -783,26 +851,34 @@ def detect_magic_eden_or_mint_cross_ref(tx_group: List[UnifiedTransaction], all_
                         "note": f"Linked to blockchain tx {cand.tx_id[:8]}...",
                         "verification_links": get_rune_links(cand.tx_id),
                         "ordiscan_link": get_ordiscan_link(cand.tx_id),
-                        "transaction": cand # Include blockchain tx for context
+                        "transaction": cand
                     }]
                 }
 
     # CASE B: CEX Deposit (Receiving Proceeds) -> Linked to Blockchain Sale
-    # "Deposit 0.5 BTC" -> Was it a Fiat On-Ramp? Or did we sell an Ordinal?
     if main_tx.tx_type in ['Deposit', 'Receive'] and main_tx.asset == 'BTC':
-        # Search candidates
-        time_window = timedelta(hours=6) # 6 hour variance (exchange dep can be slow)
+        with open("debug_log.txt", "a") as f:
+            f.write(f"CASE B: CEX Deposit detected\n")
+        
+        time_window = timedelta(hours=6) # 6 hour variance
         
         candidates = []
         for b_tx in all_blockchain_txs:
-             if abs((b_tx.timestamp - main_tx.timestamp).total_seconds()) < time_window.total_seconds():
-                 # We are looking for the blockchain side where we *sent* the asset?
-                 # If we sold on ME, we might see an incoming BTC tx on-chain too?
-                 # Or maybe the CEX deposit IS the settlement.
+             diff = abs((b_tx.timestamp - main_tx.timestamp).total_seconds())
+             if diff < time_window.total_seconds():
+                 candidates.append((b_tx, diff))
                  
-                 # If we see a blockchain tx that looks like a Sale (Ordinal leaving wallet), that's the trigger.
+                 # Log close matches
+                 if diff < 7200:
+                     with open("debug_log.txt", "a") as f:
+                         f.write(f"  Candidate: {b_tx.tx_id[:8]} diff={diff}s\n")
+                         f.write(f"    Type: {b_tx.tx_type}, Metadata: {b_tx.metadata}\n")
+                     
+                 # If we see a blockchain tx that is an Ordinal/Rune leaving wallet
                  if b_tx.tx_type in ['Withdrawal', 'Send'] and b_tx.metadata.get('asset_type') in ['ORDINAL', 'RUNE']:
-                     # Found an Ordinal leaving the wallet nearby!
+                     with open("debug_log.txt", "a") as f:
+                         f.write(f"  MATCH FOUND! {b_tx.tx_id[:8]} is Ordinal/Rune sale\n")
+                     
                      return {
                         "pattern": "NFT_MARKETPLACE_SALE_CROSSREF",
                         "confidence": 0.85,
@@ -823,5 +899,8 @@ def detect_magic_eden_or_mint_cross_ref(tx_group: List[UnifiedTransaction], all_
                             "transaction": b_tx
                         }]
                      }
+        
+        with open("debug_log.txt", "a") as f:
+            f.write(f"  Checked {len(candidates)} candidates, no match found\n")
                      
     return None

@@ -1,4 +1,5 @@
 import React from 'react';
+import { ExternalLink } from 'lucide-react';
 
 interface Props {
     title: string;
@@ -12,10 +13,88 @@ const TransactionList: React.FC<Props> = ({ title, transactions, colorClass, sho
     // Get all unique column names from the data
     const columns = transactions.length > 0 ? Object.keys(transactions[0]) : [];
 
-    const formatCellValue = (col: string, value: any) => {
+    const getPatternBadge = (pattern: string) => {
+        const patternConfig: Record<string, { label: string; color: string; emoji: string }> = {
+            'MINT_BUY': { label: 'Mint/Buy', color: 'bg-purple-100 text-purple-700 border-purple-300', emoji: '🎨' },
+            'BULK_MINT': { label: 'Bulk Mint', color: 'bg-purple-100 text-purple-700 border-purple-300', emoji: '🎨✨' },
+            'GAS_FEE': { label: 'Gas Fee', color: 'bg-gray-100 text-gray-700 border-gray-300', emoji: '⛽' },
+            'SALE': { label: 'Sale', color: 'bg-green-100 text-green-700 border-green-300', emoji: '💰' },
+            'SELF_TRANSFER': { label: 'Self Transfer', color: 'bg-blue-100 text-blue-700 border-blue-300', emoji: '🔄' },
+            'FIAT_ONRAMP': { label: 'Fiat On-Ramp', color: 'bg-yellow-100 text-yellow-700 border-yellow-300', emoji: '💵' },
+            'RUNE_RECEIVE': { label: 'Rune Receive', color: 'bg-orange-100 text-orange-700 border-orange-300', emoji: '🔮' },
+            'POTENTIAL_MARKETPLACE_SWAP': { label: 'Marketplace', color: 'bg-indigo-100 text-indigo-700 border-indigo-300', emoji: '🏪' },
+        };
+
+        const config = patternConfig[pattern] || { label: pattern, color: 'bg-gray-100 text-gray-600 border-gray-300', emoji: '🏷️' };
+
+        return (
+            <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-semibold border ${config.color}`}>
+                <span>{config.emoji}</span>
+                <span>{config.label}</span>
+            </span>
+        );
+    };
+
+    const formatCellValue = (col: string, value: any, tx: any) => {
         // Handle null/undefined/empty
         if (value === null || value === undefined || value === '') {
             return '-';
+        }
+
+        // Handle tx_id column - make it clickable ONLY for blockchain transactions
+        if (col === 'tx_id' && value && typeof value === 'string' && value.length > 10) {
+            // Check if this is a blockchain transaction (not CEX-only)
+            const isBlockchainTx = tx.source && (
+                tx.source.toLowerCase().includes('blockchain') ||
+                tx.source.toLowerCase().includes('source b') ||
+                tx.source === 'BLOCKCHAIN'
+            );
+
+            // Only show verification links for actual blockchain transactions
+            if (isBlockchainTx) {
+                const mempoolLink = `https://mempool.space/tx/${value}`;
+                const ordiscanLink = `https://ordiscan.com/tx/${value}`;
+
+                return (
+                    <div className="flex items-center gap-2">
+                        <span className="font-mono text-xs" title={value}>
+                            {value.slice(0, 8)}...{value.slice(-6)}
+                        </span>
+                        <div className="flex gap-1">
+                            <a
+                                href={mempoolLink}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-blue-600 hover:text-blue-800"
+                                title="View on Mempool"
+                            >
+                                <ExternalLink className="w-3 h-3" />
+                            </a>
+                            <a
+                                href={ordiscanLink}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-purple-600 hover:text-purple-800"
+                                title="View on Ordiscan"
+                            >
+                                <ExternalLink className="w-3 h-3" />
+                            </a>
+                        </div>
+                    </div>
+                );
+            } else {
+                // CEX transaction - just show the ID without links
+                return (
+                    <span className="font-mono text-xs text-gray-500" title={value}>
+                        {value.slice(0, 12)}... <span className="text-xs text-gray-400">(CEX)</span>
+                    </span>
+                );
+            }
+        }
+
+        // Handle pattern column - show badge
+        if (col === 'pattern' && value && typeof value === 'string') {
+            return getPatternBadge(value);
         }
 
         // Handle USD Conversion for Amount columns
@@ -23,9 +102,6 @@ const TransactionList: React.FC<Props> = ({ title, transactions, colorClass, sho
         if (showUSD && btcPrice && (colLower === 'amount' || colLower === 'volume' || colLower === 'fee' || colLower === 'cost_basis' || colLower === 'proceeds')) {
             const numVal = parseFloat(value);
             if (!isNaN(numVal)) {
-                // Determine if it's likely BTC (Source B is usually BTC)
-                // If value is huge (like sats), this might be wrong, but backend usually returns decimal BTC.
-                // Assuming value is in BTC.
                 const usdVal = numVal * btcPrice;
                 const formattedUsd = usdVal.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
                 return (
@@ -81,9 +157,9 @@ const TransactionList: React.FC<Props> = ({ title, transactions, colorClass, sho
                             <tr key={idx} className="hover:bg-gray-50">
                                 {columns.map((col) => {
                                     const value = tx[col];
-                                    const displayValue = formatCellValue(col, value);
+                                    const displayValue = formatCellValue(col, value, tx);
 
-                                    // If it's a React element (like our badge), render it directly
+                                    // If it's a React element (like our badge or link), render it directly
                                     if (React.isValidElement(displayValue)) {
                                         return (
                                             <td

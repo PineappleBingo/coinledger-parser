@@ -162,6 +162,17 @@ async def analyze(wallet_addresses: Optional[List[str]] = None):
         engine = ReconciliationEngine()
         results = engine.reconcile_with_corrections(state.source_a, state.source_b, my_wallets)
         
+        # Create a mapping of transaction IDs to patterns
+        tx_to_pattern = {}
+        for suggestion in results["correction_suggestions"]:
+            pattern = suggestion["pattern"]
+            for tx in suggestion.get("affected_transactions", []):
+                # Use a composite key: source + tx_id + timestamp to handle duplicates
+                key = f"{tx.source}_{tx.tx_id}_{tx.timestamp.isoformat()}"
+                # If a transaction is in multiple patterns, keep the first (highest priority) one
+                if key not in tx_to_pattern:
+                    tx_to_pattern[key] = pattern
+        
         # Format correction suggestions for frontend
         formatted_suggestions = []
         for suggestion in results["correction_suggestions"]:
@@ -184,7 +195,8 @@ async def analyze(wallet_addresses: Optional[List[str]] = None):
                     "asset": tx.asset,
                     "tx_id": tx.tx_id,
                     "source": tx.source,
-                    "metadata": tx.metadata if hasattr(tx, 'metadata') and tx.metadata else {}
+                    "metadata": tx.metadata if hasattr(tx, 'metadata') and tx.metadata else {},
+                    "pattern": suggestion["pattern"]  # Add pattern to each transaction
                 })
             
             # Format recommended actions
@@ -272,6 +284,23 @@ async def analyze(wallet_addresses: Optional[List[str]] = None):
             
             formatted_suggestions.append(formatted)
         
+        # Enrich source_a and source_b with pattern labels
+        enriched_source_a = []
+        for tx in state.source_a:
+            tx_dict = tx.to_dict()
+            key = f"{tx.source}_{tx.tx_id}_{tx.timestamp.isoformat()}"
+            if key in tx_to_pattern:
+                tx_dict["pattern"] = tx_to_pattern[key]
+            enriched_source_a.append(tx_dict)
+        
+        enriched_source_b = []
+        for tx in state.source_b:
+            tx_dict = tx.to_dict()
+            key = f"{tx.source}_{tx.tx_id}_{tx.timestamp.isoformat()}"
+            if key in tx_to_pattern:
+                tx_dict["pattern"] = tx_to_pattern[key]
+            enriched_source_b.append(tx_dict)
+        
         print(f"Pattern detection complete: {results['summary']['total_issues']} issues found")
         print(f"By severity: {results['summary']['by_severity']}")
         print(f"By pattern: {results['summary']['by_pattern']}")
@@ -279,7 +308,9 @@ async def analyze(wallet_addresses: Optional[List[str]] = None):
         return {
             "status": "completed",
             "correction_suggestions": formatted_suggestions,
-            "summary": results["summary"]
+            "summary": results["summary"],
+            "enriched_source_a": enriched_source_a,
+            "enriched_source_b": enriched_source_b
         }
         
     except Exception as e:
@@ -432,3 +463,67 @@ async def fetch_rune_info(request: FetchRuneRequest):
     except Exception as e:
         print(f"Exception in fetch_rune_info: {e}")
         raise HTTPException(status_code=500, detail=f"Error fetching Rune info: {str(e)}")
+
+class ExportToSheetsRequest(BaseModel):
+    sheet_url: str
+    wallet_addresses: Optional[List[str]] = None
+
+@app.post("/api/export-to-sheets")
+async def export_to_sheets(request: ExportToSheetsRequest):
+    """
+    Export analyzed blockchain transactions to Google Sheets Universal Import Template.
+    Works independently - does not require CEX data from Step 1.
+    """
+    if not state.source_b:
+        raise HTTPException(status_code=400, detail="No blockchain data found. Please fetch blockchain data first (Step 2).")
+    
+    try:
+        from src.reporting.sheets_exporter import export_transactions_to_sheets
+        from src.reconciliation.ordinals_detector import detect_patterns, group_transactions_by_txid
+        
+        print(f"Starting Google Sheets export with {len(state.source_b)} blockchain transactions")
+        
+        # Get wallet addresses from request or use empty list
+        my_wallets = request.wallet_addresses if request.wallet_addresses else []
+        
+        # Run pattern detection on blockchain transactions
+        # Group transactions by TxID for pattern detection
+        blockchain_groups = group_transactions_by_txid(state.source_b)
+        
+        print(f"Created {len(blockchain_groups)} transaction groups for pattern detection")
+        
+        # Detect patterns in each group
+        patterns = []
+        for group_key, tx_group in blockchain_groups.items():
+            pattern = detect_patterns(tx_group, my_wallets, state.source_b)
+            if pattern:
+                patterns.append(pattern)
+        
+        print(f"Detected {len(patterns)} patterns")
+        
+        # Export to Google Sheets
+        result = export_transactions_to_sheets(
+            transactions=state.source_b,
+            patterns=patterns,
+            sheet_url=request.sheet_url
+        )
+        
+        if result['status'] == 'error':
+            raise HTTPException(status_code=500, detail=result['message'])
+        
+        return {
+            "status": "success",
+            "message": result['message'],
+            "row_count": result['row_count'],
+            "review_count": result['review_count'],
+            "patterns_detected": len(patterns)
+        }
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        import traceback
+        error_details = traceback.format_exc()
+        print(f"Export to sheets error: {str(e)}")
+        print(f"Traceback:\n{error_details}")
+        raise HTTPException(status_code=500, detail=f"Export failed: {str(e)}")

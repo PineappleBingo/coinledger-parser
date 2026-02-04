@@ -1,0 +1,5334 @@
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - CEX: Withdrawal -2.13e-05 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - CEX: Withdrawal -2.13e-05 BTC @ 2026-01-06 05:19:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -2.13e-05 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: GAS_FEE
+
+=== detect_patterns CALLED ===
+tx_group has 2 transactions:
+  - CEX: Withdrawal -0.00023608 BTC | metadata=None | witness_len=0
+  - CEX: Deposit 1.092e-05 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 2 transactions
+  - CEX: Withdrawal -0.00023608 BTC @ 2026-01-05 07:03:00+00:00
+  - CEX: Deposit 1.092e-05 BTC @ 2026-01-05 07:03:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -0.00023608 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: FIAT_ONRAMP
+
+=== detect_patterns CALLED ===
+tx_group has 2 transactions:
+  - CEX: Withdrawal -8.571e-05 BTC | metadata=None | witness_len=0
+  - CEX: Deposit 5.46e-06 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 2 transactions
+  - CEX: Withdrawal -8.571e-05 BTC @ 2025-12-01 06:09:00+00:00
+  - CEX: Deposit 5.46e-06 BTC @ 2025-12-01 06:09:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -8.571e-05 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: MINT_BUY
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - CEX: Withdrawal -1.171e-05 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - CEX: Withdrawal -1.171e-05 BTC @ 2025-12-01 21:19:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -1.171e-05 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: GAS_FEE
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - CEX: Deposit 0.00052 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - CEX: Deposit 0.00052 BTC @ 2025-11-28 03:25:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Deposit 0.00052 BTC
+CASE B: CEX Deposit detected
+  Checked 0 candidates, no match found
+  -> MATCHED: FIAT_ONRAMP
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - CEX: Withdrawal -1.082e-05 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - CEX: Withdrawal -1.082e-05 BTC @ 2025-11-19 02:05:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -1.082e-05 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: GAS_FEE
+
+=== detect_patterns CALLED ===
+tx_group has 2 transactions:
+  - CEX: Withdrawal -0.0001206 BTC | metadata=None | witness_len=0
+  - CEX: Deposit 5.46e-06 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 2 transactions
+  - CEX: Withdrawal -0.0001206 BTC @ 2025-11-18 22:49:00+00:00
+  - CEX: Deposit 5.46e-06 BTC @ 2025-11-18 22:49:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -0.0001206 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: MINT_BUY
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - CEX: Deposit 0.0003 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - CEX: Deposit 0.0003 BTC @ 2025-11-16 03:46:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Deposit 0.0003 BTC
+CASE B: CEX Deposit detected
+  Checked 0 candidates, no match found
+  -> MATCHED: FIAT_ONRAMP
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - CEX: Withdrawal -9.42e-06 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - CEX: Withdrawal -9.42e-06 BTC @ 2025-11-11 03:09:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -9.42e-06 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: GAS_FEE
+
+=== detect_patterns CALLED ===
+tx_group has 2 transactions:
+  - CEX: Withdrawal -0.00016482 BTC | metadata=None | witness_len=0
+  - CEX: Deposit 5.46e-06 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 2 transactions
+  - CEX: Withdrawal -0.00016482 BTC @ 2025-11-08 02:02:00+00:00
+  - CEX: Deposit 5.46e-06 BTC @ 2025-11-08 02:02:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -0.00016482 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: MINT_BUY
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - CEX: Deposit 3.3e-06 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - CEX: Deposit 3.3e-06 BTC @ 2025-11-07 09:11:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Deposit 3.3e-06 BTC
+CASE B: CEX Deposit detected
+  Checked 0 candidates, no match found
+  -> MATCHED: FIAT_ONRAMP
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - CEX: Deposit 0.00021 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - CEX: Deposit 0.00021 BTC @ 2025-10-27 04:50:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Deposit 0.00021 BTC
+CASE B: CEX Deposit detected
+  Checked 0 candidates, no match found
+  -> MATCHED: FIAT_ONRAMP
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - CEX: Withdrawal -1.762e-05 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - CEX: Withdrawal -1.762e-05 BTC @ 2025-09-30 18:46:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -1.762e-05 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: GAS_FEE
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - CEX: Withdrawal -8.8e-06 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - CEX: Withdrawal -8.8e-06 BTC @ 2025-09-30 18:37:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -8.8e-06 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: GAS_FEE
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - CEX: Withdrawal -0.00015552 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - CEX: Withdrawal -0.00015552 BTC @ 2025-09-17 21:24:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -0.00015552 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: GAS_FEE
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - CEX: Deposit 0.00021 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - CEX: Deposit 0.00021 BTC @ 2025-09-17 19:42:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Deposit 0.00021 BTC
+CASE B: CEX Deposit detected
+  Checked 0 candidates, no match found
+  -> MATCHED: FIAT_ONRAMP
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - CEX: Deposit 5.46e-06 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - CEX: Deposit 5.46e-06 BTC @ 2025-09-01 10:56:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Deposit 5.46e-06 BTC
+CASE B: CEX Deposit detected
+  Checked 0 candidates, no match found
+  -> MATCHED: FIAT_ONRAMP
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - CEX: Withdrawal -0.00016416 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - CEX: Withdrawal -0.00016416 BTC @ 2025-08-26 03:15:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -0.00016416 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: GAS_FEE
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - CEX: Deposit 3.3e-06 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - CEX: Deposit 3.3e-06 BTC @ 2025-08-25 16:39:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Deposit 3.3e-06 BTC
+CASE B: CEX Deposit detected
+  Checked 0 candidates, no match found
+  -> MATCHED: FIAT_ONRAMP
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - CEX: Withdrawal -0.0001397 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - CEX: Withdrawal -0.0001397 BTC @ 2025-08-25 13:45:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -0.0001397 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: GAS_FEE
+
+=== detect_patterns CALLED ===
+tx_group has 2 transactions:
+  - CEX: Withdrawal -0.00010995 BTC | metadata=None | witness_len=0
+  - CEX: Deposit 3.3e-06 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 2 transactions
+  - CEX: Withdrawal -0.00010995 BTC @ 2025-08-22 13:43:00+00:00
+  - CEX: Deposit 3.3e-06 BTC @ 2025-08-22 13:43:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -0.00010995 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: MINT_BUY
+
+=== detect_patterns CALLED ===
+tx_group has 2 transactions:
+  - CEX: Withdrawal -0.00012955 BTC | metadata=None | witness_len=0
+  - CEX: Deposit 3.3e-06 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 2 transactions
+  - CEX: Withdrawal -0.00012955 BTC @ 2025-08-20 23:59:00+00:00
+  - CEX: Deposit 3.3e-06 BTC @ 2025-08-20 23:59:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -0.00012955 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: MINT_BUY
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - CEX: Deposit 7.89e-06 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - CEX: Deposit 7.89e-06 BTC @ 2025-08-20 05:01:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Deposit 7.89e-06 BTC
+CASE B: CEX Deposit detected
+  Checked 0 candidates, no match found
+  -> MATCHED: FIAT_ONRAMP
+
+=== detect_patterns CALLED ===
+tx_group has 2 transactions:
+  - CEX: Withdrawal -0.00016398 BTC | metadata=None | witness_len=0
+  - CEX: Deposit 3.3e-06 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 2 transactions
+  - CEX: Withdrawal -0.00016398 BTC @ 2025-08-20 04:03:00+00:00
+  - CEX: Deposit 3.3e-06 BTC @ 2025-08-20 04:03:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -0.00016398 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: MINT_BUY
+
+=== detect_patterns CALLED ===
+tx_group has 2 transactions:
+  - CEX: Withdrawal -0.00032 BTC | metadata=None | witness_len=0
+  - CEX: Deposit 5.46e-06 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 2 transactions
+  - CEX: Withdrawal -0.00032 BTC @ 2025-08-20 00:15:00+00:00
+  - CEX: Deposit 5.46e-06 BTC @ 2025-08-20 00:15:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -0.00032 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: MINT_BUY
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - CEX: Deposit 0.00046 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - CEX: Deposit 0.00046 BTC @ 2025-08-19 16:29:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Deposit 0.00046 BTC
+CASE B: CEX Deposit detected
+  Checked 0 candidates, no match found
+  -> MATCHED: FIAT_ONRAMP
+
+=== detect_patterns CALLED ===
+tx_group has 2 transactions:
+  - CEX: Withdrawal -0.00044793 BTC | metadata=None | witness_len=0
+  - CEX: Deposit 1.092e-05 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 2 transactions
+  - CEX: Withdrawal -0.00044793 BTC @ 2025-08-19 12:20:00+00:00
+  - CEX: Deposit 1.092e-05 BTC @ 2025-08-19 12:20:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -0.00044793 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: FIAT_ONRAMP
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - CEX: Deposit 0.00096391 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - CEX: Deposit 0.00096391 BTC @ 2025-08-18 17:01:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Deposit 0.00096391 BTC
+CASE B: CEX Deposit detected
+  Checked 0 candidates, no match found
+  -> MATCHED: FIAT_ONRAMP
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - CEX: Transfer -6.034e-05 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - CEX: Transfer -6.034e-05 BTC @ 2025-08-18 14:34:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Transfer -6.034e-05 BTC
+  -> NO MATCH (returning None)
+
+=== detect_patterns CALLED ===
+tx_group has 2 transactions:
+  - CEX: Withdrawal -0.00010684 BTC | metadata=None | witness_len=0
+  - CEX: Deposit 3.3e-06 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 2 transactions
+  - CEX: Withdrawal -0.00010684 BTC @ 2025-08-18 13:05:00+00:00
+  - CEX: Deposit 3.3e-06 BTC @ 2025-08-18 13:05:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -0.00010684 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: MINT_BUY
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - CEX: Transfer -0.00013047 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - CEX: Transfer -0.00013047 BTC @ 2025-08-18 12:09:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Transfer -0.00013047 BTC
+  -> NO MATCH (returning None)
+
+=== detect_patterns CALLED ===
+tx_group has 2 transactions:
+  - CEX: Withdrawal -7.22e-06 BTC | metadata=None | witness_len=0
+  - CEX: Deposit 3.3e-06 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 2 transactions
+  - CEX: Withdrawal -7.22e-06 BTC @ 2025-08-14 01:12:00+00:00
+  - CEX: Deposit 3.3e-06 BTC @ 2025-08-14 01:12:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -7.22e-06 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: MINT_BUY
+
+=== detect_patterns CALLED ===
+tx_group has 2 transactions:
+  - CEX: Withdrawal -7.22e-06 BTC | metadata=None | witness_len=0
+  - CEX: Deposit 3.3e-06 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 2 transactions
+  - CEX: Withdrawal -7.22e-06 BTC @ 2025-08-14 01:07:00+00:00
+  - CEX: Deposit 3.3e-06 BTC @ 2025-08-14 01:07:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -7.22e-06 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: MINT_BUY
+
+=== detect_patterns CALLED ===
+tx_group has 2 transactions:
+  - CEX: Withdrawal -7.334e-05 BTC | metadata=None | witness_len=0
+  - CEX: Deposit 3.3e-06 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 2 transactions
+  - CEX: Withdrawal -7.334e-05 BTC @ 2025-08-11 15:46:00+00:00
+  - CEX: Deposit 3.3e-06 BTC @ 2025-08-11 15:46:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -7.334e-05 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: MINT_BUY
+
+=== detect_patterns CALLED ===
+tx_group has 2 transactions:
+  - CEX: Withdrawal -7.334e-05 BTC | metadata=None | witness_len=0
+  - CEX: Deposit 3.3e-06 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 2 transactions
+  - CEX: Withdrawal -7.334e-05 BTC @ 2025-08-11 15:40:00+00:00
+  - CEX: Deposit 3.3e-06 BTC @ 2025-08-11 15:40:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -7.334e-05 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: MINT_BUY
+
+=== detect_patterns CALLED ===
+tx_group has 2 transactions:
+  - CEX: Withdrawal -6.194e-05 BTC | metadata=None | witness_len=0
+  - CEX: Deposit 3.3e-06 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 2 transactions
+  - CEX: Withdrawal -6.194e-05 BTC @ 2025-08-05 02:04:00+00:00
+  - CEX: Deposit 3.3e-06 BTC @ 2025-08-05 02:04:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -6.194e-05 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: MINT_BUY
+
+=== detect_patterns CALLED ===
+tx_group has 2 transactions:
+  - CEX: Withdrawal -6.194e-05 BTC | metadata=None | witness_len=0
+  - CEX: Deposit 3.3e-06 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 2 transactions
+  - CEX: Withdrawal -6.194e-05 BTC @ 2025-08-05 00:58:00+00:00
+  - CEX: Deposit 3.3e-06 BTC @ 2025-08-05 00:58:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -6.194e-05 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: MINT_BUY
+
+=== detect_patterns CALLED ===
+tx_group has 2 transactions:
+  - CEX: Withdrawal -6.479e-05 BTC | metadata=None | witness_len=0
+  - CEX: Deposit 3.3e-06 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 2 transactions
+  - CEX: Withdrawal -6.479e-05 BTC @ 2025-08-04 22:19:00+00:00
+  - CEX: Deposit 3.3e-06 BTC @ 2025-08-04 22:19:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -6.479e-05 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: MINT_BUY
+
+=== detect_patterns CALLED ===
+tx_group has 2 transactions:
+  - CEX: Withdrawal -1.188e-05 BTC | metadata=None | witness_len=0
+  - CEX: Withdrawal -9.3e-06 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 2 transactions
+  - CEX: Withdrawal -1.188e-05 BTC @ 2025-06-27 23:16:00+00:00
+  - CEX: Withdrawal -9.3e-06 BTC @ 2025-06-27 23:16:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -1.188e-05 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: GAS_FEE
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - CEX: Transfer -0.00040994 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - CEX: Transfer -0.00040994 BTC @ 2025-06-27 20:50:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Transfer -0.00040994 BTC
+  -> NO MATCH (returning None)
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - CEX: Withdrawal -0.00555733 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - CEX: Withdrawal -0.00555733 BTC @ 2025-06-17 12:56:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -0.00555733 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> NO MATCH (returning None)
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - CEX: Deposit 0.00409935 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - CEX: Deposit 0.00409935 BTC @ 2025-06-17 11:19:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Deposit 0.00409935 BTC
+CASE B: CEX Deposit detected
+  Checked 0 candidates, no match found
+  -> MATCHED: FIAT_ONRAMP
+
+=== detect_patterns CALLED ===
+tx_group has 2 transactions:
+  - CEX: Withdrawal -3.759e-05 BTC | metadata=None | witness_len=0
+  - CEX: Deposit 5.4e-07 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 2 transactions
+  - CEX: Withdrawal -3.759e-05 BTC @ 2025-06-17 11:11:00+00:00
+  - CEX: Deposit 5.4e-07 BTC @ 2025-06-17 11:11:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -3.759e-05 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: MINT_BUY
+
+=== detect_patterns CALLED ===
+tx_group has 2 transactions:
+  - CEX: Withdrawal -2.16e-06 BTC | metadata=None | witness_len=0
+  - CEX: Deposit 0.00032452 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 2 transactions
+  - CEX: Withdrawal -2.16e-06 BTC @ 2025-06-17 10:30:00+00:00
+  - CEX: Deposit 0.00032452 BTC @ 2025-06-17 10:30:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -2.16e-06 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: FIAT_ONRAMP
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - CEX: Deposit 0.00104 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - CEX: Deposit 0.00104 BTC @ 2025-06-16 15:43:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Deposit 0.00104 BTC
+CASE B: CEX Deposit detected
+  Checked 0 candidates, no match found
+  -> MATCHED: FIAT_ONRAMP
+
+=== detect_patterns CALLED ===
+tx_group has 2 transactions:
+  - CEX: Withdrawal -0.00015638 BTC | metadata=None | witness_len=0
+  - CEX: Deposit 1e-05 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 2 transactions
+  - CEX: Withdrawal -0.00015638 BTC @ 2025-06-11 20:00:00+00:00
+  - CEX: Deposit 1e-05 BTC @ 2025-06-11 20:00:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -0.00015638 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: MINT_BUY
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - CEX: Deposit 1e-05 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - CEX: Deposit 1e-05 BTC @ 2025-06-11 19:25:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Deposit 1e-05 BTC
+CASE B: CEX Deposit detected
+  Checked 0 candidates, no match found
+  -> MATCHED: FIAT_ONRAMP
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - CEX: Withdrawal -0.00019764 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - CEX: Withdrawal -0.00019764 BTC @ 2025-06-11 19:18:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -0.00019764 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: GAS_FEE
+
+=== detect_patterns CALLED ===
+tx_group has 2 transactions:
+  - CEX: Withdrawal -0.00040851 BTC | metadata=None | witness_len=0
+  - CEX: Deposit 1e-05 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 2 transactions
+  - CEX: Withdrawal -0.00040851 BTC @ 2025-06-11 17:24:00+00:00
+  - CEX: Deposit 1e-05 BTC @ 2025-06-11 17:24:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -0.00040851 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: MINT_BUY
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - CEX: Deposit 0.0008 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - CEX: Deposit 0.0008 BTC @ 2025-06-11 05:10:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Deposit 0.0008 BTC
+CASE B: CEX Deposit detected
+  Checked 0 candidates, no match found
+  -> MATCHED: FIAT_ONRAMP
+
+=== detect_patterns CALLED ===
+tx_group has 2 transactions:
+  - CEX: Withdrawal -0.00019986 BTC | metadata=None | witness_len=0
+  - CEX: Deposit 3.3e-06 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 2 transactions
+  - CEX: Withdrawal -0.00019986 BTC @ 2025-05-30 02:33:00+00:00
+  - CEX: Deposit 3.3e-06 BTC @ 2025-05-30 02:33:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -0.00019986 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: MINT_BUY
+
+=== detect_patterns CALLED ===
+tx_group has 2 transactions:
+  - CEX: Withdrawal -6.64e-06 BTC | metadata=None | witness_len=0
+  - CEX: Deposit 5.46e-06 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 2 transactions
+  - CEX: Withdrawal -6.64e-06 BTC @ 2025-05-28 12:58:00+00:00
+  - CEX: Deposit 5.46e-06 BTC @ 2025-05-28 12:58:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -6.64e-06 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: MINT_BUY
+
+=== detect_patterns CALLED ===
+tx_group has 2 transactions:
+  - CEX: Withdrawal -0.00067612 BTC | metadata=None | witness_len=0
+  - CEX: Deposit 1.838e-05 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 2 transactions
+  - CEX: Withdrawal -0.00067612 BTC @ 2025-05-27 04:59:00+00:00
+  - CEX: Deposit 1.838e-05 BTC @ 2025-05-27 04:59:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -0.00067612 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: FIAT_ONRAMP
+
+=== detect_patterns CALLED ===
+tx_group has 3 transactions:
+  - CEX: Withdrawal -2.399e-05 BTC | metadata=None | witness_len=0
+  - CEX: Deposit 0.00085257 BTC | metadata=None | witness_len=0
+  - CEX: Deposit 3.3e-06 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 3 transactions
+  - CEX: Withdrawal -2.399e-05 BTC @ 2025-05-27 03:30:00+00:00
+  - CEX: Deposit 0.00085257 BTC @ 2025-05-27 03:30:00+00:00
+  - CEX: Deposit 3.3e-06 BTC @ 2025-05-27 03:30:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -2.399e-05 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: FIAT_ONRAMP
+
+=== detect_patterns CALLED ===
+tx_group has 2 transactions:
+  - CEX: Withdrawal -0.00050834 BTC | metadata=None | witness_len=0
+  - CEX: Deposit 1.092e-05 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 2 transactions
+  - CEX: Withdrawal -0.00050834 BTC @ 2025-05-20 20:13:00+00:00
+  - CEX: Deposit 1.092e-05 BTC @ 2025-05-20 20:13:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -0.00050834 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: FIAT_ONRAMP
+
+=== detect_patterns CALLED ===
+tx_group has 2 transactions:
+  - CEX: Withdrawal -0.0001407 BTC | metadata=None | witness_len=0
+  - CEX: Deposit 5.46e-06 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 2 transactions
+  - CEX: Withdrawal -0.0001407 BTC @ 2025-05-14 11:13:00+00:00
+  - CEX: Deposit 5.46e-06 BTC @ 2025-05-14 11:13:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -0.0001407 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: MINT_BUY
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - CEX: Deposit 5.46e-06 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - CEX: Deposit 5.46e-06 BTC @ 2025-05-12 15:49:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Deposit 5.46e-06 BTC
+CASE B: CEX Deposit detected
+  Checked 0 candidates, no match found
+  -> MATCHED: FIAT_ONRAMP
+
+=== detect_patterns CALLED ===
+tx_group has 2 transactions:
+  - CEX: Withdrawal -0.00092166 BTC | metadata=None | witness_len=0
+  - CEX: Deposit 5.46e-06 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 2 transactions
+  - CEX: Withdrawal -0.00092166 BTC @ 2025-05-12 15:40:00+00:00
+  - CEX: Deposit 5.46e-06 BTC @ 2025-05-12 15:40:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -0.00092166 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: MINT_BUY
+
+=== detect_patterns CALLED ===
+tx_group has 2 transactions:
+  - CEX: Transfer -0.00155831 BTC | metadata=None | witness_len=0
+  - BLOCKCHAIN: Withdrawal -0.00156363 BTC | metadata={'asset_type': 'BTC'} | witness_len=2
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 2 transactions
+  - CEX: Transfer -0.00155831 BTC @ 2025-05-07 20:07:00+00:00
+  - BLOCKCHAIN: Withdrawal -0.00156363 BTC @ 2025-05-07 20:07:20+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> NO MATCH (returning None)
+
+=== detect_patterns CALLED ===
+tx_group has 3 transactions:
+  - CEX: Withdrawal -5.46e-06 BTC | metadata=None | witness_len=0
+  - CEX: Deposit 0.00156363 BTC | metadata=None | witness_len=0
+  - BLOCKCHAIN: Deposit 0.00156363 BTC | metadata={'asset_type': 'BTC'} | witness_len=2
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 3 transactions
+  - CEX: Withdrawal -5.46e-06 BTC @ 2025-05-06 02:53:00+00:00
+  - CEX: Deposit 0.00156363 BTC @ 2025-05-06 02:53:00+00:00
+  - BLOCKCHAIN: Deposit 0.00156363 BTC @ 2025-05-06 02:53:24+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> NO MATCH (returning None)
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - CEX: Deposit 5.46e-06 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - CEX: Deposit 5.46e-06 BTC @ 2025-05-06 19:14:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Deposit 5.46e-06 BTC
+CASE B: CEX Deposit detected
+  Checked 0 candidates, no match found
+  -> MATCHED: FIAT_ONRAMP
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - CEX: Deposit 5.46e-06 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - CEX: Deposit 5.46e-06 BTC @ 2025-04-09 19:14:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Deposit 5.46e-06 BTC
+CASE B: CEX Deposit detected
+  Checked 0 candidates, no match found
+  -> MATCHED: FIAT_ONRAMP
+
+=== detect_patterns CALLED ===
+tx_group has 2 transactions:
+  - CEX: Withdrawal -0.00422125 BTC | metadata=None | witness_len=0
+  - CEX: Deposit 5.46e-06 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 2 transactions
+  - CEX: Withdrawal -0.00422125 BTC @ 2025-04-09 16:00:00+00:00
+  - CEX: Deposit 5.46e-06 BTC @ 2025-04-09 16:00:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -0.00422125 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: MINT_BUY
+
+=== detect_patterns CALLED ===
+tx_group has 3 transactions:
+  - CEX: Transfer -0.00417675 BTC | metadata=None | witness_len=0
+  - CEX: Transfer -0.00417875 BTC | metadata=None | witness_len=0
+  - BLOCKCHAIN: Withdrawal -0.0042135 BTC | metadata={'asset_type': 'BTC'} | witness_len=26
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 3 transactions
+  - CEX: Transfer -0.00417675 BTC @ 2025-04-07 22:23:00+00:00
+  - CEX: Transfer -0.00417875 BTC @ 2025-04-07 22:23:00+00:00
+  - BLOCKCHAIN: Withdrawal -0.0042135 BTC @ 2025-04-07 22:23:44+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> MATCHED: POTENTIAL_MARKETPLACE_SWAP
+
+=== detect_patterns CALLED ===
+tx_group has 2 transactions:
+  - CEX: Deposit 0.00411 BTC | metadata=None | witness_len=0
+  - BLOCKCHAIN: Deposit 0.00411 BTC | metadata={'asset_type': 'BTC'} | witness_len=2
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 2 transactions
+  - CEX: Deposit 0.00411 BTC @ 2025-04-07 17:44:00+00:00
+  - BLOCKCHAIN: Deposit 0.00411 BTC @ 2025-04-07 17:44:41+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> MATCHED: SALE
+
+=== detect_patterns CALLED ===
+tx_group has 2 transactions:
+  - CEX: Withdrawal -2.765e-05 BTC | metadata=None | witness_len=0
+  - CEX: Deposit 3.3e-06 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 2 transactions
+  - CEX: Withdrawal -2.765e-05 BTC @ 2025-03-31 18:17:00+00:00
+  - CEX: Deposit 3.3e-06 BTC @ 2025-03-31 18:17:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -2.765e-05 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: MINT_BUY
+
+=== detect_patterns CALLED ===
+tx_group has 2 transactions:
+  - CEX: Withdrawal -2.765e-05 BTC | metadata=None | witness_len=0
+  - CEX: Deposit 3.3e-06 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 2 transactions
+  - CEX: Withdrawal -2.765e-05 BTC @ 2025-03-31 20:17:00+00:00
+  - CEX: Deposit 3.3e-06 BTC @ 2025-03-31 20:17:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -2.765e-05 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: MINT_BUY
+
+=== detect_patterns CALLED ===
+tx_group has 3 transactions:
+  - CEX: Withdrawal -0.000332 BTC | metadata=None | witness_len=0
+  - CEX: Deposit 5.46e-06 BTC | metadata=None | witness_len=0
+  - CEX: Withdrawal -0.00033165 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 3 transactions
+  - CEX: Withdrawal -0.000332 BTC @ 2025-03-28 14:50:00+00:00
+  - CEX: Deposit 5.46e-06 BTC @ 2025-03-28 14:50:00+00:00
+  - CEX: Withdrawal -0.00033165 BTC @ 2025-03-28 14:50:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -0.000332 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: MINT_BUY
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - CEX: Withdrawal -0.00034257 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - CEX: Withdrawal -0.00034257 BTC @ 2025-03-25 13:25:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -0.00034257 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: GAS_FEE
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - CEX: Withdrawal -0.00114 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - CEX: Withdrawal -0.00114 BTC @ 2025-03-25 03:09:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -0.00114 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> NO MATCH (returning None)
+
+=== detect_patterns CALLED ===
+tx_group has 2 transactions:
+  - CEX: Withdrawal -0.00033722 BTC | metadata=None | witness_len=0
+  - CEX: Deposit 5.46e-06 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 2 transactions
+  - CEX: Withdrawal -0.00033722 BTC @ 2025-03-24 05:31:00+00:00
+  - CEX: Deposit 5.46e-06 BTC @ 2025-03-24 05:31:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -0.00033722 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: MINT_BUY
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - CEX: Withdrawal -0.00148197 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - CEX: Withdrawal -0.00148197 BTC @ 2025-03-22 05:01:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -0.00148197 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> NO MATCH (returning None)
+
+=== detect_patterns CALLED ===
+tx_group has 2 transactions:
+  - CEX: Withdrawal -0.00044358 BTC | metadata=None | witness_len=0
+  - CEX: Deposit 5.46e-06 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 2 transactions
+  - CEX: Withdrawal -0.00044358 BTC @ 2025-03-20 20:24:00+00:00
+  - CEX: Deposit 5.46e-06 BTC @ 2025-03-20 20:24:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -0.00044358 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: MINT_BUY
+
+=== detect_patterns CALLED ===
+tx_group has 3 transactions:
+  - CEX: Withdrawal -5.46e-06 BTC | metadata=None | witness_len=0
+  - CEX: Deposit 0.00219446 BTC | metadata=None | witness_len=0
+  - CEX: Deposit 0.00209496 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 3 transactions
+  - CEX: Withdrawal -5.46e-06 BTC @ 2025-03-20 19:49:00+00:00
+  - CEX: Deposit 0.00219446 BTC @ 2025-03-20 19:49:00+00:00
+  - CEX: Deposit 0.00209496 BTC @ 2025-03-20 19:49:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -5.46e-06 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: FIAT_ONRAMP
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - CEX: Trade -0.0007035 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - CEX: Trade -0.0007035 BTC @ 2025-03-06 14:47:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Trade -0.0007035 BTC
+  -> NO MATCH (returning None)
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - CEX: Deposit 0.00088 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - CEX: Deposit 0.00088 BTC @ 2025-03-04 13:49:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Deposit 0.00088 BTC
+CASE B: CEX Deposit detected
+  Checked 0 candidates, no match found
+  -> MATCHED: FIAT_ONRAMP
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - CEX: Trade -0.00085221 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - CEX: Trade -0.00085221 BTC @ 2025-02-26 15:45:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Trade -0.00085221 BTC
+  -> NO MATCH (returning None)
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - CEX: Deposit 0.0008 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - CEX: Deposit 0.0008 BTC @ 2025-02-26 15:34:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Deposit 0.0008 BTC
+CASE B: CEX Deposit detected
+  Checked 0 candidates, no match found
+  -> MATCHED: FIAT_ONRAMP
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - CEX: Trade -0.00050235 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - CEX: Trade -0.00050235 BTC @ 2025-02-18 20:14:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Trade -0.00050235 BTC
+  -> NO MATCH (returning None)
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - CEX: Deposit 0.0003 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - CEX: Deposit 0.0003 BTC @ 2025-02-18 20:01:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Deposit 0.0003 BTC
+CASE B: CEX Deposit detected
+  Checked 0 candidates, no match found
+  -> MATCHED: FIAT_ONRAMP
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - CEX: Withdrawal -350000.0 DOG | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - CEX: Withdrawal -350000.0 DOG @ 2025-02-17 16:03:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -350000.0 DOG
+  -> NO MATCH (returning None)
+
+=== detect_patterns CALLED ===
+tx_group has 2 transactions:
+  - CEX: Mint -0.00013448 BTC | metadata=None | witness_len=0
+  - BLOCKCHAIN: Withdrawal -0.00015108 BTC | metadata={'asset_type': 'BTC'} | witness_len=2
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 2 transactions
+  - CEX: Mint -0.00013448 BTC @ 2025-01-21 20:15:00+00:00
+  - BLOCKCHAIN: Withdrawal -0.00015108 BTC @ 2025-01-21 20:15:24+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> MATCHED: GAS_FEE
+
+=== detect_patterns CALLED ===
+tx_group has 2 transactions:
+  - CEX: Mint -0.00014424 BTC | metadata=None | witness_len=0
+  - BLOCKCHAIN: Withdrawal -0.00016416 BTC | metadata={'asset_type': 'BTC'} | witness_len=2
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 2 transactions
+  - CEX: Mint -0.00014424 BTC @ 2025-01-20 23:43:00+00:00
+  - BLOCKCHAIN: Withdrawal -0.00016416 BTC @ 2025-01-20 23:43:10+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> MATCHED: GAS_FEE
+
+=== detect_patterns CALLED ===
+tx_group has 2 transactions:
+  - CEX: Withdrawal -6.612e-05 BTC | metadata=None | witness_len=0
+  - BLOCKCHAIN: Withdrawal -7.94e-05 BTC | metadata={'asset_type': 'BTC'} | witness_len=2
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 2 transactions
+  - CEX: Withdrawal -6.612e-05 BTC @ 2025-01-20 17:15:00+00:00
+  - BLOCKCHAIN: Withdrawal -7.94e-05 BTC @ 2025-01-20 17:15:03+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> MATCHED: GAS_FEE
+
+=== detect_patterns CALLED ===
+tx_group has 2 transactions:
+  - CEX: Mint -6.675e-05 BTC | metadata=None | witness_len=0
+  - BLOCKCHAIN: Withdrawal -7.555e-05 BTC | metadata={'asset_type': 'BTC'} | witness_len=2
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 2 transactions
+  - CEX: Mint -6.675e-05 BTC @ 2025-01-12 06:44:00+00:00
+  - BLOCKCHAIN: Withdrawal -7.555e-05 BTC @ 2025-01-12 06:44:29+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> MATCHED: GAS_FEE
+
+=== detect_patterns CALLED ===
+tx_group has 2 transactions:
+  - CEX: Trade -0.00459909 BTC | metadata=None | witness_len=0
+  - BLOCKCHAIN: Withdrawal -0.00460173 BTC | metadata={'asset_type': 'BTC'} | witness_len=2
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 2 transactions
+  - CEX: Trade -0.00459909 BTC @ 2025-01-12 06:17:00+00:00
+  - BLOCKCHAIN: Withdrawal -0.00460173 BTC @ 2025-01-12 06:17:42+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> NO MATCH (returning None)
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - CEX: Transfer -0.00520643 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - CEX: Transfer -0.00520643 BTC @ 2025-01-12 06:00:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Transfer -0.00520643 BTC
+  -> NO MATCH (returning None)
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - CEX: Deposit 9.583e-05 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - CEX: Deposit 9.583e-05 BTC @ 2025-01-02 03:50:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Deposit 9.583e-05 BTC
+CASE B: CEX Deposit detected
+  Checked 0 candidates, no match found
+  -> MATCHED: FIAT_ONRAMP
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - BLOCKCHAIN: Withdrawal -0.00023368 BTC | metadata={'asset_type': 'BTC'} | witness_len=6
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - BLOCKCHAIN: Withdrawal -0.00023368 BTC @ 2025-02-01 03:18:30+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> MATCHED: GAS_FEE
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - BLOCKCHAIN: Deposit 0.000125 BTC | metadata={'asset_type': 'BTC'} | witness_len=24
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - BLOCKCHAIN: Deposit 0.000125 BTC @ 2025-01-31 00:50:21+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> MATCHED: SALE
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - BLOCKCHAIN: Withdrawal -0.00059705 BTC | metadata={'asset_type': 'BTC'} | witness_len=2
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - BLOCKCHAIN: Withdrawal -0.00059705 BTC @ 2025-01-30 19:12:10+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> NO MATCH (returning None)
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - BLOCKCHAIN: Withdrawal -0.0015364 BTC | metadata={'asset_type': 'BTC'} | witness_len=2
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - BLOCKCHAIN: Withdrawal -0.0015364 BTC @ 2025-01-30 18:22:42+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> NO MATCH (returning None)
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - BLOCKCHAIN: Withdrawal -0.00060984 BTC | metadata={'asset_type': 'BTC'} | witness_len=2
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - BLOCKCHAIN: Withdrawal -0.00060984 BTC @ 2025-01-28 04:41:39+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> NO MATCH (returning None)
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - BLOCKCHAIN: Withdrawal -0.00118359 BTC | metadata={'asset_type': 'BTC'} | witness_len=2
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - BLOCKCHAIN: Withdrawal -0.00118359 BTC @ 2025-01-28 03:47:16+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> NO MATCH (returning None)
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - BLOCKCHAIN: Withdrawal -0.00020729 BTC | metadata={'asset_type': 'BTC'} | witness_len=2
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - BLOCKCHAIN: Withdrawal -0.00020729 BTC @ 2025-01-28 00:37:04+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> MATCHED: GAS_FEE
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - BLOCKCHAIN: Withdrawal -0.0009522 BTC | metadata={'asset_type': 'BTC'} | witness_len=7
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - BLOCKCHAIN: Withdrawal -0.0009522 BTC @ 2025-01-27 20:30:32+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> MATCHED: POTENTIAL_MARKETPLACE_SWAP
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - BLOCKCHAIN: Withdrawal -0.00188701 BTC | metadata={'asset_type': 'BTC'} | witness_len=2
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - BLOCKCHAIN: Withdrawal -0.00188701 BTC @ 2025-01-27 20:30:32+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> NO MATCH (returning None)
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - BLOCKCHAIN: Deposit 0.00701688 BTC | metadata={'asset_type': 'RUNE', 'runes': [{'name': 'RUNE_f13e8aa1', 'amount': 'Unknown', 'divisibility': 0}], 'rune_name': 'RUNE_f13e8aa1', 'rune_amount': 0, 'rune_divisibility': 0} | witness_len=2
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - BLOCKCHAIN: Deposit 0.00701688 BTC @ 2025-01-27 16:42:25+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> MATCHED: RUNE_RECEIVE
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - BLOCKCHAIN: Withdrawal -9.08e-06 BTC | metadata={'asset_type': 'BTC'} | witness_len=2
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - BLOCKCHAIN: Withdrawal -9.08e-06 BTC @ 2025-01-12 06:14:23+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> MATCHED: GAS_FEE
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - BLOCKCHAIN: Deposit 0.0052 BTC | metadata={'asset_type': 'BTC'} | witness_len=2
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - BLOCKCHAIN: Deposit 0.0052 BTC @ 2025-01-12 06:04:18+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> MATCHED: SALE
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - CEX: Withdrawal -2.13e-05 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - CEX: Withdrawal -2.13e-05 BTC @ 2026-01-06 05:19:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -2.13e-05 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: GAS_FEE
+
+=== detect_patterns CALLED ===
+tx_group has 2 transactions:
+  - CEX: Withdrawal -0.00023608 BTC | metadata=None | witness_len=0
+  - CEX: Deposit 1.092e-05 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 2 transactions
+  - CEX: Withdrawal -0.00023608 BTC @ 2026-01-05 07:03:00+00:00
+  - CEX: Deposit 1.092e-05 BTC @ 2026-01-05 07:03:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -0.00023608 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: FIAT_ONRAMP
+
+=== detect_patterns CALLED ===
+tx_group has 2 transactions:
+  - CEX: Withdrawal -8.571e-05 BTC | metadata=None | witness_len=0
+  - CEX: Deposit 5.46e-06 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 2 transactions
+  - CEX: Withdrawal -8.571e-05 BTC @ 2025-12-01 06:09:00+00:00
+  - CEX: Deposit 5.46e-06 BTC @ 2025-12-01 06:09:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -8.571e-05 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: MINT_BUY
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - CEX: Withdrawal -1.171e-05 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - CEX: Withdrawal -1.171e-05 BTC @ 2025-12-01 21:19:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -1.171e-05 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: GAS_FEE
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - CEX: Deposit 0.00052 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - CEX: Deposit 0.00052 BTC @ 2025-11-28 03:25:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Deposit 0.00052 BTC
+CASE B: CEX Deposit detected
+  Checked 0 candidates, no match found
+  -> MATCHED: FIAT_ONRAMP
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - CEX: Withdrawal -1.082e-05 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - CEX: Withdrawal -1.082e-05 BTC @ 2025-11-19 02:05:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -1.082e-05 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: GAS_FEE
+
+=== detect_patterns CALLED ===
+tx_group has 2 transactions:
+  - CEX: Withdrawal -0.0001206 BTC | metadata=None | witness_len=0
+  - CEX: Deposit 5.46e-06 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 2 transactions
+  - CEX: Withdrawal -0.0001206 BTC @ 2025-11-18 22:49:00+00:00
+  - CEX: Deposit 5.46e-06 BTC @ 2025-11-18 22:49:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -0.0001206 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: MINT_BUY
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - CEX: Deposit 0.0003 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - CEX: Deposit 0.0003 BTC @ 2025-11-16 03:46:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Deposit 0.0003 BTC
+CASE B: CEX Deposit detected
+  Checked 0 candidates, no match found
+  -> MATCHED: FIAT_ONRAMP
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - CEX: Withdrawal -9.42e-06 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - CEX: Withdrawal -9.42e-06 BTC @ 2025-11-11 03:09:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -9.42e-06 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: GAS_FEE
+
+=== detect_patterns CALLED ===
+tx_group has 2 transactions:
+  - CEX: Withdrawal -0.00016482 BTC | metadata=None | witness_len=0
+  - CEX: Deposit 5.46e-06 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 2 transactions
+  - CEX: Withdrawal -0.00016482 BTC @ 2025-11-08 02:02:00+00:00
+  - CEX: Deposit 5.46e-06 BTC @ 2025-11-08 02:02:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -0.00016482 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: MINT_BUY
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - CEX: Deposit 3.3e-06 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - CEX: Deposit 3.3e-06 BTC @ 2025-11-07 09:11:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Deposit 3.3e-06 BTC
+CASE B: CEX Deposit detected
+  Checked 0 candidates, no match found
+  -> MATCHED: FIAT_ONRAMP
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - CEX: Deposit 0.00021 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - CEX: Deposit 0.00021 BTC @ 2025-10-27 04:50:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Deposit 0.00021 BTC
+CASE B: CEX Deposit detected
+  Checked 0 candidates, no match found
+  -> MATCHED: FIAT_ONRAMP
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - CEX: Withdrawal -1.762e-05 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - CEX: Withdrawal -1.762e-05 BTC @ 2025-09-30 18:46:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -1.762e-05 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: GAS_FEE
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - CEX: Withdrawal -8.8e-06 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - CEX: Withdrawal -8.8e-06 BTC @ 2025-09-30 18:37:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -8.8e-06 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: GAS_FEE
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - CEX: Withdrawal -0.00015552 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - CEX: Withdrawal -0.00015552 BTC @ 2025-09-17 21:24:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -0.00015552 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: GAS_FEE
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - CEX: Deposit 0.00021 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - CEX: Deposit 0.00021 BTC @ 2025-09-17 19:42:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Deposit 0.00021 BTC
+CASE B: CEX Deposit detected
+  Checked 0 candidates, no match found
+  -> MATCHED: FIAT_ONRAMP
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - CEX: Deposit 5.46e-06 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - CEX: Deposit 5.46e-06 BTC @ 2025-09-01 10:56:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Deposit 5.46e-06 BTC
+CASE B: CEX Deposit detected
+  Checked 0 candidates, no match found
+  -> MATCHED: FIAT_ONRAMP
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - CEX: Withdrawal -0.00016416 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - CEX: Withdrawal -0.00016416 BTC @ 2025-08-26 03:15:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -0.00016416 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: GAS_FEE
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - CEX: Deposit 3.3e-06 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - CEX: Deposit 3.3e-06 BTC @ 2025-08-25 16:39:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Deposit 3.3e-06 BTC
+CASE B: CEX Deposit detected
+  Checked 0 candidates, no match found
+  -> MATCHED: FIAT_ONRAMP
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - CEX: Withdrawal -0.0001397 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - CEX: Withdrawal -0.0001397 BTC @ 2025-08-25 13:45:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -0.0001397 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: GAS_FEE
+
+=== detect_patterns CALLED ===
+tx_group has 2 transactions:
+  - CEX: Withdrawal -0.00010995 BTC | metadata=None | witness_len=0
+  - CEX: Deposit 3.3e-06 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 2 transactions
+  - CEX: Withdrawal -0.00010995 BTC @ 2025-08-22 13:43:00+00:00
+  - CEX: Deposit 3.3e-06 BTC @ 2025-08-22 13:43:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -0.00010995 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: MINT_BUY
+
+=== detect_patterns CALLED ===
+tx_group has 2 transactions:
+  - CEX: Withdrawal -0.00012955 BTC | metadata=None | witness_len=0
+  - CEX: Deposit 3.3e-06 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 2 transactions
+  - CEX: Withdrawal -0.00012955 BTC @ 2025-08-20 23:59:00+00:00
+  - CEX: Deposit 3.3e-06 BTC @ 2025-08-20 23:59:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -0.00012955 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: MINT_BUY
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - CEX: Deposit 7.89e-06 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - CEX: Deposit 7.89e-06 BTC @ 2025-08-20 05:01:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Deposit 7.89e-06 BTC
+CASE B: CEX Deposit detected
+  Checked 0 candidates, no match found
+  -> MATCHED: FIAT_ONRAMP
+
+=== detect_patterns CALLED ===
+tx_group has 2 transactions:
+  - CEX: Withdrawal -0.00016398 BTC | metadata=None | witness_len=0
+  - CEX: Deposit 3.3e-06 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 2 transactions
+  - CEX: Withdrawal -0.00016398 BTC @ 2025-08-20 04:03:00+00:00
+  - CEX: Deposit 3.3e-06 BTC @ 2025-08-20 04:03:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -0.00016398 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: MINT_BUY
+
+=== detect_patterns CALLED ===
+tx_group has 2 transactions:
+  - CEX: Withdrawal -0.00032 BTC | metadata=None | witness_len=0
+  - CEX: Deposit 5.46e-06 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 2 transactions
+  - CEX: Withdrawal -0.00032 BTC @ 2025-08-20 00:15:00+00:00
+  - CEX: Deposit 5.46e-06 BTC @ 2025-08-20 00:15:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -0.00032 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: MINT_BUY
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - CEX: Deposit 0.00046 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - CEX: Deposit 0.00046 BTC @ 2025-08-19 16:29:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Deposit 0.00046 BTC
+CASE B: CEX Deposit detected
+  Checked 0 candidates, no match found
+  -> MATCHED: FIAT_ONRAMP
+
+=== detect_patterns CALLED ===
+tx_group has 2 transactions:
+  - CEX: Withdrawal -0.00044793 BTC | metadata=None | witness_len=0
+  - CEX: Deposit 1.092e-05 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 2 transactions
+  - CEX: Withdrawal -0.00044793 BTC @ 2025-08-19 12:20:00+00:00
+  - CEX: Deposit 1.092e-05 BTC @ 2025-08-19 12:20:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -0.00044793 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: FIAT_ONRAMP
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - CEX: Deposit 0.00096391 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - CEX: Deposit 0.00096391 BTC @ 2025-08-18 17:01:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Deposit 0.00096391 BTC
+CASE B: CEX Deposit detected
+  Checked 0 candidates, no match found
+  -> MATCHED: FIAT_ONRAMP
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - CEX: Transfer -6.034e-05 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - CEX: Transfer -6.034e-05 BTC @ 2025-08-18 14:34:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Transfer -6.034e-05 BTC
+  -> NO MATCH (returning None)
+
+=== detect_patterns CALLED ===
+tx_group has 2 transactions:
+  - CEX: Withdrawal -0.00010684 BTC | metadata=None | witness_len=0
+  - CEX: Deposit 3.3e-06 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 2 transactions
+  - CEX: Withdrawal -0.00010684 BTC @ 2025-08-18 13:05:00+00:00
+  - CEX: Deposit 3.3e-06 BTC @ 2025-08-18 13:05:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -0.00010684 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: MINT_BUY
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - CEX: Transfer -0.00013047 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - CEX: Transfer -0.00013047 BTC @ 2025-08-18 12:09:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Transfer -0.00013047 BTC
+  -> NO MATCH (returning None)
+
+=== detect_patterns CALLED ===
+tx_group has 2 transactions:
+  - CEX: Withdrawal -7.22e-06 BTC | metadata=None | witness_len=0
+  - CEX: Deposit 3.3e-06 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 2 transactions
+  - CEX: Withdrawal -7.22e-06 BTC @ 2025-08-14 01:12:00+00:00
+  - CEX: Deposit 3.3e-06 BTC @ 2025-08-14 01:12:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -7.22e-06 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: MINT_BUY
+
+=== detect_patterns CALLED ===
+tx_group has 2 transactions:
+  - CEX: Withdrawal -7.22e-06 BTC | metadata=None | witness_len=0
+  - CEX: Deposit 3.3e-06 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 2 transactions
+  - CEX: Withdrawal -7.22e-06 BTC @ 2025-08-14 01:07:00+00:00
+  - CEX: Deposit 3.3e-06 BTC @ 2025-08-14 01:07:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -7.22e-06 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: MINT_BUY
+
+=== detect_patterns CALLED ===
+tx_group has 2 transactions:
+  - CEX: Withdrawal -7.334e-05 BTC | metadata=None | witness_len=0
+  - CEX: Deposit 3.3e-06 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 2 transactions
+  - CEX: Withdrawal -7.334e-05 BTC @ 2025-08-11 15:46:00+00:00
+  - CEX: Deposit 3.3e-06 BTC @ 2025-08-11 15:46:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -7.334e-05 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: MINT_BUY
+
+=== detect_patterns CALLED ===
+tx_group has 2 transactions:
+  - CEX: Withdrawal -7.334e-05 BTC | metadata=None | witness_len=0
+  - CEX: Deposit 3.3e-06 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 2 transactions
+  - CEX: Withdrawal -7.334e-05 BTC @ 2025-08-11 15:40:00+00:00
+  - CEX: Deposit 3.3e-06 BTC @ 2025-08-11 15:40:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -7.334e-05 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: MINT_BUY
+
+=== detect_patterns CALLED ===
+tx_group has 2 transactions:
+  - CEX: Withdrawal -6.194e-05 BTC | metadata=None | witness_len=0
+  - CEX: Deposit 3.3e-06 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 2 transactions
+  - CEX: Withdrawal -6.194e-05 BTC @ 2025-08-05 02:04:00+00:00
+  - CEX: Deposit 3.3e-06 BTC @ 2025-08-05 02:04:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -6.194e-05 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: MINT_BUY
+
+=== detect_patterns CALLED ===
+tx_group has 2 transactions:
+  - CEX: Withdrawal -6.194e-05 BTC | metadata=None | witness_len=0
+  - CEX: Deposit 3.3e-06 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 2 transactions
+  - CEX: Withdrawal -6.194e-05 BTC @ 2025-08-05 00:58:00+00:00
+  - CEX: Deposit 3.3e-06 BTC @ 2025-08-05 00:58:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -6.194e-05 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: MINT_BUY
+
+=== detect_patterns CALLED ===
+tx_group has 2 transactions:
+  - CEX: Withdrawal -6.479e-05 BTC | metadata=None | witness_len=0
+  - CEX: Deposit 3.3e-06 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 2 transactions
+  - CEX: Withdrawal -6.479e-05 BTC @ 2025-08-04 22:19:00+00:00
+  - CEX: Deposit 3.3e-06 BTC @ 2025-08-04 22:19:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -6.479e-05 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: MINT_BUY
+
+=== detect_patterns CALLED ===
+tx_group has 2 transactions:
+  - CEX: Withdrawal -1.188e-05 BTC | metadata=None | witness_len=0
+  - CEX: Withdrawal -9.3e-06 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 2 transactions
+  - CEX: Withdrawal -1.188e-05 BTC @ 2025-06-27 23:16:00+00:00
+  - CEX: Withdrawal -9.3e-06 BTC @ 2025-06-27 23:16:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -1.188e-05 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: GAS_FEE
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - CEX: Transfer -0.00040994 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - CEX: Transfer -0.00040994 BTC @ 2025-06-27 20:50:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Transfer -0.00040994 BTC
+  -> NO MATCH (returning None)
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - CEX: Withdrawal -0.00555733 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - CEX: Withdrawal -0.00555733 BTC @ 2025-06-17 12:56:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -0.00555733 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> NO MATCH (returning None)
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - CEX: Deposit 0.00409935 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - CEX: Deposit 0.00409935 BTC @ 2025-06-17 11:19:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Deposit 0.00409935 BTC
+CASE B: CEX Deposit detected
+  Checked 0 candidates, no match found
+  -> MATCHED: FIAT_ONRAMP
+
+=== detect_patterns CALLED ===
+tx_group has 2 transactions:
+  - CEX: Withdrawal -3.759e-05 BTC | metadata=None | witness_len=0
+  - CEX: Deposit 5.4e-07 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 2 transactions
+  - CEX: Withdrawal -3.759e-05 BTC @ 2025-06-17 11:11:00+00:00
+  - CEX: Deposit 5.4e-07 BTC @ 2025-06-17 11:11:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -3.759e-05 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: MINT_BUY
+
+=== detect_patterns CALLED ===
+tx_group has 2 transactions:
+  - CEX: Withdrawal -2.16e-06 BTC | metadata=None | witness_len=0
+  - CEX: Deposit 0.00032452 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 2 transactions
+  - CEX: Withdrawal -2.16e-06 BTC @ 2025-06-17 10:30:00+00:00
+  - CEX: Deposit 0.00032452 BTC @ 2025-06-17 10:30:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -2.16e-06 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: FIAT_ONRAMP
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - CEX: Deposit 0.00104 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - CEX: Deposit 0.00104 BTC @ 2025-06-16 15:43:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Deposit 0.00104 BTC
+CASE B: CEX Deposit detected
+  Checked 0 candidates, no match found
+  -> MATCHED: FIAT_ONRAMP
+
+=== detect_patterns CALLED ===
+tx_group has 2 transactions:
+  - CEX: Withdrawal -0.00015638 BTC | metadata=None | witness_len=0
+  - CEX: Deposit 1e-05 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 2 transactions
+  - CEX: Withdrawal -0.00015638 BTC @ 2025-06-11 20:00:00+00:00
+  - CEX: Deposit 1e-05 BTC @ 2025-06-11 20:00:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -0.00015638 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: MINT_BUY
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - CEX: Deposit 1e-05 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - CEX: Deposit 1e-05 BTC @ 2025-06-11 19:25:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Deposit 1e-05 BTC
+CASE B: CEX Deposit detected
+  Checked 0 candidates, no match found
+  -> MATCHED: FIAT_ONRAMP
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - CEX: Withdrawal -0.00019764 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - CEX: Withdrawal -0.00019764 BTC @ 2025-06-11 19:18:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -0.00019764 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: GAS_FEE
+
+=== detect_patterns CALLED ===
+tx_group has 2 transactions:
+  - CEX: Withdrawal -0.00040851 BTC | metadata=None | witness_len=0
+  - CEX: Deposit 1e-05 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 2 transactions
+  - CEX: Withdrawal -0.00040851 BTC @ 2025-06-11 17:24:00+00:00
+  - CEX: Deposit 1e-05 BTC @ 2025-06-11 17:24:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -0.00040851 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: MINT_BUY
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - CEX: Deposit 0.0008 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - CEX: Deposit 0.0008 BTC @ 2025-06-11 05:10:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Deposit 0.0008 BTC
+CASE B: CEX Deposit detected
+  Checked 0 candidates, no match found
+  -> MATCHED: FIAT_ONRAMP
+
+=== detect_patterns CALLED ===
+tx_group has 2 transactions:
+  - CEX: Withdrawal -0.00019986 BTC | metadata=None | witness_len=0
+  - CEX: Deposit 3.3e-06 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 2 transactions
+  - CEX: Withdrawal -0.00019986 BTC @ 2025-05-30 02:33:00+00:00
+  - CEX: Deposit 3.3e-06 BTC @ 2025-05-30 02:33:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -0.00019986 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: MINT_BUY
+
+=== detect_patterns CALLED ===
+tx_group has 2 transactions:
+  - CEX: Withdrawal -6.64e-06 BTC | metadata=None | witness_len=0
+  - CEX: Deposit 5.46e-06 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 2 transactions
+  - CEX: Withdrawal -6.64e-06 BTC @ 2025-05-28 12:58:00+00:00
+  - CEX: Deposit 5.46e-06 BTC @ 2025-05-28 12:58:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -6.64e-06 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: MINT_BUY
+
+=== detect_patterns CALLED ===
+tx_group has 2 transactions:
+  - CEX: Withdrawal -0.00067612 BTC | metadata=None | witness_len=0
+  - CEX: Deposit 1.838e-05 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 2 transactions
+  - CEX: Withdrawal -0.00067612 BTC @ 2025-05-27 04:59:00+00:00
+  - CEX: Deposit 1.838e-05 BTC @ 2025-05-27 04:59:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -0.00067612 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: FIAT_ONRAMP
+
+=== detect_patterns CALLED ===
+tx_group has 3 transactions:
+  - CEX: Withdrawal -2.399e-05 BTC | metadata=None | witness_len=0
+  - CEX: Deposit 0.00085257 BTC | metadata=None | witness_len=0
+  - CEX: Deposit 3.3e-06 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 3 transactions
+  - CEX: Withdrawal -2.399e-05 BTC @ 2025-05-27 03:30:00+00:00
+  - CEX: Deposit 0.00085257 BTC @ 2025-05-27 03:30:00+00:00
+  - CEX: Deposit 3.3e-06 BTC @ 2025-05-27 03:30:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -2.399e-05 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: FIAT_ONRAMP
+
+=== detect_patterns CALLED ===
+tx_group has 2 transactions:
+  - CEX: Withdrawal -0.00050834 BTC | metadata=None | witness_len=0
+  - CEX: Deposit 1.092e-05 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 2 transactions
+  - CEX: Withdrawal -0.00050834 BTC @ 2025-05-20 20:13:00+00:00
+  - CEX: Deposit 1.092e-05 BTC @ 2025-05-20 20:13:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -0.00050834 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: FIAT_ONRAMP
+
+=== detect_patterns CALLED ===
+tx_group has 2 transactions:
+  - CEX: Withdrawal -0.0001407 BTC | metadata=None | witness_len=0
+  - CEX: Deposit 5.46e-06 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 2 transactions
+  - CEX: Withdrawal -0.0001407 BTC @ 2025-05-14 11:13:00+00:00
+  - CEX: Deposit 5.46e-06 BTC @ 2025-05-14 11:13:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -0.0001407 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: MINT_BUY
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - CEX: Deposit 5.46e-06 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - CEX: Deposit 5.46e-06 BTC @ 2025-05-12 15:49:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Deposit 5.46e-06 BTC
+CASE B: CEX Deposit detected
+  Checked 0 candidates, no match found
+  -> MATCHED: FIAT_ONRAMP
+
+=== detect_patterns CALLED ===
+tx_group has 2 transactions:
+  - CEX: Withdrawal -0.00092166 BTC | metadata=None | witness_len=0
+  - CEX: Deposit 5.46e-06 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 2 transactions
+  - CEX: Withdrawal -0.00092166 BTC @ 2025-05-12 15:40:00+00:00
+  - CEX: Deposit 5.46e-06 BTC @ 2025-05-12 15:40:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -0.00092166 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: MINT_BUY
+
+=== detect_patterns CALLED ===
+tx_group has 2 transactions:
+  - CEX: Transfer -0.00155831 BTC | metadata=None | witness_len=0
+  - BLOCKCHAIN: Withdrawal -0.00156363 BTC | metadata={'asset_type': 'BTC'} | witness_len=2
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 2 transactions
+  - CEX: Transfer -0.00155831 BTC @ 2025-05-07 20:07:00+00:00
+  - BLOCKCHAIN: Withdrawal -0.00156363 BTC @ 2025-05-07 20:07:20+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> NO MATCH (returning None)
+
+=== detect_patterns CALLED ===
+tx_group has 3 transactions:
+  - CEX: Withdrawal -5.46e-06 BTC | metadata=None | witness_len=0
+  - CEX: Deposit 0.00156363 BTC | metadata=None | witness_len=0
+  - BLOCKCHAIN: Deposit 0.00156363 BTC | metadata={'asset_type': 'BTC'} | witness_len=2
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 3 transactions
+  - CEX: Withdrawal -5.46e-06 BTC @ 2025-05-06 02:53:00+00:00
+  - CEX: Deposit 0.00156363 BTC @ 2025-05-06 02:53:00+00:00
+  - BLOCKCHAIN: Deposit 0.00156363 BTC @ 2025-05-06 02:53:24+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> NO MATCH (returning None)
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - CEX: Deposit 5.46e-06 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - CEX: Deposit 5.46e-06 BTC @ 2025-05-06 19:14:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Deposit 5.46e-06 BTC
+CASE B: CEX Deposit detected
+  Checked 0 candidates, no match found
+  -> MATCHED: FIAT_ONRAMP
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - CEX: Deposit 5.46e-06 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - CEX: Deposit 5.46e-06 BTC @ 2025-04-09 19:14:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Deposit 5.46e-06 BTC
+CASE B: CEX Deposit detected
+  Checked 0 candidates, no match found
+  -> MATCHED: FIAT_ONRAMP
+
+=== detect_patterns CALLED ===
+tx_group has 2 transactions:
+  - CEX: Withdrawal -0.00422125 BTC | metadata=None | witness_len=0
+  - CEX: Deposit 5.46e-06 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 2 transactions
+  - CEX: Withdrawal -0.00422125 BTC @ 2025-04-09 16:00:00+00:00
+  - CEX: Deposit 5.46e-06 BTC @ 2025-04-09 16:00:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -0.00422125 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: MINT_BUY
+
+=== detect_patterns CALLED ===
+tx_group has 3 transactions:
+  - CEX: Transfer -0.00417675 BTC | metadata=None | witness_len=0
+  - CEX: Transfer -0.00417875 BTC | metadata=None | witness_len=0
+  - BLOCKCHAIN: Withdrawal -0.0042135 BTC | metadata={'asset_type': 'BTC'} | witness_len=26
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 3 transactions
+  - CEX: Transfer -0.00417675 BTC @ 2025-04-07 22:23:00+00:00
+  - CEX: Transfer -0.00417875 BTC @ 2025-04-07 22:23:00+00:00
+  - BLOCKCHAIN: Withdrawal -0.0042135 BTC @ 2025-04-07 22:23:44+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> MATCHED: POTENTIAL_MARKETPLACE_SWAP
+
+=== detect_patterns CALLED ===
+tx_group has 2 transactions:
+  - CEX: Deposit 0.00411 BTC | metadata=None | witness_len=0
+  - BLOCKCHAIN: Deposit 0.00411 BTC | metadata={'asset_type': 'BTC'} | witness_len=2
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 2 transactions
+  - CEX: Deposit 0.00411 BTC @ 2025-04-07 17:44:00+00:00
+  - BLOCKCHAIN: Deposit 0.00411 BTC @ 2025-04-07 17:44:41+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> MATCHED: SALE
+
+=== detect_patterns CALLED ===
+tx_group has 2 transactions:
+  - CEX: Withdrawal -2.765e-05 BTC | metadata=None | witness_len=0
+  - CEX: Deposit 3.3e-06 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 2 transactions
+  - CEX: Withdrawal -2.765e-05 BTC @ 2025-03-31 18:17:00+00:00
+  - CEX: Deposit 3.3e-06 BTC @ 2025-03-31 18:17:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -2.765e-05 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: MINT_BUY
+
+=== detect_patterns CALLED ===
+tx_group has 2 transactions:
+  - CEX: Withdrawal -2.765e-05 BTC | metadata=None | witness_len=0
+  - CEX: Deposit 3.3e-06 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 2 transactions
+  - CEX: Withdrawal -2.765e-05 BTC @ 2025-03-31 20:17:00+00:00
+  - CEX: Deposit 3.3e-06 BTC @ 2025-03-31 20:17:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -2.765e-05 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: MINT_BUY
+
+=== detect_patterns CALLED ===
+tx_group has 3 transactions:
+  - CEX: Withdrawal -0.000332 BTC | metadata=None | witness_len=0
+  - CEX: Deposit 5.46e-06 BTC | metadata=None | witness_len=0
+  - CEX: Withdrawal -0.00033165 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 3 transactions
+  - CEX: Withdrawal -0.000332 BTC @ 2025-03-28 14:50:00+00:00
+  - CEX: Deposit 5.46e-06 BTC @ 2025-03-28 14:50:00+00:00
+  - CEX: Withdrawal -0.00033165 BTC @ 2025-03-28 14:50:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -0.000332 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: MINT_BUY
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - CEX: Withdrawal -0.00034257 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - CEX: Withdrawal -0.00034257 BTC @ 2025-03-25 13:25:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -0.00034257 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: GAS_FEE
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - CEX: Withdrawal -0.00114 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - CEX: Withdrawal -0.00114 BTC @ 2025-03-25 03:09:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -0.00114 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> NO MATCH (returning None)
+
+=== detect_patterns CALLED ===
+tx_group has 2 transactions:
+  - CEX: Withdrawal -0.00033722 BTC | metadata=None | witness_len=0
+  - CEX: Deposit 5.46e-06 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 2 transactions
+  - CEX: Withdrawal -0.00033722 BTC @ 2025-03-24 05:31:00+00:00
+  - CEX: Deposit 5.46e-06 BTC @ 2025-03-24 05:31:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -0.00033722 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: MINT_BUY
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - CEX: Withdrawal -0.00148197 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - CEX: Withdrawal -0.00148197 BTC @ 2025-03-22 05:01:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -0.00148197 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> NO MATCH (returning None)
+
+=== detect_patterns CALLED ===
+tx_group has 2 transactions:
+  - CEX: Withdrawal -0.00044358 BTC | metadata=None | witness_len=0
+  - CEX: Deposit 5.46e-06 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 2 transactions
+  - CEX: Withdrawal -0.00044358 BTC @ 2025-03-20 20:24:00+00:00
+  - CEX: Deposit 5.46e-06 BTC @ 2025-03-20 20:24:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -0.00044358 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: MINT_BUY
+
+=== detect_patterns CALLED ===
+tx_group has 3 transactions:
+  - CEX: Withdrawal -5.46e-06 BTC | metadata=None | witness_len=0
+  - CEX: Deposit 0.00219446 BTC | metadata=None | witness_len=0
+  - CEX: Deposit 0.00209496 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 3 transactions
+  - CEX: Withdrawal -5.46e-06 BTC @ 2025-03-20 19:49:00+00:00
+  - CEX: Deposit 0.00219446 BTC @ 2025-03-20 19:49:00+00:00
+  - CEX: Deposit 0.00209496 BTC @ 2025-03-20 19:49:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -5.46e-06 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: FIAT_ONRAMP
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - CEX: Trade -0.0007035 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - CEX: Trade -0.0007035 BTC @ 2025-03-06 14:47:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Trade -0.0007035 BTC
+  -> NO MATCH (returning None)
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - CEX: Deposit 0.00088 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - CEX: Deposit 0.00088 BTC @ 2025-03-04 13:49:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Deposit 0.00088 BTC
+CASE B: CEX Deposit detected
+  Checked 0 candidates, no match found
+  -> MATCHED: FIAT_ONRAMP
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - CEX: Trade -0.00085221 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - CEX: Trade -0.00085221 BTC @ 2025-02-26 15:45:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Trade -0.00085221 BTC
+  -> NO MATCH (returning None)
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - CEX: Deposit 0.0008 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - CEX: Deposit 0.0008 BTC @ 2025-02-26 15:34:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Deposit 0.0008 BTC
+CASE B: CEX Deposit detected
+  Checked 0 candidates, no match found
+  -> MATCHED: FIAT_ONRAMP
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - CEX: Trade -0.00050235 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - CEX: Trade -0.00050235 BTC @ 2025-02-18 20:14:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Trade -0.00050235 BTC
+  -> NO MATCH (returning None)
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - CEX: Deposit 0.0003 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - CEX: Deposit 0.0003 BTC @ 2025-02-18 20:01:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Deposit 0.0003 BTC
+CASE B: CEX Deposit detected
+  Checked 0 candidates, no match found
+  -> MATCHED: FIAT_ONRAMP
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - CEX: Withdrawal -350000.0 DOG | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - CEX: Withdrawal -350000.0 DOG @ 2025-02-17 16:03:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -350000.0 DOG
+  -> NO MATCH (returning None)
+
+=== detect_patterns CALLED ===
+tx_group has 2 transactions:
+  - CEX: Mint -0.00013448 BTC | metadata=None | witness_len=0
+  - BLOCKCHAIN: Withdrawal -0.00015108 BTC | metadata={'asset_type': 'BTC'} | witness_len=2
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 2 transactions
+  - CEX: Mint -0.00013448 BTC @ 2025-01-21 20:15:00+00:00
+  - BLOCKCHAIN: Withdrawal -0.00015108 BTC @ 2025-01-21 20:15:24+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> MATCHED: GAS_FEE
+
+=== detect_patterns CALLED ===
+tx_group has 2 transactions:
+  - CEX: Mint -0.00014424 BTC | metadata=None | witness_len=0
+  - BLOCKCHAIN: Withdrawal -0.00016416 BTC | metadata={'asset_type': 'BTC'} | witness_len=2
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 2 transactions
+  - CEX: Mint -0.00014424 BTC @ 2025-01-20 23:43:00+00:00
+  - BLOCKCHAIN: Withdrawal -0.00016416 BTC @ 2025-01-20 23:43:10+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> MATCHED: GAS_FEE
+
+=== detect_patterns CALLED ===
+tx_group has 2 transactions:
+  - CEX: Withdrawal -6.612e-05 BTC | metadata=None | witness_len=0
+  - BLOCKCHAIN: Withdrawal -7.94e-05 BTC | metadata={'asset_type': 'BTC'} | witness_len=2
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 2 transactions
+  - CEX: Withdrawal -6.612e-05 BTC @ 2025-01-20 17:15:00+00:00
+  - BLOCKCHAIN: Withdrawal -7.94e-05 BTC @ 2025-01-20 17:15:03+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> MATCHED: GAS_FEE
+
+=== detect_patterns CALLED ===
+tx_group has 2 transactions:
+  - CEX: Mint -6.675e-05 BTC | metadata=None | witness_len=0
+  - BLOCKCHAIN: Withdrawal -7.555e-05 BTC | metadata={'asset_type': 'BTC'} | witness_len=2
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 2 transactions
+  - CEX: Mint -6.675e-05 BTC @ 2025-01-12 06:44:00+00:00
+  - BLOCKCHAIN: Withdrawal -7.555e-05 BTC @ 2025-01-12 06:44:29+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> MATCHED: GAS_FEE
+
+=== detect_patterns CALLED ===
+tx_group has 2 transactions:
+  - CEX: Trade -0.00459909 BTC | metadata=None | witness_len=0
+  - BLOCKCHAIN: Withdrawal -0.00460173 BTC | metadata={'asset_type': 'BTC'} | witness_len=2
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 2 transactions
+  - CEX: Trade -0.00459909 BTC @ 2025-01-12 06:17:00+00:00
+  - BLOCKCHAIN: Withdrawal -0.00460173 BTC @ 2025-01-12 06:17:42+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> NO MATCH (returning None)
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - CEX: Transfer -0.00520643 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - CEX: Transfer -0.00520643 BTC @ 2025-01-12 06:00:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Transfer -0.00520643 BTC
+  -> NO MATCH (returning None)
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - CEX: Deposit 9.583e-05 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - CEX: Deposit 9.583e-05 BTC @ 2025-01-02 03:50:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Deposit 9.583e-05 BTC
+CASE B: CEX Deposit detected
+  Checked 0 candidates, no match found
+  -> MATCHED: FIAT_ONRAMP
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - BLOCKCHAIN: Withdrawal -0.00023368 BTC | metadata={'asset_type': 'BTC'} | witness_len=6
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - BLOCKCHAIN: Withdrawal -0.00023368 BTC @ 2025-02-01 03:18:30+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> MATCHED: GAS_FEE
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - BLOCKCHAIN: Deposit 0.000125 BTC | metadata={'asset_type': 'BTC'} | witness_len=24
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - BLOCKCHAIN: Deposit 0.000125 BTC @ 2025-01-31 00:50:21+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> MATCHED: SALE
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - BLOCKCHAIN: Withdrawal -0.00059705 BTC | metadata={'asset_type': 'BTC'} | witness_len=2
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - BLOCKCHAIN: Withdrawal -0.00059705 BTC @ 2025-01-30 19:12:10+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> NO MATCH (returning None)
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - BLOCKCHAIN: Withdrawal -0.0015364 BTC | metadata={'asset_type': 'BTC'} | witness_len=2
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - BLOCKCHAIN: Withdrawal -0.0015364 BTC @ 2025-01-30 18:22:42+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> NO MATCH (returning None)
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - BLOCKCHAIN: Withdrawal -0.00060984 BTC | metadata={'asset_type': 'BTC'} | witness_len=2
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - BLOCKCHAIN: Withdrawal -0.00060984 BTC @ 2025-01-28 04:41:39+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> NO MATCH (returning None)
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - BLOCKCHAIN: Withdrawal -0.00118359 BTC | metadata={'asset_type': 'BTC'} | witness_len=2
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - BLOCKCHAIN: Withdrawal -0.00118359 BTC @ 2025-01-28 03:47:16+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> NO MATCH (returning None)
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - BLOCKCHAIN: Withdrawal -0.00020729 BTC | metadata={'asset_type': 'BTC'} | witness_len=2
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - BLOCKCHAIN: Withdrawal -0.00020729 BTC @ 2025-01-28 00:37:04+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> MATCHED: GAS_FEE
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - BLOCKCHAIN: Withdrawal -0.0009522 BTC | metadata={'asset_type': 'BTC'} | witness_len=7
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - BLOCKCHAIN: Withdrawal -0.0009522 BTC @ 2025-01-27 20:30:32+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> MATCHED: POTENTIAL_MARKETPLACE_SWAP
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - BLOCKCHAIN: Withdrawal -0.00188701 BTC | metadata={'asset_type': 'BTC'} | witness_len=2
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - BLOCKCHAIN: Withdrawal -0.00188701 BTC @ 2025-01-27 20:30:32+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> NO MATCH (returning None)
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - BLOCKCHAIN: Deposit 0.00701688 BTC | metadata={'asset_type': 'RUNE', 'runes': [{'name': 'RUNE_f13e8aa1', 'amount': 'Unknown', 'divisibility': 0}], 'rune_name': 'RUNE_f13e8aa1', 'rune_amount': 0, 'rune_divisibility': 0} | witness_len=2
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - BLOCKCHAIN: Deposit 0.00701688 BTC @ 2025-01-27 16:42:25+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> MATCHED: RUNE_RECEIVE
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - BLOCKCHAIN: Withdrawal -9.08e-06 BTC | metadata={'asset_type': 'BTC'} | witness_len=2
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - BLOCKCHAIN: Withdrawal -9.08e-06 BTC @ 2025-01-12 06:14:23+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> MATCHED: GAS_FEE
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - BLOCKCHAIN: Deposit 0.0052 BTC | metadata={'asset_type': 'BTC'} | witness_len=2
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - BLOCKCHAIN: Deposit 0.0052 BTC @ 2025-01-12 06:04:18+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> MATCHED: SALE
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - CEX: Withdrawal -2.13e-05 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - CEX: Withdrawal -2.13e-05 BTC @ 2026-01-06 05:19:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -2.13e-05 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: GAS_FEE
+
+=== detect_patterns CALLED ===
+tx_group has 2 transactions:
+  - CEX: Withdrawal -0.00023608 BTC | metadata=None | witness_len=0
+  - CEX: Deposit 1.092e-05 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 2 transactions
+  - CEX: Withdrawal -0.00023608 BTC @ 2026-01-05 07:03:00+00:00
+  - CEX: Deposit 1.092e-05 BTC @ 2026-01-05 07:03:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -0.00023608 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: FIAT_ONRAMP
+
+=== detect_patterns CALLED ===
+tx_group has 2 transactions:
+  - CEX: Withdrawal -8.571e-05 BTC | metadata=None | witness_len=0
+  - CEX: Deposit 5.46e-06 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 2 transactions
+  - CEX: Withdrawal -8.571e-05 BTC @ 2025-12-01 06:09:00+00:00
+  - CEX: Deposit 5.46e-06 BTC @ 2025-12-01 06:09:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -8.571e-05 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: MINT_BUY
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - CEX: Withdrawal -1.171e-05 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - CEX: Withdrawal -1.171e-05 BTC @ 2025-12-01 21:19:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -1.171e-05 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: GAS_FEE
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - CEX: Deposit 0.00052 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - CEX: Deposit 0.00052 BTC @ 2025-11-28 03:25:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Deposit 0.00052 BTC
+CASE B: CEX Deposit detected
+  Checked 0 candidates, no match found
+  -> MATCHED: FIAT_ONRAMP
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - CEX: Withdrawal -1.082e-05 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - CEX: Withdrawal -1.082e-05 BTC @ 2025-11-19 02:05:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -1.082e-05 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: GAS_FEE
+
+=== detect_patterns CALLED ===
+tx_group has 2 transactions:
+  - CEX: Withdrawal -0.0001206 BTC | metadata=None | witness_len=0
+  - CEX: Deposit 5.46e-06 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 2 transactions
+  - CEX: Withdrawal -0.0001206 BTC @ 2025-11-18 22:49:00+00:00
+  - CEX: Deposit 5.46e-06 BTC @ 2025-11-18 22:49:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -0.0001206 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: MINT_BUY
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - CEX: Deposit 0.0003 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - CEX: Deposit 0.0003 BTC @ 2025-11-16 03:46:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Deposit 0.0003 BTC
+CASE B: CEX Deposit detected
+  Checked 0 candidates, no match found
+  -> MATCHED: FIAT_ONRAMP
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - CEX: Withdrawal -9.42e-06 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - CEX: Withdrawal -9.42e-06 BTC @ 2025-11-11 03:09:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -9.42e-06 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: GAS_FEE
+
+=== detect_patterns CALLED ===
+tx_group has 2 transactions:
+  - CEX: Withdrawal -0.00016482 BTC | metadata=None | witness_len=0
+  - CEX: Deposit 5.46e-06 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 2 transactions
+  - CEX: Withdrawal -0.00016482 BTC @ 2025-11-08 02:02:00+00:00
+  - CEX: Deposit 5.46e-06 BTC @ 2025-11-08 02:02:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -0.00016482 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: MINT_BUY
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - CEX: Deposit 3.3e-06 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - CEX: Deposit 3.3e-06 BTC @ 2025-11-07 09:11:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Deposit 3.3e-06 BTC
+CASE B: CEX Deposit detected
+  Checked 0 candidates, no match found
+  -> MATCHED: FIAT_ONRAMP
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - CEX: Deposit 0.00021 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - CEX: Deposit 0.00021 BTC @ 2025-10-27 04:50:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Deposit 0.00021 BTC
+CASE B: CEX Deposit detected
+  Checked 0 candidates, no match found
+  -> MATCHED: FIAT_ONRAMP
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - CEX: Withdrawal -1.762e-05 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - CEX: Withdrawal -1.762e-05 BTC @ 2025-09-30 18:46:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -1.762e-05 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: GAS_FEE
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - CEX: Withdrawal -8.8e-06 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - CEX: Withdrawal -8.8e-06 BTC @ 2025-09-30 18:37:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -8.8e-06 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: GAS_FEE
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - CEX: Withdrawal -0.00015552 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - CEX: Withdrawal -0.00015552 BTC @ 2025-09-17 21:24:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -0.00015552 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: GAS_FEE
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - CEX: Deposit 0.00021 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - CEX: Deposit 0.00021 BTC @ 2025-09-17 19:42:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Deposit 0.00021 BTC
+CASE B: CEX Deposit detected
+  Checked 0 candidates, no match found
+  -> MATCHED: FIAT_ONRAMP
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - CEX: Deposit 5.46e-06 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - CEX: Deposit 5.46e-06 BTC @ 2025-09-01 10:56:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Deposit 5.46e-06 BTC
+CASE B: CEX Deposit detected
+  Checked 0 candidates, no match found
+  -> MATCHED: FIAT_ONRAMP
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - CEX: Withdrawal -0.00016416 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - CEX: Withdrawal -0.00016416 BTC @ 2025-08-26 03:15:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -0.00016416 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: GAS_FEE
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - CEX: Deposit 3.3e-06 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - CEX: Deposit 3.3e-06 BTC @ 2025-08-25 16:39:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Deposit 3.3e-06 BTC
+CASE B: CEX Deposit detected
+  Checked 0 candidates, no match found
+  -> MATCHED: FIAT_ONRAMP
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - CEX: Withdrawal -0.0001397 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - CEX: Withdrawal -0.0001397 BTC @ 2025-08-25 13:45:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -0.0001397 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: GAS_FEE
+
+=== detect_patterns CALLED ===
+tx_group has 2 transactions:
+  - CEX: Withdrawal -0.00010995 BTC | metadata=None | witness_len=0
+  - CEX: Deposit 3.3e-06 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 2 transactions
+  - CEX: Withdrawal -0.00010995 BTC @ 2025-08-22 13:43:00+00:00
+  - CEX: Deposit 3.3e-06 BTC @ 2025-08-22 13:43:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -0.00010995 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: MINT_BUY
+
+=== detect_patterns CALLED ===
+tx_group has 2 transactions:
+  - CEX: Withdrawal -0.00012955 BTC | metadata=None | witness_len=0
+  - CEX: Deposit 3.3e-06 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 2 transactions
+  - CEX: Withdrawal -0.00012955 BTC @ 2025-08-20 23:59:00+00:00
+  - CEX: Deposit 3.3e-06 BTC @ 2025-08-20 23:59:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -0.00012955 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: MINT_BUY
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - CEX: Deposit 7.89e-06 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - CEX: Deposit 7.89e-06 BTC @ 2025-08-20 05:01:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Deposit 7.89e-06 BTC
+CASE B: CEX Deposit detected
+  Checked 0 candidates, no match found
+  -> MATCHED: FIAT_ONRAMP
+
+=== detect_patterns CALLED ===
+tx_group has 2 transactions:
+  - CEX: Withdrawal -0.00016398 BTC | metadata=None | witness_len=0
+  - CEX: Deposit 3.3e-06 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 2 transactions
+  - CEX: Withdrawal -0.00016398 BTC @ 2025-08-20 04:03:00+00:00
+  - CEX: Deposit 3.3e-06 BTC @ 2025-08-20 04:03:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -0.00016398 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: MINT_BUY
+
+=== detect_patterns CALLED ===
+tx_group has 2 transactions:
+  - CEX: Withdrawal -0.00032 BTC | metadata=None | witness_len=0
+  - CEX: Deposit 5.46e-06 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 2 transactions
+  - CEX: Withdrawal -0.00032 BTC @ 2025-08-20 00:15:00+00:00
+  - CEX: Deposit 5.46e-06 BTC @ 2025-08-20 00:15:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -0.00032 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: MINT_BUY
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - CEX: Deposit 0.00046 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - CEX: Deposit 0.00046 BTC @ 2025-08-19 16:29:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Deposit 0.00046 BTC
+CASE B: CEX Deposit detected
+  Checked 0 candidates, no match found
+  -> MATCHED: FIAT_ONRAMP
+
+=== detect_patterns CALLED ===
+tx_group has 2 transactions:
+  - CEX: Withdrawal -0.00044793 BTC | metadata=None | witness_len=0
+  - CEX: Deposit 1.092e-05 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 2 transactions
+  - CEX: Withdrawal -0.00044793 BTC @ 2025-08-19 12:20:00+00:00
+  - CEX: Deposit 1.092e-05 BTC @ 2025-08-19 12:20:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -0.00044793 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: FIAT_ONRAMP
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - CEX: Deposit 0.00096391 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - CEX: Deposit 0.00096391 BTC @ 2025-08-18 17:01:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Deposit 0.00096391 BTC
+CASE B: CEX Deposit detected
+  Checked 0 candidates, no match found
+  -> MATCHED: FIAT_ONRAMP
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - CEX: Transfer -6.034e-05 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - CEX: Transfer -6.034e-05 BTC @ 2025-08-18 14:34:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Transfer -6.034e-05 BTC
+  -> NO MATCH (returning None)
+
+=== detect_patterns CALLED ===
+tx_group has 2 transactions:
+  - CEX: Withdrawal -0.00010684 BTC | metadata=None | witness_len=0
+  - CEX: Deposit 3.3e-06 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 2 transactions
+  - CEX: Withdrawal -0.00010684 BTC @ 2025-08-18 13:05:00+00:00
+  - CEX: Deposit 3.3e-06 BTC @ 2025-08-18 13:05:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -0.00010684 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: MINT_BUY
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - CEX: Transfer -0.00013047 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - CEX: Transfer -0.00013047 BTC @ 2025-08-18 12:09:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Transfer -0.00013047 BTC
+  -> NO MATCH (returning None)
+
+=== detect_patterns CALLED ===
+tx_group has 2 transactions:
+  - CEX: Withdrawal -7.22e-06 BTC | metadata=None | witness_len=0
+  - CEX: Deposit 3.3e-06 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 2 transactions
+  - CEX: Withdrawal -7.22e-06 BTC @ 2025-08-14 01:12:00+00:00
+  - CEX: Deposit 3.3e-06 BTC @ 2025-08-14 01:12:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -7.22e-06 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: MINT_BUY
+
+=== detect_patterns CALLED ===
+tx_group has 2 transactions:
+  - CEX: Withdrawal -7.22e-06 BTC | metadata=None | witness_len=0
+  - CEX: Deposit 3.3e-06 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 2 transactions
+  - CEX: Withdrawal -7.22e-06 BTC @ 2025-08-14 01:07:00+00:00
+  - CEX: Deposit 3.3e-06 BTC @ 2025-08-14 01:07:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -7.22e-06 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: MINT_BUY
+
+=== detect_patterns CALLED ===
+tx_group has 2 transactions:
+  - CEX: Withdrawal -7.334e-05 BTC | metadata=None | witness_len=0
+  - CEX: Deposit 3.3e-06 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 2 transactions
+  - CEX: Withdrawal -7.334e-05 BTC @ 2025-08-11 15:46:00+00:00
+  - CEX: Deposit 3.3e-06 BTC @ 2025-08-11 15:46:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -7.334e-05 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: MINT_BUY
+
+=== detect_patterns CALLED ===
+tx_group has 2 transactions:
+  - CEX: Withdrawal -7.334e-05 BTC | metadata=None | witness_len=0
+  - CEX: Deposit 3.3e-06 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 2 transactions
+  - CEX: Withdrawal -7.334e-05 BTC @ 2025-08-11 15:40:00+00:00
+  - CEX: Deposit 3.3e-06 BTC @ 2025-08-11 15:40:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -7.334e-05 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: MINT_BUY
+
+=== detect_patterns CALLED ===
+tx_group has 2 transactions:
+  - CEX: Withdrawal -6.194e-05 BTC | metadata=None | witness_len=0
+  - CEX: Deposit 3.3e-06 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 2 transactions
+  - CEX: Withdrawal -6.194e-05 BTC @ 2025-08-05 02:04:00+00:00
+  - CEX: Deposit 3.3e-06 BTC @ 2025-08-05 02:04:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -6.194e-05 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: MINT_BUY
+
+=== detect_patterns CALLED ===
+tx_group has 2 transactions:
+  - CEX: Withdrawal -6.194e-05 BTC | metadata=None | witness_len=0
+  - CEX: Deposit 3.3e-06 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 2 transactions
+  - CEX: Withdrawal -6.194e-05 BTC @ 2025-08-05 00:58:00+00:00
+  - CEX: Deposit 3.3e-06 BTC @ 2025-08-05 00:58:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -6.194e-05 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: MINT_BUY
+
+=== detect_patterns CALLED ===
+tx_group has 2 transactions:
+  - CEX: Withdrawal -6.479e-05 BTC | metadata=None | witness_len=0
+  - CEX: Deposit 3.3e-06 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 2 transactions
+  - CEX: Withdrawal -6.479e-05 BTC @ 2025-08-04 22:19:00+00:00
+  - CEX: Deposit 3.3e-06 BTC @ 2025-08-04 22:19:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -6.479e-05 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: MINT_BUY
+
+=== detect_patterns CALLED ===
+tx_group has 2 transactions:
+  - CEX: Withdrawal -1.188e-05 BTC | metadata=None | witness_len=0
+  - CEX: Withdrawal -9.3e-06 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 2 transactions
+  - CEX: Withdrawal -1.188e-05 BTC @ 2025-06-27 23:16:00+00:00
+  - CEX: Withdrawal -9.3e-06 BTC @ 2025-06-27 23:16:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -1.188e-05 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: GAS_FEE
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - CEX: Transfer -0.00040994 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - CEX: Transfer -0.00040994 BTC @ 2025-06-27 20:50:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Transfer -0.00040994 BTC
+  -> NO MATCH (returning None)
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - CEX: Withdrawal -0.00555733 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - CEX: Withdrawal -0.00555733 BTC @ 2025-06-17 12:56:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -0.00555733 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> NO MATCH (returning None)
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - CEX: Deposit 0.00409935 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - CEX: Deposit 0.00409935 BTC @ 2025-06-17 11:19:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Deposit 0.00409935 BTC
+CASE B: CEX Deposit detected
+  Checked 0 candidates, no match found
+  -> MATCHED: FIAT_ONRAMP
+
+=== detect_patterns CALLED ===
+tx_group has 2 transactions:
+  - CEX: Withdrawal -3.759e-05 BTC | metadata=None | witness_len=0
+  - CEX: Deposit 5.4e-07 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 2 transactions
+  - CEX: Withdrawal -3.759e-05 BTC @ 2025-06-17 11:11:00+00:00
+  - CEX: Deposit 5.4e-07 BTC @ 2025-06-17 11:11:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -3.759e-05 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: MINT_BUY
+
+=== detect_patterns CALLED ===
+tx_group has 2 transactions:
+  - CEX: Withdrawal -2.16e-06 BTC | metadata=None | witness_len=0
+  - CEX: Deposit 0.00032452 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 2 transactions
+  - CEX: Withdrawal -2.16e-06 BTC @ 2025-06-17 10:30:00+00:00
+  - CEX: Deposit 0.00032452 BTC @ 2025-06-17 10:30:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -2.16e-06 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: FIAT_ONRAMP
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - CEX: Deposit 0.00104 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - CEX: Deposit 0.00104 BTC @ 2025-06-16 15:43:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Deposit 0.00104 BTC
+CASE B: CEX Deposit detected
+  Checked 0 candidates, no match found
+  -> MATCHED: FIAT_ONRAMP
+
+=== detect_patterns CALLED ===
+tx_group has 2 transactions:
+  - CEX: Withdrawal -0.00015638 BTC | metadata=None | witness_len=0
+  - CEX: Deposit 1e-05 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 2 transactions
+  - CEX: Withdrawal -0.00015638 BTC @ 2025-06-11 20:00:00+00:00
+  - CEX: Deposit 1e-05 BTC @ 2025-06-11 20:00:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -0.00015638 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: MINT_BUY
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - CEX: Deposit 1e-05 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - CEX: Deposit 1e-05 BTC @ 2025-06-11 19:25:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Deposit 1e-05 BTC
+CASE B: CEX Deposit detected
+  Checked 0 candidates, no match found
+  -> MATCHED: FIAT_ONRAMP
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - CEX: Withdrawal -0.00019764 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - CEX: Withdrawal -0.00019764 BTC @ 2025-06-11 19:18:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -0.00019764 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: GAS_FEE
+
+=== detect_patterns CALLED ===
+tx_group has 2 transactions:
+  - CEX: Withdrawal -0.00040851 BTC | metadata=None | witness_len=0
+  - CEX: Deposit 1e-05 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 2 transactions
+  - CEX: Withdrawal -0.00040851 BTC @ 2025-06-11 17:24:00+00:00
+  - CEX: Deposit 1e-05 BTC @ 2025-06-11 17:24:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -0.00040851 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: MINT_BUY
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - CEX: Deposit 0.0008 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - CEX: Deposit 0.0008 BTC @ 2025-06-11 05:10:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Deposit 0.0008 BTC
+CASE B: CEX Deposit detected
+  Checked 0 candidates, no match found
+  -> MATCHED: FIAT_ONRAMP
+
+=== detect_patterns CALLED ===
+tx_group has 2 transactions:
+  - CEX: Withdrawal -0.00019986 BTC | metadata=None | witness_len=0
+  - CEX: Deposit 3.3e-06 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 2 transactions
+  - CEX: Withdrawal -0.00019986 BTC @ 2025-05-30 02:33:00+00:00
+  - CEX: Deposit 3.3e-06 BTC @ 2025-05-30 02:33:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -0.00019986 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: MINT_BUY
+
+=== detect_patterns CALLED ===
+tx_group has 2 transactions:
+  - CEX: Withdrawal -6.64e-06 BTC | metadata=None | witness_len=0
+  - CEX: Deposit 5.46e-06 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 2 transactions
+  - CEX: Withdrawal -6.64e-06 BTC @ 2025-05-28 12:58:00+00:00
+  - CEX: Deposit 5.46e-06 BTC @ 2025-05-28 12:58:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -6.64e-06 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: MINT_BUY
+
+=== detect_patterns CALLED ===
+tx_group has 2 transactions:
+  - CEX: Withdrawal -0.00067612 BTC | metadata=None | witness_len=0
+  - CEX: Deposit 1.838e-05 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 2 transactions
+  - CEX: Withdrawal -0.00067612 BTC @ 2025-05-27 04:59:00+00:00
+  - CEX: Deposit 1.838e-05 BTC @ 2025-05-27 04:59:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -0.00067612 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: FIAT_ONRAMP
+
+=== detect_patterns CALLED ===
+tx_group has 3 transactions:
+  - CEX: Withdrawal -2.399e-05 BTC | metadata=None | witness_len=0
+  - CEX: Deposit 0.00085257 BTC | metadata=None | witness_len=0
+  - CEX: Deposit 3.3e-06 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 3 transactions
+  - CEX: Withdrawal -2.399e-05 BTC @ 2025-05-27 03:30:00+00:00
+  - CEX: Deposit 0.00085257 BTC @ 2025-05-27 03:30:00+00:00
+  - CEX: Deposit 3.3e-06 BTC @ 2025-05-27 03:30:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -2.399e-05 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: FIAT_ONRAMP
+
+=== detect_patterns CALLED ===
+tx_group has 2 transactions:
+  - CEX: Withdrawal -0.00050834 BTC | metadata=None | witness_len=0
+  - CEX: Deposit 1.092e-05 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 2 transactions
+  - CEX: Withdrawal -0.00050834 BTC @ 2025-05-20 20:13:00+00:00
+  - CEX: Deposit 1.092e-05 BTC @ 2025-05-20 20:13:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -0.00050834 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: FIAT_ONRAMP
+
+=== detect_patterns CALLED ===
+tx_group has 2 transactions:
+  - CEX: Withdrawal -0.0001407 BTC | metadata=None | witness_len=0
+  - CEX: Deposit 5.46e-06 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 2 transactions
+  - CEX: Withdrawal -0.0001407 BTC @ 2025-05-14 11:13:00+00:00
+  - CEX: Deposit 5.46e-06 BTC @ 2025-05-14 11:13:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -0.0001407 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: MINT_BUY
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - CEX: Deposit 5.46e-06 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - CEX: Deposit 5.46e-06 BTC @ 2025-05-12 15:49:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Deposit 5.46e-06 BTC
+CASE B: CEX Deposit detected
+  Checked 0 candidates, no match found
+  -> MATCHED: FIAT_ONRAMP
+
+=== detect_patterns CALLED ===
+tx_group has 2 transactions:
+  - CEX: Withdrawal -0.00092166 BTC | metadata=None | witness_len=0
+  - CEX: Deposit 5.46e-06 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 2 transactions
+  - CEX: Withdrawal -0.00092166 BTC @ 2025-05-12 15:40:00+00:00
+  - CEX: Deposit 5.46e-06 BTC @ 2025-05-12 15:40:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -0.00092166 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: MINT_BUY
+
+=== detect_patterns CALLED ===
+tx_group has 2 transactions:
+  - CEX: Transfer -0.00155831 BTC | metadata=None | witness_len=0
+  - BLOCKCHAIN: Withdrawal -0.00156363 BTC | metadata={'asset_type': 'BTC'} | witness_len=2
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 2 transactions
+  - CEX: Transfer -0.00155831 BTC @ 2025-05-07 20:07:00+00:00
+  - BLOCKCHAIN: Withdrawal -0.00156363 BTC @ 2025-05-07 20:07:20+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> NO MATCH (returning None)
+
+=== detect_patterns CALLED ===
+tx_group has 3 transactions:
+  - CEX: Withdrawal -5.46e-06 BTC | metadata=None | witness_len=0
+  - CEX: Deposit 0.00156363 BTC | metadata=None | witness_len=0
+  - BLOCKCHAIN: Deposit 0.00156363 BTC | metadata={'asset_type': 'BTC'} | witness_len=2
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 3 transactions
+  - CEX: Withdrawal -5.46e-06 BTC @ 2025-05-06 02:53:00+00:00
+  - CEX: Deposit 0.00156363 BTC @ 2025-05-06 02:53:00+00:00
+  - BLOCKCHAIN: Deposit 0.00156363 BTC @ 2025-05-06 02:53:24+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> NO MATCH (returning None)
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - CEX: Deposit 5.46e-06 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - CEX: Deposit 5.46e-06 BTC @ 2025-05-06 19:14:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Deposit 5.46e-06 BTC
+CASE B: CEX Deposit detected
+  Checked 0 candidates, no match found
+  -> MATCHED: FIAT_ONRAMP
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - CEX: Deposit 5.46e-06 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - CEX: Deposit 5.46e-06 BTC @ 2025-04-09 19:14:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Deposit 5.46e-06 BTC
+CASE B: CEX Deposit detected
+  Checked 0 candidates, no match found
+  -> MATCHED: FIAT_ONRAMP
+
+=== detect_patterns CALLED ===
+tx_group has 2 transactions:
+  - CEX: Withdrawal -0.00422125 BTC | metadata=None | witness_len=0
+  - CEX: Deposit 5.46e-06 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 2 transactions
+  - CEX: Withdrawal -0.00422125 BTC @ 2025-04-09 16:00:00+00:00
+  - CEX: Deposit 5.46e-06 BTC @ 2025-04-09 16:00:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -0.00422125 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: MINT_BUY
+
+=== detect_patterns CALLED ===
+tx_group has 3 transactions:
+  - CEX: Transfer -0.00417675 BTC | metadata=None | witness_len=0
+  - CEX: Transfer -0.00417875 BTC | metadata=None | witness_len=0
+  - BLOCKCHAIN: Withdrawal -0.0042135 BTC | metadata={'asset_type': 'BTC'} | witness_len=26
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 3 transactions
+  - CEX: Transfer -0.00417675 BTC @ 2025-04-07 22:23:00+00:00
+  - CEX: Transfer -0.00417875 BTC @ 2025-04-07 22:23:00+00:00
+  - BLOCKCHAIN: Withdrawal -0.0042135 BTC @ 2025-04-07 22:23:44+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> MATCHED: POTENTIAL_MARKETPLACE_SWAP
+
+=== detect_patterns CALLED ===
+tx_group has 2 transactions:
+  - CEX: Deposit 0.00411 BTC | metadata=None | witness_len=0
+  - BLOCKCHAIN: Deposit 0.00411 BTC | metadata={'asset_type': 'BTC'} | witness_len=2
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 2 transactions
+  - CEX: Deposit 0.00411 BTC @ 2025-04-07 17:44:00+00:00
+  - BLOCKCHAIN: Deposit 0.00411 BTC @ 2025-04-07 17:44:41+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> MATCHED: SALE
+
+=== detect_patterns CALLED ===
+tx_group has 2 transactions:
+  - CEX: Withdrawal -2.765e-05 BTC | metadata=None | witness_len=0
+  - CEX: Deposit 3.3e-06 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 2 transactions
+  - CEX: Withdrawal -2.765e-05 BTC @ 2025-03-31 18:17:00+00:00
+  - CEX: Deposit 3.3e-06 BTC @ 2025-03-31 18:17:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -2.765e-05 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: MINT_BUY
+
+=== detect_patterns CALLED ===
+tx_group has 2 transactions:
+  - CEX: Withdrawal -2.765e-05 BTC | metadata=None | witness_len=0
+  - CEX: Deposit 3.3e-06 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 2 transactions
+  - CEX: Withdrawal -2.765e-05 BTC @ 2025-03-31 20:17:00+00:00
+  - CEX: Deposit 3.3e-06 BTC @ 2025-03-31 20:17:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -2.765e-05 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: MINT_BUY
+
+=== detect_patterns CALLED ===
+tx_group has 3 transactions:
+  - CEX: Withdrawal -0.000332 BTC | metadata=None | witness_len=0
+  - CEX: Deposit 5.46e-06 BTC | metadata=None | witness_len=0
+  - CEX: Withdrawal -0.00033165 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 3 transactions
+  - CEX: Withdrawal -0.000332 BTC @ 2025-03-28 14:50:00+00:00
+  - CEX: Deposit 5.46e-06 BTC @ 2025-03-28 14:50:00+00:00
+  - CEX: Withdrawal -0.00033165 BTC @ 2025-03-28 14:50:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -0.000332 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: MINT_BUY
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - CEX: Withdrawal -0.00034257 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - CEX: Withdrawal -0.00034257 BTC @ 2025-03-25 13:25:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -0.00034257 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: GAS_FEE
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - CEX: Withdrawal -0.00114 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - CEX: Withdrawal -0.00114 BTC @ 2025-03-25 03:09:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -0.00114 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> NO MATCH (returning None)
+
+=== detect_patterns CALLED ===
+tx_group has 2 transactions:
+  - CEX: Withdrawal -0.00033722 BTC | metadata=None | witness_len=0
+  - CEX: Deposit 5.46e-06 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 2 transactions
+  - CEX: Withdrawal -0.00033722 BTC @ 2025-03-24 05:31:00+00:00
+  - CEX: Deposit 5.46e-06 BTC @ 2025-03-24 05:31:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -0.00033722 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: MINT_BUY
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - CEX: Withdrawal -0.00148197 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - CEX: Withdrawal -0.00148197 BTC @ 2025-03-22 05:01:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -0.00148197 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> NO MATCH (returning None)
+
+=== detect_patterns CALLED ===
+tx_group has 2 transactions:
+  - CEX: Withdrawal -0.00044358 BTC | metadata=None | witness_len=0
+  - CEX: Deposit 5.46e-06 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 2 transactions
+  - CEX: Withdrawal -0.00044358 BTC @ 2025-03-20 20:24:00+00:00
+  - CEX: Deposit 5.46e-06 BTC @ 2025-03-20 20:24:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -0.00044358 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: MINT_BUY
+
+=== detect_patterns CALLED ===
+tx_group has 3 transactions:
+  - CEX: Withdrawal -5.46e-06 BTC | metadata=None | witness_len=0
+  - CEX: Deposit 0.00219446 BTC | metadata=None | witness_len=0
+  - CEX: Deposit 0.00209496 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 3 transactions
+  - CEX: Withdrawal -5.46e-06 BTC @ 2025-03-20 19:49:00+00:00
+  - CEX: Deposit 0.00219446 BTC @ 2025-03-20 19:49:00+00:00
+  - CEX: Deposit 0.00209496 BTC @ 2025-03-20 19:49:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -5.46e-06 BTC
+CASE A: CEX Withdrawal detected
+  Found 0 candidates within 1 hour
+  -> MATCHED: FIAT_ONRAMP
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - CEX: Trade -0.0007035 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - CEX: Trade -0.0007035 BTC @ 2025-03-06 14:47:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Trade -0.0007035 BTC
+  -> NO MATCH (returning None)
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - CEX: Deposit 0.00088 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - CEX: Deposit 0.00088 BTC @ 2025-03-04 13:49:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Deposit 0.00088 BTC
+CASE B: CEX Deposit detected
+  Checked 0 candidates, no match found
+  -> MATCHED: FIAT_ONRAMP
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - CEX: Trade -0.00085221 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - CEX: Trade -0.00085221 BTC @ 2025-02-26 15:45:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Trade -0.00085221 BTC
+  -> NO MATCH (returning None)
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - CEX: Deposit 0.0008 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - CEX: Deposit 0.0008 BTC @ 2025-02-26 15:34:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Deposit 0.0008 BTC
+CASE B: CEX Deposit detected
+  Checked 0 candidates, no match found
+  -> MATCHED: FIAT_ONRAMP
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - CEX: Trade -0.00050235 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - CEX: Trade -0.00050235 BTC @ 2025-02-18 20:14:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Trade -0.00050235 BTC
+  -> NO MATCH (returning None)
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - CEX: Deposit 0.0003 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - CEX: Deposit 0.0003 BTC @ 2025-02-18 20:01:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Deposit 0.0003 BTC
+CASE B: CEX Deposit detected
+  Checked 0 candidates, no match found
+  -> MATCHED: FIAT_ONRAMP
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - CEX: Withdrawal -350000.0 DOG | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - CEX: Withdrawal -350000.0 DOG @ 2025-02-17 16:03:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Withdrawal -350000.0 DOG
+  -> NO MATCH (returning None)
+
+=== detect_patterns CALLED ===
+tx_group has 2 transactions:
+  - CEX: Mint -0.00013448 BTC | metadata=None | witness_len=0
+  - BLOCKCHAIN: Withdrawal -0.00015108 BTC | metadata={'asset_type': 'BTC'} | witness_len=2
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 2 transactions
+  - CEX: Mint -0.00013448 BTC @ 2025-01-21 20:15:00+00:00
+  - BLOCKCHAIN: Withdrawal -0.00015108 BTC @ 2025-01-21 20:15:24+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> MATCHED: GAS_FEE
+
+=== detect_patterns CALLED ===
+tx_group has 2 transactions:
+  - CEX: Mint -0.00014424 BTC | metadata=None | witness_len=0
+  - BLOCKCHAIN: Withdrawal -0.00016416 BTC | metadata={'asset_type': 'BTC'} | witness_len=2
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 2 transactions
+  - CEX: Mint -0.00014424 BTC @ 2025-01-20 23:43:00+00:00
+  - BLOCKCHAIN: Withdrawal -0.00016416 BTC @ 2025-01-20 23:43:10+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> MATCHED: GAS_FEE
+
+=== detect_patterns CALLED ===
+tx_group has 2 transactions:
+  - CEX: Withdrawal -6.612e-05 BTC | metadata=None | witness_len=0
+  - BLOCKCHAIN: Withdrawal -7.94e-05 BTC | metadata={'asset_type': 'BTC'} | witness_len=2
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 2 transactions
+  - CEX: Withdrawal -6.612e-05 BTC @ 2025-01-20 17:15:00+00:00
+  - BLOCKCHAIN: Withdrawal -7.94e-05 BTC @ 2025-01-20 17:15:03+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> MATCHED: GAS_FEE
+
+=== detect_patterns CALLED ===
+tx_group has 2 transactions:
+  - CEX: Mint -6.675e-05 BTC | metadata=None | witness_len=0
+  - BLOCKCHAIN: Withdrawal -7.555e-05 BTC | metadata={'asset_type': 'BTC'} | witness_len=2
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 2 transactions
+  - CEX: Mint -6.675e-05 BTC @ 2025-01-12 06:44:00+00:00
+  - BLOCKCHAIN: Withdrawal -7.555e-05 BTC @ 2025-01-12 06:44:29+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> MATCHED: GAS_FEE
+
+=== detect_patterns CALLED ===
+tx_group has 2 transactions:
+  - CEX: Trade -0.00459909 BTC | metadata=None | witness_len=0
+  - BLOCKCHAIN: Withdrawal -0.00460173 BTC | metadata={'asset_type': 'BTC'} | witness_len=2
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 2 transactions
+  - CEX: Trade -0.00459909 BTC @ 2025-01-12 06:17:00+00:00
+  - BLOCKCHAIN: Withdrawal -0.00460173 BTC @ 2025-01-12 06:17:42+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> NO MATCH (returning None)
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - CEX: Transfer -0.00520643 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - CEX: Transfer -0.00520643 BTC @ 2025-01-12 06:00:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Transfer -0.00520643 BTC
+  -> NO MATCH (returning None)
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - CEX: Deposit 9.583e-05 BTC | metadata=None | witness_len=0
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - CEX: Deposit 9.583e-05 BTC @ 2025-01-02 03:50:00+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: False
+main_tx: Deposit 9.583e-05 BTC
+CASE B: CEX Deposit detected
+  Checked 0 candidates, no match found
+  -> MATCHED: FIAT_ONRAMP
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - BLOCKCHAIN: Withdrawal -0.00023368 BTC | metadata={'asset_type': 'BTC'} | witness_len=6
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - BLOCKCHAIN: Withdrawal -0.00023368 BTC @ 2025-02-01 03:18:30+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> MATCHED: GAS_FEE
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - BLOCKCHAIN: Deposit 0.000125 BTC | metadata={'asset_type': 'BTC'} | witness_len=24
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - BLOCKCHAIN: Deposit 0.000125 BTC @ 2025-01-31 00:50:21+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> MATCHED: SALE
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - BLOCKCHAIN: Withdrawal -0.00059705 BTC | metadata={'asset_type': 'BTC'} | witness_len=2
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - BLOCKCHAIN: Withdrawal -0.00059705 BTC @ 2025-01-30 19:12:10+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> NO MATCH (returning None)
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - BLOCKCHAIN: Withdrawal -0.0015364 BTC | metadata={'asset_type': 'BTC'} | witness_len=2
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - BLOCKCHAIN: Withdrawal -0.0015364 BTC @ 2025-01-30 18:22:42+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> NO MATCH (returning None)
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - BLOCKCHAIN: Withdrawal -0.00060984 BTC | metadata={'asset_type': 'BTC'} | witness_len=2
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - BLOCKCHAIN: Withdrawal -0.00060984 BTC @ 2025-01-28 04:41:39+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> NO MATCH (returning None)
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - BLOCKCHAIN: Withdrawal -0.00118359 BTC | metadata={'asset_type': 'BTC'} | witness_len=2
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - BLOCKCHAIN: Withdrawal -0.00118359 BTC @ 2025-01-28 03:47:16+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> NO MATCH (returning None)
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - BLOCKCHAIN: Withdrawal -0.00020729 BTC | metadata={'asset_type': 'BTC'} | witness_len=2
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - BLOCKCHAIN: Withdrawal -0.00020729 BTC @ 2025-01-28 00:37:04+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> MATCHED: GAS_FEE
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - BLOCKCHAIN: Withdrawal -0.0009522 BTC | metadata={'asset_type': 'BTC'} | witness_len=7
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - BLOCKCHAIN: Withdrawal -0.0009522 BTC @ 2025-01-27 20:30:32+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> MATCHED: POTENTIAL_MARKETPLACE_SWAP
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - BLOCKCHAIN: Withdrawal -0.00188701 BTC | metadata={'asset_type': 'BTC'} | witness_len=2
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - BLOCKCHAIN: Withdrawal -0.00188701 BTC @ 2025-01-27 20:30:32+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> NO MATCH (returning None)
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - BLOCKCHAIN: Deposit 0.00701688 BTC | metadata={'asset_type': 'RUNE', 'runes': [{'name': 'RUNE_f13e8aa1', 'amount': 'Unknown', 'divisibility': 0}], 'rune_name': 'RUNE_f13e8aa1', 'rune_amount': 0, 'rune_divisibility': 0} | witness_len=2
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - BLOCKCHAIN: Deposit 0.00701688 BTC @ 2025-01-27 16:42:25+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> MATCHED: RUNE_RECEIVE
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - BLOCKCHAIN: Withdrawal -9.08e-06 BTC | metadata={'asset_type': 'BTC'} | witness_len=2
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - BLOCKCHAIN: Withdrawal -9.08e-06 BTC @ 2025-01-12 06:14:23+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> MATCHED: GAS_FEE
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - BLOCKCHAIN: Deposit 0.0052 BTC | metadata={'asset_type': 'BTC'} | witness_len=2
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - BLOCKCHAIN: Deposit 0.0052 BTC @ 2025-01-12 06:04:18+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> MATCHED: SALE
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - BLOCKCHAIN: Withdrawal -0.00156363 BTC | metadata={'asset_type': 'BTC'} | witness_len=2
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - BLOCKCHAIN: Withdrawal -0.00156363 BTC @ 2025-05-07 20:07:20+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> NO MATCH (returning None)
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - BLOCKCHAIN: Deposit 0.00156363 BTC | metadata={'asset_type': 'BTC'} | witness_len=2
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - BLOCKCHAIN: Deposit 0.00156363 BTC @ 2025-05-06 02:53:24+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> MATCHED: SALE
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - BLOCKCHAIN: Withdrawal -0.0042135 BTC | metadata={'asset_type': 'BTC'} | witness_len=26
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - BLOCKCHAIN: Withdrawal -0.0042135 BTC @ 2025-04-07 22:23:44+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> MATCHED: POTENTIAL_MARKETPLACE_SWAP
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - BLOCKCHAIN: Deposit 0.00411 BTC | metadata={'asset_type': 'BTC'} | witness_len=2
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - BLOCKCHAIN: Deposit 0.00411 BTC @ 2025-04-07 17:44:41+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> MATCHED: SALE
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - BLOCKCHAIN: Withdrawal -0.00023368 BTC | metadata={'asset_type': 'BTC'} | witness_len=6
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - BLOCKCHAIN: Withdrawal -0.00023368 BTC @ 2025-02-01 03:18:30+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> MATCHED: GAS_FEE
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - BLOCKCHAIN: Deposit 0.000125 BTC | metadata={'asset_type': 'BTC'} | witness_len=24
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - BLOCKCHAIN: Deposit 0.000125 BTC @ 2025-01-31 00:50:21+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> MATCHED: SALE
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - BLOCKCHAIN: Withdrawal -0.00059705 BTC | metadata={'asset_type': 'BTC'} | witness_len=2
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - BLOCKCHAIN: Withdrawal -0.00059705 BTC @ 2025-01-30 19:12:10+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> NO MATCH (returning None)
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - BLOCKCHAIN: Withdrawal -0.0015364 BTC | metadata={'asset_type': 'BTC'} | witness_len=2
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - BLOCKCHAIN: Withdrawal -0.0015364 BTC @ 2025-01-30 18:22:42+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> NO MATCH (returning None)
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - BLOCKCHAIN: Withdrawal -0.00060984 BTC | metadata={'asset_type': 'BTC'} | witness_len=2
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - BLOCKCHAIN: Withdrawal -0.00060984 BTC @ 2025-01-28 04:41:39+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> NO MATCH (returning None)
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - BLOCKCHAIN: Withdrawal -0.00118359 BTC | metadata={'asset_type': 'BTC'} | witness_len=2
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - BLOCKCHAIN: Withdrawal -0.00118359 BTC @ 2025-01-28 03:47:16+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> NO MATCH (returning None)
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - BLOCKCHAIN: Withdrawal -0.00020729 BTC | metadata={'asset_type': 'BTC'} | witness_len=2
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - BLOCKCHAIN: Withdrawal -0.00020729 BTC @ 2025-01-28 00:37:04+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> MATCHED: GAS_FEE
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - BLOCKCHAIN: Withdrawal -0.0009522 BTC | metadata={'asset_type': 'BTC'} | witness_len=7
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - BLOCKCHAIN: Withdrawal -0.0009522 BTC @ 2025-01-27 20:30:32+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> MATCHED: POTENTIAL_MARKETPLACE_SWAP
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - BLOCKCHAIN: Withdrawal -0.00188701 BTC | metadata={'asset_type': 'BTC'} | witness_len=2
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - BLOCKCHAIN: Withdrawal -0.00188701 BTC @ 2025-01-27 20:30:32+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> NO MATCH (returning None)
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - BLOCKCHAIN: Deposit 0.00701688 BTC | metadata={'asset_type': 'RUNE', 'runes': [{'name': 'RUNE_f13e8aa1', 'amount': 'Unknown', 'divisibility': 0}], 'rune_name': 'RUNE_f13e8aa1', 'rune_amount': 0, 'rune_divisibility': 0} | witness_len=2
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - BLOCKCHAIN: Deposit 0.00701688 BTC @ 2025-01-27 16:42:25+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> MATCHED: RUNE_RECEIVE
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - BLOCKCHAIN: Withdrawal -0.00015108 BTC | metadata={'asset_type': 'BTC'} | witness_len=2
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - BLOCKCHAIN: Withdrawal -0.00015108 BTC @ 2025-01-21 20:15:24+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> MATCHED: GAS_FEE
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - BLOCKCHAIN: Withdrawal -0.00016416 BTC | metadata={'asset_type': 'BTC'} | witness_len=2
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - BLOCKCHAIN: Withdrawal -0.00016416 BTC @ 2025-01-20 23:43:10+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> MATCHED: GAS_FEE
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - BLOCKCHAIN: Withdrawal -7.94e-05 BTC | metadata={'asset_type': 'BTC'} | witness_len=2
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - BLOCKCHAIN: Withdrawal -7.94e-05 BTC @ 2025-01-20 17:15:03+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> MATCHED: GAS_FEE
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - BLOCKCHAIN: Withdrawal -7.555e-05 BTC | metadata={'asset_type': 'BTC'} | witness_len=2
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - BLOCKCHAIN: Withdrawal -7.555e-05 BTC @ 2025-01-12 06:44:29+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> MATCHED: GAS_FEE
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - BLOCKCHAIN: Withdrawal -0.00460173 BTC | metadata={'asset_type': 'BTC'} | witness_len=2
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - BLOCKCHAIN: Withdrawal -0.00460173 BTC @ 2025-01-12 06:17:42+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> NO MATCH (returning None)
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - BLOCKCHAIN: Withdrawal -9.08e-06 BTC | metadata={'asset_type': 'BTC'} | witness_len=2
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - BLOCKCHAIN: Withdrawal -9.08e-06 BTC @ 2025-01-12 06:14:23+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> MATCHED: GAS_FEE
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - BLOCKCHAIN: Deposit 0.0052 BTC | metadata={'asset_type': 'BTC'} | witness_len=2
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - BLOCKCHAIN: Deposit 0.0052 BTC @ 2025-01-12 06:04:18+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> MATCHED: SALE
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - BLOCKCHAIN: Withdrawal -0.00156363 BTC | metadata={'asset_type': 'BTC'} | witness_len=2
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - BLOCKCHAIN: Withdrawal -0.00156363 BTC @ 2025-05-07 20:07:20+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> NO MATCH (returning None)
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - BLOCKCHAIN: Deposit 0.00156363 BTC | metadata={'asset_type': 'BTC'} | witness_len=2
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - BLOCKCHAIN: Deposit 0.00156363 BTC @ 2025-05-06 02:53:24+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> MATCHED: SALE
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - BLOCKCHAIN: Withdrawal -0.0042135 BTC | metadata={'asset_type': 'BTC'} | witness_len=26
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - BLOCKCHAIN: Withdrawal -0.0042135 BTC @ 2025-04-07 22:23:44+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> MATCHED: POTENTIAL_MARKETPLACE_SWAP
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - BLOCKCHAIN: Deposit 0.00411 BTC | metadata={'asset_type': 'BTC'} | witness_len=2
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - BLOCKCHAIN: Deposit 0.00411 BTC @ 2025-04-07 17:44:41+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> MATCHED: SALE
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - BLOCKCHAIN: Withdrawal -0.00023368 BTC | metadata={'asset_type': 'BTC'} | witness_len=6
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - BLOCKCHAIN: Withdrawal -0.00023368 BTC @ 2025-02-01 03:18:30+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> MATCHED: GAS_FEE
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - BLOCKCHAIN: Deposit 0.000125 BTC | metadata={'asset_type': 'BTC'} | witness_len=24
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - BLOCKCHAIN: Deposit 0.000125 BTC @ 2025-01-31 00:50:21+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> MATCHED: SALE
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - BLOCKCHAIN: Withdrawal -0.00059705 BTC | metadata={'asset_type': 'BTC'} | witness_len=2
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - BLOCKCHAIN: Withdrawal -0.00059705 BTC @ 2025-01-30 19:12:10+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> NO MATCH (returning None)
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - BLOCKCHAIN: Withdrawal -0.0015364 BTC | metadata={'asset_type': 'BTC'} | witness_len=2
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - BLOCKCHAIN: Withdrawal -0.0015364 BTC @ 2025-01-30 18:22:42+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> NO MATCH (returning None)
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - BLOCKCHAIN: Withdrawal -0.00060984 BTC | metadata={'asset_type': 'BTC'} | witness_len=2
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - BLOCKCHAIN: Withdrawal -0.00060984 BTC @ 2025-01-28 04:41:39+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> NO MATCH (returning None)
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - BLOCKCHAIN: Withdrawal -0.00118359 BTC | metadata={'asset_type': 'BTC'} | witness_len=2
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - BLOCKCHAIN: Withdrawal -0.00118359 BTC @ 2025-01-28 03:47:16+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> NO MATCH (returning None)
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - BLOCKCHAIN: Withdrawal -0.00020729 BTC | metadata={'asset_type': 'BTC'} | witness_len=2
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - BLOCKCHAIN: Withdrawal -0.00020729 BTC @ 2025-01-28 00:37:04+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> MATCHED: GAS_FEE
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - BLOCKCHAIN: Withdrawal -0.0009522 BTC | metadata={'asset_type': 'BTC'} | witness_len=7
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - BLOCKCHAIN: Withdrawal -0.0009522 BTC @ 2025-01-27 20:30:32+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> MATCHED: POTENTIAL_MARKETPLACE_SWAP
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - BLOCKCHAIN: Withdrawal -0.00188701 BTC | metadata={'asset_type': 'BTC'} | witness_len=2
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - BLOCKCHAIN: Withdrawal -0.00188701 BTC @ 2025-01-27 20:30:32+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> NO MATCH (returning None)
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - BLOCKCHAIN: Deposit 0.00701688 BTC | metadata={'asset_type': 'RUNE', 'runes': [{'name': 'RUNE_f13e8aa1', 'amount': 'Unknown', 'divisibility': 0}], 'rune_name': 'RUNE_f13e8aa1', 'rune_amount': 0, 'rune_divisibility': 0} | witness_len=2
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - BLOCKCHAIN: Deposit 0.00701688 BTC @ 2025-01-27 16:42:25+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> MATCHED: RUNE_RECEIVE
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - BLOCKCHAIN: Withdrawal -0.00015108 BTC | metadata={'asset_type': 'BTC'} | witness_len=2
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - BLOCKCHAIN: Withdrawal -0.00015108 BTC @ 2025-01-21 20:15:24+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> MATCHED: GAS_FEE
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - BLOCKCHAIN: Withdrawal -0.00016416 BTC | metadata={'asset_type': 'BTC'} | witness_len=2
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - BLOCKCHAIN: Withdrawal -0.00016416 BTC @ 2025-01-20 23:43:10+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> MATCHED: GAS_FEE
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - BLOCKCHAIN: Withdrawal -7.94e-05 BTC | metadata={'asset_type': 'BTC'} | witness_len=2
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - BLOCKCHAIN: Withdrawal -7.94e-05 BTC @ 2025-01-20 17:15:03+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> MATCHED: GAS_FEE
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - BLOCKCHAIN: Withdrawal -7.555e-05 BTC | metadata={'asset_type': 'BTC'} | witness_len=2
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - BLOCKCHAIN: Withdrawal -7.555e-05 BTC @ 2025-01-12 06:44:29+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> MATCHED: GAS_FEE
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - BLOCKCHAIN: Withdrawal -0.00460173 BTC | metadata={'asset_type': 'BTC'} | witness_len=2
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - BLOCKCHAIN: Withdrawal -0.00460173 BTC @ 2025-01-12 06:17:42+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> NO MATCH (returning None)
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - BLOCKCHAIN: Withdrawal -9.08e-06 BTC | metadata={'asset_type': 'BTC'} | witness_len=2
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - BLOCKCHAIN: Withdrawal -9.08e-06 BTC @ 2025-01-12 06:14:23+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> MATCHED: GAS_FEE
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - BLOCKCHAIN: Deposit 0.0052 BTC | metadata={'asset_type': 'BTC'} | witness_len=2
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - BLOCKCHAIN: Deposit 0.0052 BTC @ 2025-01-12 06:04:18+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> MATCHED: SALE
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - BLOCKCHAIN: Withdrawal -0.00156363 BTC | metadata={'asset_type': 'BTC'} | witness_len=2
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - BLOCKCHAIN: Withdrawal -0.00156363 BTC @ 2025-05-07 20:07:20+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> NO MATCH (returning None)
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - BLOCKCHAIN: Deposit 0.00156363 BTC | metadata={'asset_type': 'BTC'} | witness_len=2
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - BLOCKCHAIN: Deposit 0.00156363 BTC @ 2025-05-06 02:53:24+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> MATCHED: SALE
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - BLOCKCHAIN: Withdrawal -0.0042135 BTC | metadata={'asset_type': 'BTC'} | witness_len=26
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - BLOCKCHAIN: Withdrawal -0.0042135 BTC @ 2025-04-07 22:23:44+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> MATCHED: POTENTIAL_MARKETPLACE_SWAP
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - BLOCKCHAIN: Deposit 0.00411 BTC | metadata={'asset_type': 'BTC'} | witness_len=2
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - BLOCKCHAIN: Deposit 0.00411 BTC @ 2025-04-07 17:44:41+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> MATCHED: SALE
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - BLOCKCHAIN: Withdrawal -0.00023368 BTC | metadata={'asset_type': 'BTC'} | witness_len=6
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - BLOCKCHAIN: Withdrawal -0.00023368 BTC @ 2025-02-01 03:18:30+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> MATCHED: GAS_FEE
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - BLOCKCHAIN: Deposit 0.000125 BTC | metadata={'asset_type': 'BTC'} | witness_len=24
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - BLOCKCHAIN: Deposit 0.000125 BTC @ 2025-01-31 00:50:21+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> MATCHED: SALE
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - BLOCKCHAIN: Withdrawal -0.00059705 BTC | metadata={'asset_type': 'BTC'} | witness_len=2
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - BLOCKCHAIN: Withdrawal -0.00059705 BTC @ 2025-01-30 19:12:10+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> NO MATCH (returning None)
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - BLOCKCHAIN: Withdrawal -0.0015364 BTC | metadata={'asset_type': 'BTC'} | witness_len=2
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - BLOCKCHAIN: Withdrawal -0.0015364 BTC @ 2025-01-30 18:22:42+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> NO MATCH (returning None)
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - BLOCKCHAIN: Withdrawal -0.00060984 BTC | metadata={'asset_type': 'BTC'} | witness_len=2
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - BLOCKCHAIN: Withdrawal -0.00060984 BTC @ 2025-01-28 04:41:39+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> NO MATCH (returning None)
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - BLOCKCHAIN: Withdrawal -0.00118359 BTC | metadata={'asset_type': 'BTC'} | witness_len=2
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - BLOCKCHAIN: Withdrawal -0.00118359 BTC @ 2025-01-28 03:47:16+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> NO MATCH (returning None)
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - BLOCKCHAIN: Withdrawal -0.00020729 BTC | metadata={'asset_type': 'BTC'} | witness_len=2
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - BLOCKCHAIN: Withdrawal -0.00020729 BTC @ 2025-01-28 00:37:04+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> MATCHED: GAS_FEE
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - BLOCKCHAIN: Withdrawal -0.0009522 BTC | metadata={'asset_type': 'BTC'} | witness_len=7
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - BLOCKCHAIN: Withdrawal -0.0009522 BTC @ 2025-01-27 20:30:32+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> MATCHED: POTENTIAL_MARKETPLACE_SWAP
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - BLOCKCHAIN: Withdrawal -0.00188701 BTC | metadata={'asset_type': 'BTC'} | witness_len=2
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - BLOCKCHAIN: Withdrawal -0.00188701 BTC @ 2025-01-27 20:30:32+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> NO MATCH (returning None)
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - BLOCKCHAIN: Deposit 0.00701688 BTC | metadata={'asset_type': 'RUNE', 'runes': [{'name': 'RUNE_f13e8aa1', 'amount': 'Unknown', 'divisibility': 0}], 'rune_name': 'RUNE_f13e8aa1', 'rune_amount': 0, 'rune_divisibility': 0} | witness_len=2
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - BLOCKCHAIN: Deposit 0.00701688 BTC @ 2025-01-27 16:42:25+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> MATCHED: RUNE_RECEIVE
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - BLOCKCHAIN: Withdrawal -0.00015108 BTC | metadata={'asset_type': 'BTC'} | witness_len=2
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - BLOCKCHAIN: Withdrawal -0.00015108 BTC @ 2025-01-21 20:15:24+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> MATCHED: GAS_FEE
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - BLOCKCHAIN: Withdrawal -0.00016416 BTC | metadata={'asset_type': 'BTC'} | witness_len=2
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - BLOCKCHAIN: Withdrawal -0.00016416 BTC @ 2025-01-20 23:43:10+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> MATCHED: GAS_FEE
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - BLOCKCHAIN: Withdrawal -7.94e-05 BTC | metadata={'asset_type': 'BTC'} | witness_len=2
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - BLOCKCHAIN: Withdrawal -7.94e-05 BTC @ 2025-01-20 17:15:03+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> MATCHED: GAS_FEE
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - BLOCKCHAIN: Withdrawal -7.555e-05 BTC | metadata={'asset_type': 'BTC'} | witness_len=2
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - BLOCKCHAIN: Withdrawal -7.555e-05 BTC @ 2025-01-12 06:44:29+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> MATCHED: GAS_FEE
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - BLOCKCHAIN: Withdrawal -0.00460173 BTC | metadata={'asset_type': 'BTC'} | witness_len=2
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - BLOCKCHAIN: Withdrawal -0.00460173 BTC @ 2025-01-12 06:17:42+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> NO MATCH (returning None)
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - BLOCKCHAIN: Withdrawal -9.08e-06 BTC | metadata={'asset_type': 'BTC'} | witness_len=2
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - BLOCKCHAIN: Withdrawal -9.08e-06 BTC @ 2025-01-12 06:14:23+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> MATCHED: GAS_FEE
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - BLOCKCHAIN: Deposit 0.0052 BTC | metadata={'asset_type': 'BTC'} | witness_len=2
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - BLOCKCHAIN: Deposit 0.0052 BTC @ 2025-01-12 06:04:18+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> MATCHED: SALE
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - BLOCKCHAIN: Withdrawal -0.00156363 BTC | metadata={'asset_type': 'BTC'} | witness_len=2
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - BLOCKCHAIN: Withdrawal -0.00156363 BTC @ 2025-05-07 20:07:20+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> NO MATCH (returning None)
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - BLOCKCHAIN: Deposit 0.00156363 BTC | metadata={'asset_type': 'BTC'} | witness_len=2
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - BLOCKCHAIN: Deposit 0.00156363 BTC @ 2025-05-06 02:53:24+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> MATCHED: SALE
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - BLOCKCHAIN: Withdrawal -0.0042135 BTC | metadata={'asset_type': 'BTC'} | witness_len=26
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - BLOCKCHAIN: Withdrawal -0.0042135 BTC @ 2025-04-07 22:23:44+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> MATCHED: POTENTIAL_MARKETPLACE_SWAP
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - BLOCKCHAIN: Deposit 0.00411 BTC | metadata={'asset_type': 'BTC'} | witness_len=2
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - BLOCKCHAIN: Deposit 0.00411 BTC @ 2025-04-07 17:44:41+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> MATCHED: SALE
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - BLOCKCHAIN: Withdrawal -0.00023368 BTC | metadata={'asset_type': 'BTC'} | witness_len=6
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - BLOCKCHAIN: Withdrawal -0.00023368 BTC @ 2025-02-01 03:18:30+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> MATCHED: GAS_FEE
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - BLOCKCHAIN: Deposit 0.000125 BTC | metadata={'asset_type': 'BTC'} | witness_len=24
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - BLOCKCHAIN: Deposit 0.000125 BTC @ 2025-01-31 00:50:21+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> MATCHED: SALE
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - BLOCKCHAIN: Withdrawal -0.00059705 BTC | metadata={'asset_type': 'BTC'} | witness_len=2
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - BLOCKCHAIN: Withdrawal -0.00059705 BTC @ 2025-01-30 19:12:10+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> NO MATCH (returning None)
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - BLOCKCHAIN: Withdrawal -0.0015364 BTC | metadata={'asset_type': 'BTC'} | witness_len=2
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - BLOCKCHAIN: Withdrawal -0.0015364 BTC @ 2025-01-30 18:22:42+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> NO MATCH (returning None)
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - BLOCKCHAIN: Withdrawal -0.00060984 BTC | metadata={'asset_type': 'BTC'} | witness_len=2
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - BLOCKCHAIN: Withdrawal -0.00060984 BTC @ 2025-01-28 04:41:39+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> NO MATCH (returning None)
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - BLOCKCHAIN: Withdrawal -0.00118359 BTC | metadata={'asset_type': 'BTC'} | witness_len=2
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - BLOCKCHAIN: Withdrawal -0.00118359 BTC @ 2025-01-28 03:47:16+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> NO MATCH (returning None)
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - BLOCKCHAIN: Withdrawal -0.00020729 BTC | metadata={'asset_type': 'BTC'} | witness_len=2
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - BLOCKCHAIN: Withdrawal -0.00020729 BTC @ 2025-01-28 00:37:04+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> MATCHED: GAS_FEE
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - BLOCKCHAIN: Withdrawal -0.0009522 BTC | metadata={'asset_type': 'BTC'} | witness_len=7
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - BLOCKCHAIN: Withdrawal -0.0009522 BTC @ 2025-01-27 20:30:32+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> MATCHED: POTENTIAL_MARKETPLACE_SWAP
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - BLOCKCHAIN: Withdrawal -0.00188701 BTC | metadata={'asset_type': 'BTC'} | witness_len=2
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - BLOCKCHAIN: Withdrawal -0.00188701 BTC @ 2025-01-27 20:30:32+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> NO MATCH (returning None)
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - BLOCKCHAIN: Deposit 0.00701688 BTC | metadata={'asset_type': 'RUNE', 'runes': [{'name': 'RUNE_f13e8aa1', 'amount': 'Unknown', 'divisibility': 0}], 'rune_name': 'RUNE_f13e8aa1', 'rune_amount': 0, 'rune_divisibility': 0} | witness_len=2
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - BLOCKCHAIN: Deposit 0.00701688 BTC @ 2025-01-27 16:42:25+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> MATCHED: RUNE_RECEIVE
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - BLOCKCHAIN: Withdrawal -0.00015108 BTC | metadata={'asset_type': 'BTC'} | witness_len=2
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - BLOCKCHAIN: Withdrawal -0.00015108 BTC @ 2025-01-21 20:15:24+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> MATCHED: GAS_FEE
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - BLOCKCHAIN: Withdrawal -0.00016416 BTC | metadata={'asset_type': 'BTC'} | witness_len=2
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - BLOCKCHAIN: Withdrawal -0.00016416 BTC @ 2025-01-20 23:43:10+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> MATCHED: GAS_FEE
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - BLOCKCHAIN: Withdrawal -7.94e-05 BTC | metadata={'asset_type': 'BTC'} | witness_len=2
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - BLOCKCHAIN: Withdrawal -7.94e-05 BTC @ 2025-01-20 17:15:03+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> MATCHED: GAS_FEE
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - BLOCKCHAIN: Withdrawal -7.555e-05 BTC | metadata={'asset_type': 'BTC'} | witness_len=2
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - BLOCKCHAIN: Withdrawal -7.555e-05 BTC @ 2025-01-12 06:44:29+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> MATCHED: GAS_FEE
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - BLOCKCHAIN: Withdrawal -0.00460173 BTC | metadata={'asset_type': 'BTC'} | witness_len=2
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - BLOCKCHAIN: Withdrawal -0.00460173 BTC @ 2025-01-12 06:17:42+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> NO MATCH (returning None)
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - BLOCKCHAIN: Withdrawal -9.08e-06 BTC | metadata={'asset_type': 'BTC'} | witness_len=2
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - BLOCKCHAIN: Withdrawal -9.08e-06 BTC @ 2025-01-12 06:14:23+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> MATCHED: GAS_FEE
+
+=== detect_patterns CALLED ===
+tx_group has 1 transactions:
+  - BLOCKCHAIN: Deposit 0.0052 BTC | metadata={'asset_type': 'BTC'} | witness_len=2
+
+=== detect_magic_eden_or_mint_cross_ref CALLED ===
+tx_group has 1 transactions
+  - BLOCKCHAIN: Deposit 0.0052 BTC @ 2025-01-12 06:04:18+00:00
+all_blockchain_txs has 21 transactions
+has_blockchain in tx_group: True
+SKIPPING: tx_group already has blockchain tx
+  -> MATCHED: SALE

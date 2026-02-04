@@ -24,6 +24,11 @@ function App() {
   const [btcPrice, setBtcPrice] = useState<number | null>(null);
   const [progress, setProgress] = useState(0);
 
+  // Google Sheets Export States
+  const [exportOption, setExportOption] = useState<'report' | 'sheets'>('report');
+  const [sheetUrl, setSheetUrl] = useState('https://docs.google.com/spreadsheets/d/1caXWkAvAqfKRmmc3suVVfP2NH8sAW5gKx2AuqkZO14E/edit?usp=sharing');
+  const [exportStatus, setExportStatus] = useState('');
+
   React.useEffect(() => {
     // Fetch current BTC price
     const fetchPrice = async () => {
@@ -155,6 +160,14 @@ function App() {
       const res = await axios.post('http://localhost:8000/api/analyze');
       console.log('Analysis results:', res.data);
       setResults(res.data);
+
+      // Update source data with enriched versions that include pattern labels
+      if (res.data.enriched_source_a) {
+        setSourceA(res.data.enriched_source_a);
+      }
+      if (res.data.enriched_source_b) {
+        setSourceB(res.data.enriched_source_b);
+      }
     } catch (error: any) {
       console.error('Analysis error:', error);
       alert(`Analysis failed: ${error.response?.data?.detail || error.message}`);
@@ -162,6 +175,36 @@ function App() {
       setLoading(false);
     }
   };
+
+  const handleExportToSheets = async () => {
+    if (!sheetUrl) {
+      alert('Please enter a Google Sheets URL');
+      return;
+    }
+
+    try {
+      setLoading(true);
+      setExportStatus('Analyzing transactions and exporting to Google Sheets...');
+
+      const res = await axios.post('http://localhost:8000/api/export-to-sheets', {
+        sheet_url: sheetUrl,
+        wallet_addresses: wallet.split(/[,\n]+/).map(addr => addr.trim()).filter(addr => addr.length > 0)
+      });
+
+      console.log('Export results:', res.data);
+      setExportStatus(
+        `✓ Success! Exported ${res.data.row_count} transactions to Google Sheets. ` +
+        `${res.data.review_count} rows marked for review (yellow). ` +
+        `${res.data.patterns_detected} patterns detected.`
+      );
+    } catch (error: any) {
+      console.error('Export error:', error);
+      setExportStatus(`✗ Export failed: ${error.response?.data?.detail || error.message}`);
+    } finally {
+      setLoading(false);
+    }
+  };
+
 
   const handleExportCSV = () => {
     if (!sourceB || sourceB.length === 0) return;
@@ -263,7 +306,7 @@ function App() {
           </div>
 
           {/* Step 2: Fetch Blockchain */}
-          <div className={`bg-white p-6 rounded-xl shadow-sm border-t-4 ${sourceA.length > 0 ? 'border-indigo-500' : 'border-gray-300 opacity-75'}`}>
+          <div className={`bg-white p-6 rounded-xl shadow-sm border-t-4 border-indigo-500`}>
             <h2 className="text-lg font-semibold mb-4">2. Fetch Blockchain Data</h2>
             <div className="space-y-4">
               <div>
@@ -275,7 +318,6 @@ function App() {
                   placeholder="bc1pf3n2ka7tpwv4tc4yzflclspjgq9yjvhek6cjnd4x2lzdd7k5lqfs327cql&#10;bc1qeezvh8psmu32tylqxlkpwjf3854n8cp6vv5lk8&#10;383pcVpTUPdTcj4pPnYhhqQds6JLh25rpy"
                   value={wallet}
                   onChange={(e) => setWallet(e.target.value)}
-                  disabled={sourceA.length === 0}
                   rows={3}
                   className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none resize-none font-mono text-sm"
                 />
@@ -287,7 +329,6 @@ function App() {
                     type="date"
                     value={fromDate}
                     onChange={(e) => setFromDate(e.target.value)}
-                    disabled={sourceA.length === 0}
                     className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none text-sm"
                   />
                 </div>
@@ -297,14 +338,13 @@ function App() {
                     type="date"
                     value={toDate}
                     onChange={(e) => setToDate(e.target.value)}
-                    disabled={sourceA.length === 0}
                     className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none text-sm"
                   />
                 </div>
               </div>
               <button
                 onClick={handleFetchBlockchain}
-                disabled={sourceA.length === 0 || loading}
+                disabled={loading}
                 className="w-full px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50 flex items-center justify-center gap-2"
               >
                 <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
@@ -340,19 +380,82 @@ function App() {
           </div>
 
           {/* Step 3: Analyze */}
-          <div className={`bg-white p-6 rounded-xl shadow-sm border-t-4 ${sourceA.length > 0 && sourceB.length > 0 ? 'border-purple-500' : 'border-gray-300 opacity-75'}`}>
-            <h2 className="text-lg font-semibold mb-4">3. Analyze & Reconcile</h2>
+          <div className={`bg-white p-6 rounded-xl shadow-sm border-t-4 ${sourceB.length > 0 ? 'border-purple-500' : 'border-gray-300 opacity-75'}`}>
+            <h2 className="text-lg font-semibold mb-4">3. Analyze & Export</h2>
             <div className="space-y-4">
-              <div className="text-sm text-gray-500 mb-4">
-                Ready to compare {sourceA.length} CEX txs vs {sourceB.length} Chain txs.
+
+              {/* Option A: Import Parser Report */}
+              <div className="border rounded-lg p-4">
+                <div className="flex items-center mb-2">
+                  <input
+                    type="radio"
+                    id="option-report"
+                    name="export-option"
+                    checked={exportOption === 'report'}
+                    onChange={() => setExportOption('report')}
+                    className="mr-2"
+                  />
+                  <label htmlFor="option-report" className="font-semibold">
+                    Option A: Generate Import Parser Report
+                  </label>
+                </div>
+                <p className="text-xs text-gray-500 ml-6 mb-2">
+                  Compare CEX data vs Blockchain data (requires Step 1 + Step 2)
+                </p>
+                <button
+                  onClick={handleAnalyze}
+                  disabled={sourceA.length === 0 || sourceB.length === 0 || loading || exportOption !== 'report'}
+                  className="ml-6 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 flex items-center gap-2"
+                >
+                  <Activity className="w-4 h-4" /> Run Analysis
+                </button>
+                {sourceA.length === 0 && exportOption === 'report' && (
+                  <p className="text-xs text-orange-500 ml-6 mt-1">⚠️ Requires CEX data from Step 1</p>
+                )}
               </div>
-              <button
-                onClick={handleAnalyze}
-                disabled={sourceA.length === 0 || sourceB.length === 0 || loading}
-                className="w-full px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 flex items-center justify-center gap-2"
-              >
-                <Activity className="w-4 h-4" /> Run Analysis
-              </button>
+
+              {/* Option B: Google Sheets Export */}
+              <div className="border rounded-lg p-4">
+                <div className="flex items-center mb-2">
+                  <input
+                    type="radio"
+                    id="option-sheets"
+                    name="export-option"
+                    checked={exportOption === 'sheets'}
+                    onChange={() => setExportOption('sheets')}
+                    className="mr-2"
+                  />
+                  <label htmlFor="option-sheets" className="font-semibold">
+                    Option B: Fill Universal Import Template
+                  </label>
+                </div>
+                <p className="text-xs text-gray-500 ml-6 mb-2">
+                  Export blockchain data to Google Sheets (requires Step 2 only)
+                </p>
+                <div className="ml-6 space-y-2">
+                  <input
+                    type="text"
+                    placeholder="Google Sheets URL"
+                    value={sheetUrl}
+                    onChange={(e) => setSheetUrl(e.target.value)}
+                    disabled={exportOption !== 'sheets'}
+                    className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 outline-none text-sm"
+                  />
+                  <button
+                    onClick={handleExportToSheets}
+                    disabled={sourceB.length === 0 || loading || exportOption !== 'sheets' || !sheetUrl}
+                    className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 flex items-center gap-2"
+                  >
+                    <Download className="w-4 h-4" /> Export to Sheets
+                  </button>
+                  {exportStatus && exportOption === 'sheets' && (
+                    <p className={`text-sm ${exportStatus.includes('✓') ? 'text-green-600' : 'text-red-500'}`}>
+                      {exportStatus}
+                    </p>
+                  )}
+                </div>
+              </div>
+
             </div>
           </div>
         </div>
