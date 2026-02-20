@@ -104,10 +104,31 @@ class BlockchainClient:
                     fee_btc = fee_satoshis / 100_000_000
                     
                     # ENHANCED: Detect Ordinals and Runes
-                    asset_type = self._detect_asset_type(tx, outputs_to_address)
+                    asset_type = self._detect_asset_type(tx, outputs_to_address, address)
                     
                     # Build metadata with asset type and additional info
                     metadata = {'asset_type': asset_type}
+                    
+                    # Store payment and receiving addresses for verification
+                    payment_addrs = set()
+                    receiving_addrs = set()
+                    for vin in tx.get('vin', []):
+                        addr = vin.get('prevout', {}).get('scriptpubkey_address', '')
+                        if addr:
+                            payment_addrs.add(addr)
+                    for vout in tx.get('vout', []):
+                        addr = vout.get('scriptpubkey_address', '')
+                        if addr and addr != address:
+                            receiving_addrs.add(addr)
+                    
+                    if payment_addrs:
+                        metadata['payment_addresses'] = list(payment_addrs)
+                    if receiving_addrs:
+                        metadata['receiving_addresses'] = list(receiving_addrs)
+                    # Flag taproot involvement
+                    has_taproot = any(a.startswith('bc1p') for a in receiving_addrs)
+                    if has_taproot:
+                        metadata['has_taproot_output'] = True
                     
                     # Extract inscription ID for Ordinals
                     if asset_type == 'ORDINAL':
@@ -171,31 +192,58 @@ class BlockchainClient:
             traceback.print_exc()
             return []
     
-    def _detect_asset_type(self, tx: dict, outputs_to_address: int) -> str:
+    def _detect_asset_type(self, tx: dict, outputs_to_address: int, user_address: str = '') -> str:
         """
         Detect if transaction involves Ordinals or Runes protocols.
         
-        Ordinals: Typically dust amounts (546 sats, 330 sats, etc.)
-        Runes: Uses OP_RETURN with specific protocol markers (0x52 = 'R')
+        Detection methods:
+        1. OP_RETURN with Runes protocol marker (6a5d)
+        2. Dust amounts (546, 330, ≤1000 sats) → Ordinal
+        3. Address-based: payment from bc1q/3xxx/1xxx → bc1p (Taproot) = Ordinal
         """
         # Check for Runes protocol
-        # Runes uses OP_RETURN outputs with protocol marker
         for vout in tx.get('vout', []):
             scriptpubkey = vout.get('scriptpubkey', '')
             scriptpubkey_type = vout.get('scriptpubkey_type', '')
             
-            # Runes protocol check: OP_RETURN starting with 0x52 ('R')
             if scriptpubkey_type == 'op_return':
-                # Check if it's a Runes protocol transaction
-                if scriptpubkey.startswith('6a5d'):  # OP_RETURN + OP_PUSHDATA1
-                    # Runes protocol marker check
-                    # Format: OP_RETURN OP_PUSHDATA1 [length] 'R' [rune_data]
+                if scriptpubkey.startswith('6a5d'):
                     return 'RUNE'
         
         # Check for Ordinals (dust amounts)
-        # Ordinals typically use 546 sats (0.00000546 BTC) or 330 sats
         if outputs_to_address > 0:
             if outputs_to_address == 546 or outputs_to_address == 330 or outputs_to_address <= 1000:
+                return 'ORDINAL'
+        
+        # Address-based Ordinal detection:
+        # If any output goes to a Taproot (bc1p) address and payment comes from
+        # Native SegWit (bc1q), Nested SegWit (3xxx), or Legacy (1xxx) → likely Ordinal
+        payment_addresses = set()
+        taproot_outputs = []
+        
+        for vin in tx.get('vin', []):
+            addr = vin.get('prevout', {}).get('scriptpubkey_address', '')
+            if addr:
+                payment_addresses.add(addr)
+        
+        for vout in tx.get('vout', []):
+            addr = vout.get('scriptpubkey_address', '')
+            if addr and addr.startswith('bc1p'):
+                taproot_outputs.append(addr)
+        
+        if taproot_outputs:
+            # Check if ANY payment address is a non-taproot type
+            has_non_taproot_payment = any(
+                addr.startswith('bc1q') or  # Native SegWit
+                addr.startswith('3') or      # Nested SegWit (P2SH-P2WPKH)
+                addr.startswith('1')          # Legacy (P2PKH)
+                for addr in payment_addresses
+            )
+            if has_non_taproot_payment:
+                return 'ORDINAL'
+            
+            # Even taproot-to-taproot with small amounts could be ordinal transfers
+            if outputs_to_address > 0 and outputs_to_address <= 10000:
                 return 'ORDINAL'
         
         # Regular BTC transaction

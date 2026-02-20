@@ -1,0 +1,378 @@
+import React, { useState } from 'react';
+import { ChevronDown, ChevronRight, Copy, ExternalLink, Search, Download, HelpCircle } from 'lucide-react';
+import axios from 'axios';
+
+interface Props {
+    transactions: any[];
+    searchQuery: string;
+    selectedTxId?: string | null;
+    onRowClick?: (txId: string) => void;
+    onRuneFetched?: (txId: string, runeData: any) => void;
+    showUSD?: boolean;
+    btcPrice?: number | null;
+}
+
+const ReviewPanelA: React.FC<Props> = ({ transactions, searchQuery, selectedTxId, onRowClick, onRuneFetched, showUSD, btcPrice }) => {
+    const formatUSD = (btcAmount: number) => {
+        if (!showUSD || !btcPrice) return '';
+        const usd = Math.abs(btcAmount) * btcPrice;
+        return ` ($${usd.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })})`;
+    };
+    const [expandedIds, setExpandedIds] = useState<Set<number>>(new Set());
+    const [runeInfo, setRuneInfo] = useState<Record<string, any>>({});
+    const [loadingRune, setLoadingRune] = useState<Record<string, boolean>>({});
+
+    const toggleExpand = (idx: number) => {
+        setExpandedIds(prev => {
+            const next = new Set(prev);
+            if (next.has(idx)) next.delete(idx);
+            else next.add(idx);
+            return next;
+        });
+    };
+
+    const copyToClipboard = (text: string) => {
+        navigator.clipboard.writeText(text);
+    };
+
+    const fetchRuneOrOrdinalInfo = async (txId: string) => {
+        if (!txId || runeInfo[txId]) return;
+        setLoadingRune(prev => ({ ...prev, [txId]: true }));
+        try {
+            const res = await axios.post('http://localhost:8000/api/fetch-rune-info', { tx_id: txId });
+            if (res.data.success === false) {
+                // Not found on any API — show info message, not error
+                setRuneInfo(prev => ({ ...prev, [txId]: { not_found: true, message: res.data.message || 'No data found' } }));
+            } else {
+                setRuneInfo(prev => ({ ...prev, [txId]: res.data }));
+                if (onRuneFetched && res.data && !res.data.error) {
+                    onRuneFetched(txId, res.data);
+                }
+            }
+        } catch (err: any) {
+            const detail = err.response?.data?.detail;
+            // detail could be a string OR an array of Pydantic validation errors
+            const errorMsg = typeof detail === 'string' ? detail
+                : Array.isArray(detail) ? detail.map((d: any) => d.msg || JSON.stringify(d)).join('; ')
+                    : 'Failed to fetch';
+            setRuneInfo(prev => ({ ...prev, [txId]: { error: errorMsg } }));
+        } finally {
+            setLoadingRune(prev => ({ ...prev, [txId]: false }));
+        }
+    };
+
+    // Filter transactions
+    const filtered = searchQuery
+        ? transactions.filter(tx => {
+            const q = searchQuery.toLowerCase();
+            return (
+                (tx.tx_id && tx.tx_id.toLowerCase().includes(q)) ||
+                (tx.asset && tx.asset.toLowerCase().includes(q)) ||
+                (tx.pattern && tx.pattern.toLowerCase().includes(q)) ||
+                (tx.description && tx.description.toLowerCase().includes(q)) ||
+                (tx.coinledger_type && tx.coinledger_type.toLowerCase().includes(q))
+            );
+        })
+        : transactions;
+
+    const getTypeBadge = (tx: any) => {
+        const type = tx.coinledger_type || tx.tx_type || 'Unknown';
+        const config: Record<string, { bg: string; text: string }> = {
+            'Trade': { bg: 'bg-blue-500/20', text: 'text-blue-400' },
+            'Deposit': { bg: 'bg-green-500/20', text: 'text-green-400' },
+            'Withdrawal': { bg: 'bg-red-500/20', text: 'text-red-400' },
+            'Ignored': { bg: 'bg-gray-500/20', text: 'text-gray-400' },
+            'Income': { bg: 'bg-emerald-500/20', text: 'text-emerald-400' },
+            'Investment Loss': { bg: 'bg-orange-500/20', text: 'text-orange-400' },
+            'Airdrop': { bg: 'bg-cyan-500/20', text: 'text-cyan-400' },
+        };
+        const c = config[type] || { bg: 'bg-gray-500/20', text: 'text-gray-400' };
+        return <span className={`px-2 py-0.5 rounded text-xs font-bold ${c.bg} ${c.text}`}>{type}</span>;
+    };
+
+    const getPatternEmoji = (pattern: string | null) => {
+        if (!pattern) return '';
+        const map: Record<string, string> = {
+            'MINT_BUY': '🎨', 'BULK_MINT': '🎨✨', 'GAS_FEE': '⛽', 'SALE': '💰',
+            'SELF_TRANSFER': '🔄', 'FIAT_ONRAMP': '💵', 'RUNE_RECEIVE': '🔮',
+            'MAGIC_EDEN_BUY': '🪄', 'MAGIC_EDEN_BUY_ISOLATED': '🪄', 'MAGIC_EDEN_SALE': '🪄💰', 'NFT_TRADE': '🏪',
+        };
+        return map[pattern] || '🏷️';
+    };
+
+    // Expanded detection: any tx that could be an Ordinal/Rune (buy, sell, receive, trade)
+    const isOrdinalOrRune = (tx: any) => {
+        const meta = tx.metadata;
+        const assetType = meta && typeof meta === 'object' ? (meta.asset_type || '') : '';
+        if (assetType === 'ORDINAL' || assetType === 'RUNE') return true;
+        // Any pattern that involves NFT/Rune trading
+        const nftPatterns = ['MINT_BUY', 'BULK_MINT', 'RUNE_RECEIVE', 'SALE', 'MAGIC_EDEN_BUY', 'MAGIC_EDEN_BUY_ISOLATED', 'MAGIC_EDEN_SALE', 'NFT_TRADE'];
+        if (tx.pattern && nftPatterns.includes(tx.pattern)) return true;
+        // Description-based detection
+        if (tx.description && /nft|rune|ordinal|sale|mint/i.test(tx.description)) return true;
+        return false;
+    };
+
+    // Check if rune name is a raw placeholder like RUNE_a4b40e86
+    const hasRawRuneName = (tx: any) => {
+        const meta = tx.metadata;
+        if (!meta || typeof meta !== 'object') return false;
+        const name = meta.rune_name || '';
+        return /^RUNE_[a-f0-9]+$/i.test(name);
+    };
+
+    const getDisplayRuneName = (tx: any) => {
+        const txId = tx.tx_id || '';
+        // If we fetched real info, use that
+        if (runeInfo[txId] && !runeInfo[txId].error && runeInfo[txId].runes?.length > 0) {
+            return runeInfo[txId].runes[0].name;
+        }
+        // Otherwise check metadata
+        const meta = tx.metadata;
+        if (meta && typeof meta === 'object' && meta.rune_name && !hasRawRuneName(tx)) {
+            return meta.rune_name;
+        }
+        return null;
+    };
+
+    const formatDate = (ts: string) => {
+        try {
+            const d = new Date(ts);
+            return d.toISOString().replace('T', ' ').split('.')[0] + ' UTC';
+        } catch { return ts; }
+    };
+
+    const formatBTC = (amount: number) => {
+        if (amount === 0) return '0';
+        return amount < 0 ? `${amount.toFixed(8)}` : `+${amount.toFixed(8)}`;
+    };
+
+    return (
+        <div className="h-full flex flex-col">
+            <h3 className="text-lg font-bold text-purple-400 mb-3 flex items-center gap-2">
+                📋 Review Panel A — Transaction Details
+                <span className="text-sm font-normal text-gray-500">({filtered.length})</span>
+            </h3>
+            <div className="flex-1 overflow-y-auto space-y-2 pr-1 max-h-[700px]">
+                {filtered.map((tx, idx) => {
+                    const isExpanded = expandedIds.has(idx);
+                    const txId = tx.tx_id || '';
+                    const isBlockchain = txId.length > 10;
+                    const hasOrdRune = isOrdinalOrRune(tx);
+                    const isSelected = selectedTxId && txId === selectedTxId;
+                    // Unclassified: no pattern detected, blockchain tx, looks like a transfer
+                    const isUnclassified = isBlockchain && !tx.pattern && tx.source === 'BLOCKCHAIN'
+                        && tx.coinledger_type !== 'Ignored';
+
+                    return (
+                        <div key={idx}
+                            className={`rounded-xl border overflow-hidden transition-all
+                                ${isSelected
+                                    ? 'border-purple-500 bg-purple-500/10 ring-1 ring-purple-500/30'
+                                    : 'border-gray-700/50 bg-gray-900/50'}`}
+                        >
+                            {/* Card Header — always visible */}
+                            <button
+                                onClick={() => {
+                                    toggleExpand(idx);
+                                    if (onRowClick && txId) onRowClick(txId);
+                                }}
+                                className="w-full flex items-center justify-between px-4 py-3 hover:bg-gray-800/50 transition-colors text-left"
+                            >
+                                <div className="flex items-center gap-3">
+                                    <span className="text-lg">{getPatternEmoji(tx.pattern)}</span>
+                                    {getTypeBadge(tx)}
+                                    {tx.pattern && (
+                                        <span className="text-xs text-gray-500 font-mono">{tx.pattern}</span>
+                                    )}
+                                    {/* Show decoded rune name inline if available */}
+                                    {getDisplayRuneName(tx) && (
+                                        <span className="text-xs font-bold text-orange-400">🔮 {getDisplayRuneName(tx)}</span>
+                                    )}
+                                    {/* Unclassified transaction indicator */}
+                                    {isUnclassified && (
+                                        <span className="relative group">
+                                            <HelpCircle className="w-4 h-4 text-yellow-500 cursor-help" />
+                                            <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 rounded-lg text-xs bg-gray-800 border border-yellow-500/30 text-yellow-300 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity z-50 pointer-events-none shadow-lg">
+                                                ❓ Unclassified — the sending/receiving address may not be in your tracked wallets
+                                            </span>
+                                        </span>
+                                    )}
+                                </div>
+                                <div className="flex items-center gap-4">
+                                    <span className="text-xs text-gray-500">{formatDate(tx.timestamp)}</span>
+                                    {isExpanded ? <ChevronDown className="w-4 h-4 text-gray-400" /> : <ChevronRight className="w-4 h-4 text-gray-400" />}
+                                </div>
+                            </button>
+
+                            {/* Collapsed preview line */}
+                            {!isExpanded && (
+                                <div className="px-4 pb-3 flex items-center gap-4 text-sm">
+                                    {tx.amount < 0 ? (
+                                        <span className="text-red-400">Sent: {formatBTC(tx.amount)} {tx.asset}{formatUSD(tx.amount)}</span>
+                                    ) : (
+                                        <span className="text-green-400">Received: {formatBTC(tx.amount)} {tx.asset}{formatUSD(tx.amount)}</span>
+                                    )}
+                                    {tx.fee > 0 && <span className="text-gray-500 text-xs">Fee: {tx.fee.toFixed(8)} BTC{formatUSD(tx.fee)}</span>}
+                                    {isBlockchain && (
+                                        <span className="text-gray-600 font-mono text-xs ml-auto">{txId.slice(0, 8)}…{txId.slice(-6)}</span>
+                                    )}
+                                </div>
+                            )}
+
+                            {/* Expanded Details */}
+                            {isExpanded && (
+                                <div className="px-4 pb-4 space-y-3 border-t border-gray-800/50">
+                                    {/* Amounts */}
+                                    <div className="grid grid-cols-2 gap-4 pt-3">
+                                        <div>
+                                            <span className="text-xs text-gray-500 block">Sent</span>
+                                            <span className={`font-semibold ${tx.amount < 0 ? 'text-red-400' : 'text-gray-500'}`}>
+                                                {tx.amount < 0 ? `${Math.abs(tx.amount).toFixed(8)} ${tx.asset}` : '—'}
+                                                {tx.amount < 0 && <span className="text-gray-500 text-xs font-normal">{formatUSD(tx.amount)}</span>}
+                                            </span>
+                                        </div>
+                                        <div>
+                                            <span className="text-xs text-gray-500 block">Received</span>
+                                            <span className={`font-semibold ${tx.amount > 0 ? 'text-green-400' : 'text-gray-500'}`}>
+                                                {tx.amount > 0 ? `${tx.amount.toFixed(8)} ${tx.asset}` : '—'}
+                                                {tx.amount > 0 && <span className="text-gray-500 text-xs font-normal">{formatUSD(tx.amount)}</span>}
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    {/* Fee */}
+                                    {tx.fee > 0 && (
+                                        <div className="bg-gray-800/30 rounded-lg px-3 py-2 flex items-center gap-2">
+                                            <span className="text-yellow-400">⚡</span>
+                                            <span className="text-xs text-gray-400">Fee</span>
+                                            <span className="text-sm font-medium text-gray-300">{tx.fee.toFixed(8)} BTC{formatUSD(tx.fee)}</span>
+                                        </div>
+                                    )}
+
+                                    {/* Description */}
+                                    {tx.description && (
+                                        <div className="text-sm text-gray-400">
+                                            <span className="text-gray-600">Description: </span>{tx.description}
+                                        </div>
+                                    )}
+
+                                    {/* Metadata — Asset Type Badge */}
+                                    {tx.metadata && typeof tx.metadata === 'object' && tx.metadata.asset_type && tx.metadata.asset_type !== 'BTC' && (
+                                        <div className="bg-gray-800/30 rounded-lg px-3 py-2 space-y-1">
+                                            <div className="flex items-center gap-2">
+                                                <span className="text-xs text-gray-500">Asset Type: </span>
+                                                <span className={`text-sm font-bold ${tx.metadata.asset_type === 'ORDINAL' ? 'text-purple-400' : 'text-orange-400'}`}>
+                                                    {tx.metadata.asset_type === 'ORDINAL' ? '🎨 ORDINAL' : '🔮 RUNE'}
+                                                </span>
+                                                {getDisplayRuneName(tx) && (
+                                                    <span className="text-sm text-orange-300 font-semibold">{getDisplayRuneName(tx)}</span>
+                                                )}
+                                                {hasRawRuneName(tx) && !runeInfo[txId] && (
+                                                    <span className="text-xs text-yellow-500">(undecoded — click fetch below)</span>
+                                                )}
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {/* TxHash + Verify Links */}
+                                    {isBlockchain && (
+                                        <div className="space-y-2">
+                                            <div className="flex items-center gap-2 text-xs">
+                                                <span className="text-gray-500">TxHash:</span>
+                                                <span className="font-mono text-gray-300">{txId.slice(0, 16)}…{txId.slice(-8)}</span>
+                                                <button onClick={(e) => { e.stopPropagation(); copyToClipboard(txId); }} className="text-gray-500 hover:text-gray-300" title="Copy">
+                                                    <Copy className="w-3 h-3" />
+                                                </button>
+                                            </div>
+                                            <div className="flex gap-2 flex-wrap">
+                                                <a href={`https://mempool.space/tx/${txId}`} target="_blank" rel="noopener noreferrer"
+                                                    className="inline-flex items-center gap-1 px-2 py-1 rounded text-xs bg-blue-500/10 text-blue-400 hover:bg-blue-500/20 border border-blue-500/20">
+                                                    <ExternalLink className="w-3 h-3" /> Mempool
+                                                </a>
+                                                <a href={`https://www.blockchain.com/btc/tx/${txId}`} target="_blank" rel="noopener noreferrer"
+                                                    className="inline-flex items-center gap-1 px-2 py-1 rounded text-xs bg-green-500/10 text-green-400 hover:bg-green-500/20 border border-green-500/20">
+                                                    <ExternalLink className="w-3 h-3" /> Blockchain.com
+                                                </a>
+                                                <a href={`https://ordiscan.com/tx/${txId}`} target="_blank" rel="noopener noreferrer"
+                                                    className="inline-flex items-center gap-1 px-2 py-1 rounded text-xs bg-purple-500/10 text-purple-400 hover:bg-purple-500/20 border border-purple-500/20">
+                                                    <ExternalLink className="w-3 h-3" /> Ordiscan
+                                                </a>
+                                                {/* Ordinals.com link for NFT/Rune transactions */}
+                                                {hasOrdRune && (
+                                                    <a href={`https://ordinals.com/tx/${txId}`} target="_blank" rel="noopener noreferrer"
+                                                        className="inline-flex items-center gap-1 px-2 py-1 rounded text-xs bg-amber-500/10 text-amber-400 hover:bg-amber-500/20 border border-amber-500/20">
+                                                        <ExternalLink className="w-3 h-3" /> Ordinals.com
+                                                    </a>
+                                                )}
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {/* On-demand Ordinal/Rune fetch — shown for ALL NFT/Rune related txs */}
+                                    {hasOrdRune && isBlockchain && (
+                                        <div className="border-t border-gray-800/50 pt-3">
+                                            {runeInfo[txId] ? (
+                                                runeInfo[txId].not_found ? (
+                                                    <div className="bg-gray-500/10 border border-gray-500/20 rounded-lg p-3 text-sm text-gray-400">
+                                                        ℹ️ {runeInfo[txId].message}
+                                                    </div>
+                                                ) : runeInfo[txId].error ? (
+                                                    <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-3">
+                                                        <span className="text-red-400 text-sm">{runeInfo[txId].error}</span>
+                                                    </div>
+                                                ) : (
+                                                    <div className="bg-purple-500/10 border border-purple-500/20 rounded-lg p-3 space-y-1">
+                                                        <div className="text-xs text-gray-500">Fetched from {runeInfo[txId].source}</div>
+                                                        {runeInfo[txId].runes?.map((r: any, i: number) => (
+                                                            <div key={i} className="flex items-center gap-2">
+                                                                {r.content_url && r.content_type?.includes('image') && (
+                                                                    <img src={r.content_url} alt="ordinal" className="w-6 h-6 rounded object-cover bg-black/20" />
+                                                                )}
+                                                                <div className="flex flex-col">
+                                                                    <span className="text-orange-400 font-bold">{r.name}</span>
+                                                                    {r.collection && <span className="text-xs text-gray-500 leading-tight">{r.collection}</span>}
+                                                                </div>
+                                                                <span className="text-gray-300 ml-auto">{r.amount}</span>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                )
+                                            ) : (
+                                                <button
+                                                    onClick={(e) => { e.stopPropagation(); fetchRuneOrOrdinalInfo(txId); }}
+                                                    disabled={loadingRune[txId]}
+                                                    className="w-full px-3 py-2 rounded-lg text-sm font-medium bg-purple-500/10 text-purple-300 hover:bg-purple-500/20 border border-purple-500/20 flex items-center justify-center gap-2 disabled:opacity-50"
+                                                >
+                                                    {loadingRune[txId] ? (
+                                                        <><Search className="w-3.5 h-3.5 animate-spin" /> Fetching…</>
+                                                    ) : (
+                                                        <><Download className="w-3.5 h-3.5" /> Fetch Ordinal / Rune Info</>
+                                                    )}
+                                                </button>
+                                            )}
+                                        </div>
+                                    )}
+
+                                    {/* Wallet info */}
+                                    {tx.Wallet && (
+                                        <div className="text-xs text-gray-600">
+                                            Wallet: {tx.Wallet}
+                                            {tx.WalletAddress && <span className="ml-2 font-mono">{tx.WalletAddress.slice(0, 12)}…</span>}
+                                        </div>
+                                    )}
+                                </div>
+                            )
+                            }
+                        </div>
+                    );
+                })}
+                {filtered.length === 0 && (
+                    <div className="text-center text-gray-500 py-12">No transactions match your search.</div>
+                )}
+            </div>
+        </div >
+    );
+};
+
+export default ReviewPanelA;

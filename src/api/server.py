@@ -92,6 +92,7 @@ class FetchRequest(BaseModel):
     chain: str = "bitcoin"  # Default to bitcoin for this project
     from_date: Optional[str] = None  # Format: YYYY-MM-DD
     to_date: Optional[str] = None    # Format: YYYY-MM-DD
+    append: bool = False  # If True, append to existing source_b instead of replacing
 
 @app.post("/api/fetch-blockchain")
 async def fetch_blockchain(req: FetchRequest):
@@ -101,38 +102,41 @@ async def fetch_blockchain(req: FetchRequest):
     """
     try:
         client = BlockchainClient()
-        state.source_b = client.fetch_transactions(req.wallet_address, req.chain)
+        new_txs = client.fetch_transactions(req.wallet_address, req.chain)
         
-        # Filter by date range if provided
+        # Filter new transactions by date range BEFORE accumulating
         if req.from_date or req.to_date:
             from datetime import datetime
             import pytz
             
             filtered_txs = []
-            for tx in state.source_b:
-                # Parse date range
+            for tx in new_txs:
                 if req.from_date:
                     from_dt = datetime.strptime(req.from_date, "%Y-%m-%d").replace(tzinfo=pytz.UTC)
                     if tx.timestamp < from_dt:
                         continue
-                
                 if req.to_date:
-                    # Add 1 day to include the entire to_date
                     to_dt = datetime.strptime(req.to_date, "%Y-%m-%d").replace(hour=23, minute=59, second=59, tzinfo=pytz.UTC)
                     if tx.timestamp > to_dt:
                         continue
-                
                 filtered_txs.append(tx)
             
-            state.source_b = filtered_txs
-            print(f"Filtered to {len(filtered_txs)} transactions between {req.from_date} and {req.to_date}")
+            new_txs = filtered_txs
+            print(f"Filtered to {len(new_txs)} transactions between {req.from_date} and {req.to_date}")
         
-        # Convert UnifiedTransaction objects to dicts for JSON serialization
-        blockchain_data = [tx.to_dict() for tx in state.source_b]
+        # Accumulate into state (for JSON export / analysis later)
+        if req.append:
+            state.source_b.extend(new_txs)
+        else:
+            state.source_b = list(new_txs)
+        
+        # Return ONLY the new transactions (frontend accumulates its own list)
+        blockchain_data = [tx.to_dict() for tx in new_txs]
         
         return {
             "message": "Blockchain data fetched successfully",
             "count": len(blockchain_data),
+            "total_accumulated": len(state.source_b),
             "data": blockchain_data
         }
     except Exception as e:
@@ -229,7 +233,7 @@ async def analyze(wallet_addresses: Optional[List[str]] = None):
                     action["received_asset"] = correction.get("received_asset", "")
                     action["received_quantity"] = correction.get("received_quantity", 1)
                     action["ordiscan_link"] = correction.get("ordiscan_link", "")
-                    action["oklink_link"] = correction.get("oklink_link", "")
+                    action["hiro_link"] = correction.get("hiro_link", "")
                     action["ordinals_link"] = correction.get("ordinals_link", "")
                     action["requires_ordiscan"] = correction.get("requires_ordiscan", False)
                     
@@ -251,7 +255,7 @@ async def analyze(wallet_addresses: Optional[List[str]] = None):
                     # Pass through note and verification links
                     action["note"] = correction.get("note", "")
                     action["ordiscan_link"] = correction.get("ordiscan_link", "")
-                    action["oklink_link"] = correction.get("oklink_link", "")
+                    action["hiro_link"] = correction.get("hiro_link", "")
                     action["ordinals_link"] = correction.get("ordinals_link", "")
                     
                     # Add blockchain transaction metadata for asset tags
@@ -347,7 +351,7 @@ async def get_results():
 
 class FetchRuneRequest(BaseModel):
     tx_id: str
-    api_source: str  # "oklink" or "unisat"
+    api_source: str = "unisat"  # default to unisat, optional
 
 @app.post("/api/fetch-rune-info")
 async def fetch_rune_info(request: FetchRuneRequest):
@@ -363,53 +367,97 @@ async def fetch_rune_info(request: FetchRuneRequest):
         raise HTTPException(status_code=400, detail="Invalid transaction ID")
     
     try:
-        # Use UniSat Rune Event endpoint (singular)
-        url = "https://open-api.unisat.io/v1/indexer/runes/event"
+        # 1. Primary: UniSat TX details endpoint (returns both runes and inscriptions inside vout)
+        url = f"https://open-api.unisat.io/v1/indexer/tx/{tx_id}"
         headers = {
             "Accept": "application/json"
         }
         if UNISAT_API_KEY:
             headers['Authorization'] = f"Bearer {UNISAT_API_KEY}"
-            print(f"Using UniSat API Key: Yes")
-        else:
-            print(f"Using UniSat API Key: No (Rate limits may apply)")
             
-        # Passing txid as query param
-        params = {'txid': tx_id}
-            
-        print(f"Fetching UniSat Rune info for {tx_id[:8]} from {url}...")
-        response = requests.get(url, headers=headers, params=params, timeout=15)
+        print(f"Fetching UniSat TX info for {tx_id[:8]} from {url}...")
+        response = requests.get(url, headers=headers, timeout=15)
         print(f"UniSat Response Status: {response.status_code}")
         
         if response.status_code == 200:
             data = response.json()
             if data.get('code') == 0 and data.get('data'):
-                # 'data' should be a list of events or an object containing 'detail'
-                event_list = data['data']
-                if isinstance(event_list, dict) and 'detail' in event_list:
-                     event_list = event_list['detail']
-                
-                if not isinstance(event_list, list):
-                    event_list = [event_list] if event_list else []
-
+                tx_data = data['data']
                 found_runes = []
-                seen_runes = set()
+                seen_names = set()
+                
+                if 'vout' in tx_data:
+                    for vout in tx_data['vout']:
+                        # Check for Runes
+                        if 'runes' in vout and vout['runes']:
+                            for r in vout['runes']:
+                                name = r.get('runeName') or r.get('name') or r.get('symbol')
+                                if name and name not in seen_names:
+                                    seen_names.add(name)
+                                    found_runes.append({
+                                        "name": name,
+                                        "amount": str(r.get('amount', '0')),
+                                        "divisibility": int(r.get('divisibility', 0))
+                                    })
+                        
+                        # Check for Ordinal Inscriptions
+                        if 'inscriptions' in vout and vout['inscriptions']:
+                            for ins in vout['inscriptions']:
+                                ins_id = ins if isinstance(ins, str) else ins.get('inscriptionId', '')
+                                if ins_id and ins_id not in seen_names:
+                                    seen_names.add(ins_id)
+                                    
+                                    # Fetch rich metadata for this inscription
+                                    name = f"Ordinal Inscription"
+                                    content_type = "unknown"
+                                    content_url = f"https://ordinals.com/content/{ins_id}"
+                                    
+                                    try:
+                                        meta_url = f"https://open-api.unisat.io/v1/indexer/inscription/info/{ins_id}"
+                                        meta_res = requests.get(meta_url, headers=headers, timeout=5)
+                                        if meta_res.status_code == 200:
+                                            m_data = meta_res.json().get('data', {})
+                                            
+                                            # Check if there's a delegate that has the actual content/name
+                                            if m_data.get('hasDeligate') and m_data.get('deligate'):
+                                                deligate_id = m_data.get('deligate')
+                                                del_url = f"https://open-api.unisat.io/v1/indexer/inscription/info/{deligate_id}"
+                                                del_res = requests.get(del_url, headers=headers, timeout=5)
+                                                if del_res.status_code == 200:
+                                                    m_data = del_res.json().get('data', m_data)
+                                            
+                                            # Extract name and collection
+                                            meta_obj = m_data.get('meta', {}) or {}
+                                            name = meta_obj.get('name') or m_data.get('inscriptionName')
+                                            
+                                            collection = None
+                                            # Try to find collection name
+                                            if isinstance(meta_obj.get('collection'), dict):
+                                                collection = meta_obj['collection'].get('name')
+                                            elif isinstance(meta_obj.get('collection'), str):
+                                                collection = meta_obj['collection']
+                                            elif m_data.get('collectionName'):
+                                                collection = m_data.get('collectionName')
 
-                for event in event_list:
-                    # Check for rune info in event
-                    # Structure might vary, checking common fields
-                    rune_name = event.get('rune') or event.get('runeName') or event.get('symbol')
-                    amount = event.get('amount')
-                    divisibility = event.get('divisibility', 0)
-                    
-                    if rune_name and amount:
-                        if rune_name not in seen_runes:
-                            seen_runes.add(rune_name)
-                            found_runes.append({
-                                "name": rune_name,
-                                "amount": str(amount),
-                                "divisibility": int(divisibility)
-                            })
+                                            if not name:
+                                                num = m_data.get('inscriptionNumber')
+                                                name = f"Inscription #{num}" if num is not None else "Ordinal Inscription"
+                                            
+                                            content_type = m_data.get('contentType', 'unknown')
+                                            if m_data.get('inscriptionId'):
+                                                content_url = f"https://ordinals.com/content/{m_data.get('inscriptionId')}"
+                                    except Exception as e:
+                                        print(f"Failed to fetch rich ordinal info: {e}")
+
+                                    found_runes.append({
+                                        "name": name,
+                                        "collection": collection,
+                                        "inscription_id": ins_id,
+                                        "amount": "1",
+                                        "divisibility": 0,
+                                        "content_type": content_type,
+                                        "content_url": content_url
+                                    })
                 
                 if found_runes:
                     return {
@@ -419,42 +467,120 @@ async def fetch_rune_info(request: FetchRuneRequest):
                         "tx_id": tx_id
                     }
                 else:
-                    print(f"No Rune events found in parsed data from events endpoint: {str(event_list)[:200]}")
-            else:
-                 print(f"UniSat events API returned code != 0 or empty data: {data}")
-                    
-        # Fallback to standard TX endpoint if events endpoint fails or returns nothing
-        print("Fallback to standard UniSat TX endpoint...")
-        url_fallback = f"https://open-api.unisat.io/v1/indexer/tx/{tx_id}"
-        response = requests.get(url_fallback, headers=headers, timeout=10)
-        
-        if response.status_code == 200:
-             data = response.json()
-             if data.get('code') == 0 and data.get('data'):
-                tx_data = data['data']
+                    print(f"No runes/ordinals found in UniSat vout data")
+        # 2. Fallback: Try Hiro API (sunsetting March 2026, 900 req/min)
+        from src.config import HIRO_API_KEY
+        if HIRO_API_KEY:
+            print("Fallback to Hiro API...")
+            try:
+                hiro_url = f"https://api.hiro.so/ordinals/v1/inscriptions?output={tx_id}:0"
+                hiro_headers = {
+                    "Accept": "application/json",
+                    "x-hiro-api-key": HIRO_API_KEY
+                }
+                hiro_response = requests.get(hiro_url, headers=hiro_headers, timeout=15)
                 
-                found_runes = []
-                if 'vout' in tx_data:
-                    for vout in tx_data['vout']:
-                        if 'runes' in vout and len(vout['runes']) > 0:
-                            for r in vout['runes']:
-                                found_runes.append({
-                                    "name": r.get('runeName') or r.get('name'),
-                                    "amount": r.get('amount', '0'),
-                                    "divisibility": int(r.get('divisibility', 0))
-                                })
+                if hiro_response.status_code == 200:
+                    hiro_data = hiro_response.json()
+                    results = hiro_data.get('results', [])
+                    found_runes = []
+                    for item in results:
+                        name = item.get('content_type', 'Inscription')
+                        number = item.get('number')
+                        insc_id = item.get('id', '')
+                        if number is not None:
+                            found_runes.append({
+                                "name": f"Inscription #{number}",
+                                "amount": "1",
+                                "inscription_id": insc_id,
+                                "content_type": name,
+                                "divisibility": 0
+                            })
+                    if found_runes:
+                        return {
+                            "success": True,
+                            "source": "hiro",
+                            "runes": found_runes,
+                            "tx_id": tx_id
+                        }
                 
-                if found_runes:
-                    return {
-                        "success": True,
-                        "source": "unisat",
-                        "runes": found_runes,
-                        "tx_id": tx_id
-                    }
+                # Also try Hiro Runes endpoint
+                hiro_runes_url = f"https://api.hiro.so/runes/v1/transactions/{tx_id}/activity"
+                runes_response = requests.get(hiro_runes_url, headers=hiro_headers, timeout=15)
+                if runes_response.status_code == 200:
+                    runes_data = runes_response.json()
+                    results = runes_data.get('results', [])
+                    found_runes = []
+                    for item in results:
+                        rune_name = item.get('rune', {}).get('name') or item.get('rune', {}).get('spaced_name', '')
+                        amount = item.get('amount', '0')
+                        if rune_name:
+                            found_runes.append({
+                                "name": rune_name,
+                                "amount": str(amount),
+                                "divisibility": item.get('rune', {}).get('divisibility', 0)
+                            })
+                    if found_runes:
+                        return {
+                            "success": True,
+                            "source": "hiro",
+                            "runes": found_runes,
+                            "tx_id": tx_id
+                        }
+            except Exception as hiro_err:
+                print(f"Hiro fallback error: {hiro_err}")
 
-        # If we reach here, neither endpoint worked
-        print(f"UniSat API Failed. Status: {response.status_code}, Body: {response.text[:200]}")
-        raise HTTPException(status_code=404, detail="Rune data not found on UniSat")
+        # Fallback 3: UniSat Inscription lookup (for Ordinals)
+        print("Fallback to UniSat Inscription lookup...")
+        try:
+            inscription_url = f"https://open-api.unisat.io/v1/indexer/tx/{tx_id}/inscription-transfers"
+            insc_response = requests.get(inscription_url, headers=headers, timeout=15)
+            
+            if insc_response.status_code == 200:
+                insc_data = insc_response.json()
+                if insc_data.get('code') == 0 and insc_data.get('data'):
+                    transfers = insc_data['data']
+                    if isinstance(transfers, dict) and 'detail' in transfers:
+                        transfers = transfers['detail']
+                    if not isinstance(transfers, list):
+                        transfers = [transfers] if transfers else []
+                    
+                    found_inscriptions = []
+                    for transfer in transfers:
+                        insc_number = transfer.get('inscriptionNumber') or transfer.get('number')
+                        insc_id = transfer.get('inscriptionId') or transfer.get('id')
+                        content_type = transfer.get('contentType', '')
+                        
+                        if insc_number is not None or insc_id:
+                            found_inscriptions.append({
+                                "name": f"Inscription #{insc_number}" if insc_number is not None else f"Inscription",
+                                "inscription_id": insc_id or '',
+                                "content_type": content_type,
+                                "amount": "1"
+                            })
+                    
+                    if found_inscriptions:
+                        return {
+                            "success": True,
+                            "source": "unisat-inscription",
+                            "runes": found_inscriptions,  # reuse runes field for compatibility
+                            "inscriptions": found_inscriptions,
+                            "tx_id": tx_id
+                        }
+                    else:
+                        print(f"No inscriptions found in transfer data: {str(transfers)[:200]}")
+        except Exception as insc_err:
+            print(f"UniSat inscription fallback error: {insc_err}")
+
+        # If all sources failed, return graceful "not found" (not a crash)
+        print(f"All APIs failed to find Rune/Ordinal data for {tx_id[:8]}")
+        return {
+            "success": False,
+            "source": "none",
+            "runes": [],
+            "tx_id": tx_id,
+            "message": "No Rune/Ordinal data found. This may be a standard BTC transaction."
+        }
 
     except requests.Timeout:
         raise HTTPException(status_code=504, detail="UniSat API timeout")
@@ -527,3 +653,239 @@ async def export_to_sheets(request: ExportToSheetsRequest):
         print(f"Export to sheets error: {str(e)}")
         print(f"Traceback:\n{error_details}")
         raise HTTPException(status_code=500, detail=f"Export failed: {str(e)}")
+
+
+# ============================================================
+# JSON Export / Upload (Step 2 data caching)
+# ============================================================
+
+@app.post("/api/export-blockchain-json")
+async def export_blockchain_json():
+    """
+    Export fetched Source B (blockchain) data as JSON for offline caching.
+    Users can re-upload this later to avoid re-fetching from the API.
+    """
+    if not state.source_b:
+        raise HTTPException(status_code=400, detail="No blockchain data to export. Fetch blockchain data first (Step 2).")
+    
+    data = {
+        "version": "1.0",
+        "exported_at": datetime.now().isoformat(),
+        "transaction_count": len(state.source_b),
+        "transactions": [tx.to_dict() for tx in state.source_b]
+    }
+    
+    return data
+
+
+class UploadBlockchainJsonRequest(BaseModel):
+    transactions: list
+    version: Optional[str] = "1.0"
+
+
+@app.post("/api/upload-blockchain-json")
+async def upload_blockchain_json(request: UploadBlockchainJsonRequest):
+    """
+    Upload cached blockchain JSON to restore Source B without re-fetching.
+    Accepts the same format exported by /api/export-blockchain-json.
+    """
+    try:
+        import pytz
+        
+        restored_txs = []
+        for tx_data in request.transactions:
+            # Parse timestamp back to datetime
+            ts = tx_data.get("timestamp", "")
+            if isinstance(ts, str):
+                try:
+                    timestamp = datetime.fromisoformat(ts.replace("Z", "+00:00"))
+                except ValueError:
+                    timestamp = datetime.now(tz=pytz.UTC)
+            else:
+                timestamp = datetime.now(tz=pytz.UTC)
+            
+            tx = UnifiedTransaction(
+                timestamp=timestamp,
+                asset=tx_data.get("asset", "BTC"),
+                amount=float(tx_data.get("amount", 0)),
+                fee=float(tx_data.get("fee", 0)),
+                tx_id=tx_data.get("tx_id", ""),
+                tx_type=tx_data.get("tx_type", "Unknown"),
+                source=tx_data.get("source", "BLOCKCHAIN"),
+                price_krw=tx_data.get("price_krw"),
+                metadata=tx_data.get("metadata", {}),
+                witness_data=tx_data.get("witness_data", []),
+                raw_hex=tx_data.get("raw_hex")
+            )
+            restored_txs.append(tx)
+        
+        state.source_b = restored_txs
+        
+        return {
+            "message": "Blockchain data restored successfully",
+            "count": len(restored_txs)
+        }
+    except Exception as e:
+        import traceback
+        print(f"Upload JSON error: {traceback.format_exc()}")
+        raise HTTPException(status_code=500, detail=f"Upload failed: {str(e)}")
+
+
+# ============================================================
+# Blockchain-Only Analysis (Option C — no CEX required)
+# ============================================================
+
+class AnalyzeBlockchainOnlyRequest(BaseModel):
+    wallet_addresses: Optional[List[str]] = None
+
+
+@app.post("/api/analyze-blockchain-only")
+async def analyze_blockchain_only(request: AnalyzeBlockchainOnlyRequest):
+    """
+    Analyze blockchain transactions WITHOUT CEX data.
+    Runs pattern detection on Source B and produces Source C
+    (CoinLedger-labeled normalized transactions).
+    """
+    if not state.source_b:
+        raise HTTPException(status_code=400, detail="No blockchain data found. Please fetch or upload blockchain data first (Step 2).")
+    
+    try:
+        from src.reconciliation.ordinals_detector import detect_patterns, group_transactions_by_txid
+        
+        my_wallets = request.wallet_addresses if request.wallet_addresses else []
+        
+        print(f"Starting blockchain-only analysis with {len(state.source_b)} transactions")
+        
+        # Group transactions by TxID
+        blockchain_groups = group_transactions_by_txid(state.source_b)
+        print(f"Created {len(blockchain_groups)} transaction groups")
+        
+        # Detect patterns
+        patterns = []
+        tx_to_pattern = {}
+        
+        for group_key, tx_group in blockchain_groups.items():
+            pattern = detect_patterns(tx_group, my_wallets, state.source_b)
+            if pattern:
+                patterns.append(pattern)
+                
+                corrections_map = {id(c["tx"]): c.get("action") for c in pattern.get("corrections", []) if "tx" in c}
+                
+                # Map each transaction in this group to its detected pattern
+                for tx in tx_group:
+                    # Make key unique by including amount
+                    key = f"{tx.source}_{tx.tx_id}_{tx.timestamp.isoformat()}_{tx.amount}"
+                    if key not in tx_to_pattern:
+                        tx_to_pattern[key] = {
+                            "pattern": pattern.get("pattern", ""),
+                            "confidence": pattern.get("confidence", 0),
+                            "action": corrections_map.get(id(tx))
+                        }
+        
+        # Build Source C: CoinLedger-labeled transactions
+        source_c = []
+        for tx in state.source_b:
+            tx_dict = tx.to_dict()
+            key = f"{tx.source}_{tx.tx_id}_{tx.timestamp.isoformat()}_{tx.amount}"
+            
+            matched_pattern = tx_to_pattern.get(key, None)
+            
+            if matched_pattern:
+                # Apply CoinLedger label from pattern
+                pattern_name = matched_pattern["pattern"]
+                action = matched_pattern["action"]
+                tx_dict["pattern"] = pattern_name
+                tx_dict["confidence"] = matched_pattern["confidence"]
+                
+                # Map pattern to CoinLedger type
+                coinledger_type_map = {
+                    "MINT_BUY": "Mint",
+                    "BULK_MINT": "Mint",
+                    "SALE": "Trade",
+                    "NFT_TRADE": "Trade",
+                    "MAGIC_EDEN_BUY": "Trade",
+                    "MAGIC_EDEN_BUY_ISOLATED": "Trade",
+                    "MAGIC_EDEN_SALE": "Trade",
+                    "GAS_FEE": "Withdrawal",
+                    "SELF_TRANSFER": "Ignored",
+                    "RUNE_RECEIVE": "Deposit",
+                    "RUNE_CENOTAPH": "Investment Loss",
+                    "BRC20_TRANSFER": "Trade",
+                    "FIAT_ONRAMP": "Trade",
+                    "PSBT_SWAP": "Trade",
+                }
+                
+                if action == "IGNORE":
+                    tx_dict["coinledger_type"] = "Ignored"
+                else:
+                    tx_dict["coinledger_type"] = coinledger_type_map.get(pattern_name, tx.tx_type)
+                
+                # Map to description
+                description_map = {
+                    "MINT_BUY": "Ordinal/Rune Mint detected",
+                    "BULK_MINT": "Bulk Ordinal/Rune Mint detected",
+                    "SALE": "NFT/Rune Sale detected",
+                    "NFT_TRADE": "NFT Marketplace Trade",
+                    "MAGIC_EDEN_BUY": "Magic Eden Buy (2% fee detected)",
+                    "MAGIC_EDEN_BUY_ISOLATED": "Magic Eden Buy (Isolated Deposit)",
+                    "MAGIC_EDEN_SALE": "Magic Eden Sale",
+                    "GAS_FEE": "Network Fee / Gas",
+                    "SELF_TRANSFER": "Self-transfer between own wallets",
+                    "RUNE_RECEIVE": "Rune/Ordinal received (non-taxable)",
+                    "RUNE_CENOTAPH": "Malformed Rune (burned)",
+                    "BRC20_TRANSFER": "BRC-20 transfer inscription",
+                    "FIAT_ONRAMP": "Fiat on-ramp purchase",
+                    "PSBT_SWAP": "PSBT Marketplace Swap",
+                }
+                
+                if action == "IGNORE":
+                    tx_dict["description"] = "Dust wrapper for Ordinal/Rune (not taxable income)"
+                else:
+                    tx_dict["description"] = description_map.get(pattern_name, "")
+            else:
+                # No pattern matched — use raw transaction type
+                tx_dict["pattern"] = None
+                tx_dict["confidence"] = 0
+                tx_dict["coinledger_type"] = tx.tx_type  # Deposit/Withdrawal as-is
+                tx_dict["description"] = ""
+            
+            # Add verification links
+            if tx.tx_id and len(tx.tx_id) > 10 and tx.source != "CEX":
+                tx_dict["verify_mempool"] = f"https://mempool.space/tx/{tx.tx_id}"
+                tx_dict["verify_blockchain"] = f"https://www.blockchain.com/btc/tx/{tx.tx_id}"
+                tx_dict["verify_ordiscan"] = f"https://ordiscan.com/tx/{tx.tx_id}"
+            
+            source_c.append(tx_dict)
+        
+        # Summary stats
+        pattern_counts = {}
+        for p in patterns:
+            pname = p.get("pattern", "UNKNOWN")
+            pattern_counts[pname] = pattern_counts.get(pname, 0) + 1
+        
+        print(f"Blockchain-only analysis complete: {len(patterns)} patterns detected")
+        
+        return {
+            "status": "completed",
+            "source_c": source_c,
+            "summary": {
+                "total_transactions": len(state.source_b),
+                "patterns_detected": len(patterns),
+                "by_pattern": pattern_counts,
+            },
+            "patterns": [
+                {
+                    "pattern": p.get("pattern"),
+                    "confidence": p.get("confidence"),
+                    "severity": p.get("severity", "MEDIUM"),
+                    "description": p.get("description", ""),
+                    "affected_count": len(p.get("affected_transactions", [])),
+                }
+                for p in patterns
+            ]
+        }
+        
+    except Exception as e:
+        import traceback
+        print(f"Blockchain-only analysis error: {traceback.format_exc()}")
+        raise HTTPException(status_code=500, detail=f"Analysis failed: {str(e)}")

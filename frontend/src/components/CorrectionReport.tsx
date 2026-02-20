@@ -31,7 +31,7 @@ interface RecommendedAction {
     received_asset?: string;
     received_quantity?: number;
     ordiscan_link?: string;
-    oklink_link?: string;
+    hiro_link?: string;
     unisat_link?: string;
     ordinals_link?: string;
     requires_ordiscan?: boolean;
@@ -600,15 +600,15 @@ const CorrectionReport: React.FC<CorrectionReportProps> = ({ suggestions, summar
                                                     </a>
                                                 )}
 
-                                                {action.oklink_link && (
+                                                {action.hiro_link && (
                                                     <a
-                                                        href={action.oklink_link}
+                                                        href={action.hiro_link}
                                                         target="_blank"
                                                         rel="noopener noreferrer"
-                                                        className="inline-flex items-center gap-1 text-blue-600 hover:text-blue-800 text-sm"
+                                                        className="inline-flex items-center gap-1 px-2 py-1 rounded text-xs bg-orange-500/10 text-orange-400 hover:bg-orange-500/20 border border-orange-500/20 transition-all"
                                                     >
                                                         <ExternalLink className="w-3 h-3" />
-                                                        Verify on OKLink
+                                                        Verify on Hiro
                                                     </a>
                                                 )}
 

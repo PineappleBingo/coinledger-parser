@@ -51,7 +51,7 @@ def get_ordiscan_link(tx_id: str) -> Optional[str]:
 def get_rune_links(tx_id: str, rune_name: str = None) -> Dict[str, str]:
     """
     Generate Rune verification URLs for transaction.
-    Returns links to Ordinals.com and OKLink for Rune verification.
+    Returns links to Ordinals.com and Hiro for Rune verification.
     """
     links = {}
     
@@ -346,7 +346,7 @@ def detect_sale_pattern(tx_group: List[UnifiedTransaction], my_wallets: List[str
                     "received_asset": "BTC",
                     "received_amount": deposits[0].amount,
                     "ordiscan_link": verification_links.get('ordiscan') or get_ordiscan_link(deposits[0].tx_id),
-                    "oklink_link": verification_links.get('oklink'),
+                    "hiro_link": verification_links.get('hiro'),
                     "ordinals_link": verification_links.get('ordinals'),
                     "requires_user_input": True,
                     "reason": "Profit from selling Ordinal/Rune - taxable event",
@@ -467,7 +467,14 @@ def detect_patterns(tx_group: List[UnifiedTransaction], my_wallets: List[str] = 
             f.write(f"  -> MATCHED: {pattern.get('pattern')}\n")
         return pattern
     
-    # Check for Rune/Ordinal RECEIVE before SALE
+    # Check for Isolated Marketplace Buy (Taproot wallet only)
+    pattern = detect_isolated_marketplace_buy(tx_group)
+    if pattern:
+        with open("debug_log.txt", "a") as f:
+            f.write(f"  -> MATCHED: {pattern.get('pattern')}\n")
+        return pattern
+        
+    # Check for simple Rune/Ordinal RECEIVE before SALE
     # This prevents misclassifying Rune deposits as sales
     pattern = detect_rune_receive_pattern(tx_group)
     if pattern:
@@ -631,6 +638,64 @@ def detect_psbt_pattern(tx_group: List[UnifiedTransaction]) -> Optional[Dict]:
                      }]
                  }
     return None
+def detect_isolated_marketplace_buy(tx_group: List[UnifiedTransaction]) -> Optional[Dict]:
+    """
+    Scenario: User bought an Ordinal/Rune on a marketplace (like Magic Eden)
+    but only connected their taproot (receiving) wallet to CoinLedger.
+    
+    Pattern: [Deposit of Dust containing Ordinal] WITH marketplace PSBT signatures/structure.
+    
+    CoinLedger Error: Records as a non-taxable Deposit (Income).
+    Reality: It is a Purchase, establishing cost basis. The user needs to manually input the amount spent.
+    """
+    withdrawals = [t for t in tx_group if t.tx_type in ['Withdrawal', 'Send']]
+    deposits = [t for t in tx_group if t.tx_type in ['Deposit', 'Receive']]
+    
+    # Check pattern: single deposit, no withdrawal, is dust
+    if len(deposits) == 1 and not withdrawals and is_dust(deposits[0].amount):
+        deposit_tx = deposits[0]
+        
+        # Check if this deposit has Rune/Ordinal metadata
+        if hasattr(deposit_tx, 'metadata') and deposit_tx.metadata:
+            asset_type = deposit_tx.metadata.get('asset_type')
+            
+            if asset_type in ['ORDINAL', 'RUNE']:
+                # Is it a complex PSBT?
+                if is_potential_marketplace_tx(deposit_tx):
+                    asset_name = "Unknown Asset"
+                    
+                    if asset_type == 'ORDINAL':
+                        inscription_id = deposit_tx.metadata.get('inscription_id', '')
+                        asset_name = f"Ordinal {inscription_id[:16]}..." if inscription_id else "Ordinal"
+                    elif asset_type == 'RUNE':
+                        rune_name = deposit_tx.metadata.get('rune_name', '')
+                        asset_name = rune_name if rune_name else "Rune"
+                    
+                    # Generate verification links
+                    verification_links = {}
+                    if asset_type == 'RUNE':
+                        rune_name = deposit_tx.metadata.get('rune_name', '')
+                        verification_links = get_rune_links(deposit_tx.tx_id, rune_name)
+                    elif asset_type == 'ORDINAL':
+                        ordiscan_link = get_ordiscan_link(deposit_tx.tx_id)
+                        if ordiscan_link:
+                            verification_links['ordiscan'] = ordiscan_link
+
+                    return {
+                        "pattern": "MAGIC_EDEN_BUY_ISOLATED",
+                        "confidence": 0.85,
+                        "severity": "HIGH",
+                        "tax_impact": "ESTABLISHES_COST_BASIS",
+                        "affected_transactions": tx_group,
+                        "corrections": [{
+                            "tx": deposit_tx,
+                            "action": "CHANGE_TO_BUY_ISOLATED",
+                            "reason": f"Isolated Marketplace Trade - {asset_name} received via PSBT",
+                            "note": "Payment wallet not connected! Please manually enter the BTC purchase price.",
+                        }]
+                    }
+    return None
+
 def detect_rune_receive_pattern(tx_group: List[UnifiedTransaction]) -> Optional[Dict]:
     """
     Scenario: Rune/Ordinal Receive Pattern
@@ -685,7 +750,7 @@ def detect_rune_receive_pattern(tx_group: List[UnifiedTransaction]) -> Optional[
                         "transaction": deposit_tx,  # Include for asset tags and preview
                         "verification_links": verification_links,  # Add verification links
                         "ordiscan_link": verification_links.get('ordiscan'),  # For compatibility
-                        "oklink_link": verification_links.get('oklink'),
+                        "hiro_link": verification_links.get('hiro'),
                         "ordinals_link": verification_links.get('ordinals')
                     }]
                 }

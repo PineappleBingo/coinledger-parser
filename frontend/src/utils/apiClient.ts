@@ -1,5 +1,6 @@
 // API utility for fetching Ordinals and Runes metadata
-// Implements automatic fallback between UniSat, OKLink, and Hiro APIs
+// Implements automatic fallback: UniSat (primary) → Hiro (fallback)
+// ⚠️ Hiro sunsetting March 2026 — Rate limit: 900 requests/minute
 
 export interface OrdinalInfo {
     inscription_id: string;
@@ -15,6 +16,9 @@ export interface RuneInfo {
     ticker: string;
     amount: string;
     divisibility: number;
+    content_url?: string;
+    content_type?: string;
+    collection?: string;
 }
 
 // Track which APIs are currently rate-limited
@@ -30,10 +34,10 @@ const resetRateLimit = (apiName: string) => {
 
 /**
  * Fetch Ordinal inscription metadata with automatic API fallback
- * Tries: UniSat → Hiro → OKLink
+ * Tries: UniSat → Hiro
  */
 export const fetchOrdinalInfo = async (inscriptionId: string): Promise<OrdinalInfo | null> => {
-    // Try UniSat API first
+    // Try UniSat API first (primary)
     if (!rateLimitedAPIs.has('unisat')) {
         try {
             const response = await fetch(
@@ -62,7 +66,7 @@ export const fetchOrdinalInfo = async (inscriptionId: string): Promise<OrdinalIn
         }
     }
 
-    // Try Hiro API as fallback
+    // Try Hiro API as fallback (sunsetting March 2026, 900 req/min)
     if (!rateLimitedAPIs.has('hiro')) {
         try {
             const response = await fetch(
@@ -70,7 +74,7 @@ export const fetchOrdinalInfo = async (inscriptionId: string): Promise<OrdinalIn
             );
 
             if (response.status === 429) {
-                console.warn('[API] Hiro rate limit reached, switching to OKLink');
+                console.warn('[API] Hiro rate limit reached');
                 rateLimitedAPIs.add('hiro');
                 resetRateLimit('hiro');
             } else if (response.ok) {
@@ -91,95 +95,67 @@ export const fetchOrdinalInfo = async (inscriptionId: string): Promise<OrdinalIn
         }
     }
 
-    // Try OKLink API as last resort
-    if (!rateLimitedAPIs.has('oklink')) {
-        try {
-            // OKLink uses inscription number, try to extract from ID
-            const response = await fetch(
-                `https://www.oklink.com/api/v5/explorer/btc/inscriptions-list?inscriptionId=${inscriptionId}`
-            );
-
-            if (response.status === 429) {
-                console.warn('[API] OKLink rate limit reached');
-                rateLimitedAPIs.add('oklink');
-                resetRateLimit('oklink');
-            } else if (response.ok) {
-                const data = await response.json();
-                console.log('[API] OKLink success:', inscriptionId);
-
-                if (data.data && data.data.length > 0) {
-                    const inscription = data.data[0];
-                    return {
-                        inscription_id: inscription.inscriptionId || inscriptionId,
-                        inscription_number: parseInt(inscription.inscriptionNumber) || 0,
-                        content_type: inscription.contentType || 'unknown',
-                        content_url: `https://ordinals.com/content/${inscriptionId}`,
-                        name: inscription.name
-                    };
-                }
-            }
-        } catch (error) {
-            console.error('[API] OKLink error:', error);
-        }
-    }
-
     console.error('[API] All APIs failed or rate-limited for inscription:', inscriptionId);
     return null;
 };
 
 /**
  * Fetch Rune metadata with automatic API fallback
- * Tries: OKLink → Hiro → UniSat
- */
-/**
- * Fetch Rune metadata with automatic API fallback
- * Tries: OKLink → Hiro → UniSat
+ * Tries: UniSat → Hiro
  */
 export const fetchRuneInfo = async (txId: string, runeName?: string): Promise<RuneInfo[]> => {
-    // Try OKLink API first (best for Runes)
-    if (!rateLimitedAPIs.has('oklink-runes')) {
+    // Try UniSat API first (primary)
+    if (!rateLimitedAPIs.has('unisat-runes')) {
         try {
             const response = await fetch(
-                `https://www.oklink.com/api/v5/explorer/btc/runes-transaction-list?txId=${txId}`
+                `https://open-api.unisat.io/v1/indexer/tx/${txId}`
             );
 
             if (response.status === 429) {
-                console.warn('[API] OKLink Runes rate limit reached, switching to Hiro');
-                rateLimitedAPIs.add('oklink-runes');
-                resetRateLimit('oklink-runes');
+                console.warn('[API] UniSat Runes rate limit reached, switching to Hiro');
+                rateLimitedAPIs.add('unisat-runes');
+                resetRateLimit('unisat-runes');
             } else if (response.ok) {
                 const data = await response.json();
-                console.log('[API] OKLink Runes success:', txId);
+                console.log('[API] UniSat Runes success:', txId);
 
-                if (data.data && data.data.length > 0) {
+                if (data.code === 0 && data.data) {
+                    const tx_data = data.data;
                     const runes: RuneInfo[] = [];
-                    const foundRunes = new Set<string>();
+                    const foundNames = new Set<string>();
 
-                    for (const rune of data.data) {
-                        const name = rune.runeName || runeName || 'Unknown Rune';
-                        if (!foundRunes.has(name)) {
-                            foundRunes.add(name);
-                            runes.push({
-                                rune_name: name,
-                                ticker: rune.runeSymbol || name || 'RUNE',
-                                amount: rune.amount || '0',
-                                divisibility: parseInt(rune.divisibility) || 0
-                            });
+                    if (tx_data.vout) {
+                        for (const vout of tx_data.vout) {
+                            if (vout.runes) {
+                                for (const r of vout.runes) {
+                                    const name = r.runeName || r.name || r.symbol || runeName || 'Unknown Rune';
+                                    if (!foundNames.has(name)) {
+                                        foundNames.add(name);
+                                        runes.push({
+                                            rune_name: name,
+                                            ticker: r.symbol || name || 'RUNE',
+                                            amount: r.amount || '0',
+                                            divisibility: parseInt(r.divisibility) || 0
+                                        });
+                                    }
+                                }
+                            }
                         }
                     }
-                    return runes;
+                    if (runes.length > 0) return runes;
                 }
             }
         } catch (error) {
-            console.error('[API] OKLink Runes error:', error);
+            console.error('[API] UniSat Runes error:', error);
         }
     }
 
-    // Try Hiro API as fallback (Note: Hiro usually fetches by name, not txId in this endpoint)
+    // Try Hiro API as fallback (sunsetting March 2026, 900 req/min)
     if (!rateLimitedAPIs.has('hiro-runes')) {
         try {
+            // Hiro Runes activity endpoint by tx
             const response = await fetch(
-                `https://api.hiro.so/runes/v1/etchings/${runeName || 'UNCOMMON•GOODS'}`
+                `https://api.hiro.so/runes/v1/transactions/${txId}/activity`
             );
 
             if (response.status === 429) {
@@ -188,14 +164,27 @@ export const fetchRuneInfo = async (txId: string, runeName?: string): Promise<Ru
                 resetRateLimit('hiro-runes');
             } else if (response.ok) {
                 const data = await response.json();
-                console.log('[API] Hiro Runes success:', runeName);
+                console.log('[API] Hiro Runes success:', txId);
 
-                return [{
-                    rune_name: data.name || runeName || 'Unknown Rune',
-                    ticker: data.symbol || data.name || 'RUNE',
-                    amount: data.total_mints || '0',
-                    divisibility: data.divisibility || 0
-                }];
+                const results = data.results || [];
+                if (results.length > 0) {
+                    const runes: RuneInfo[] = [];
+                    const foundRunes = new Set<string>();
+
+                    for (const item of results) {
+                        const name = item.rune?.spaced_name || item.rune?.name || runeName || 'Unknown Rune';
+                        if (!foundRunes.has(name)) {
+                            foundRunes.add(name);
+                            runes.push({
+                                rune_name: name,
+                                ticker: item.rune?.symbol || name || 'RUNE',
+                                amount: item.amount || '0',
+                                divisibility: item.rune?.divisibility || 0
+                            });
+                        }
+                    }
+                    if (runes.length > 0) return runes;
+                }
             }
         } catch (error) {
             console.error('[API] Hiro Runes error:', error);
