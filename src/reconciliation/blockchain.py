@@ -109,6 +109,20 @@ class BlockchainClient:
                     # Build metadata with asset type and additional info
                     metadata = {'asset_type': asset_type}
                     
+                    # Compute the total input value of the ENTIRE transaction (all parties)
+                    # This is the "Input Value" shown on blockchain.com — critical for
+                    # estimating the actual purchase price in isolated marketplace buys.
+                    total_input_sats = sum(
+                        vin.get('prevout', {}).get('value', 0)
+                        for vin in tx.get('vin', [])
+                    )
+                    total_output_sats = sum(
+                        vout.get('value', 0)
+                        for vout in tx.get('vout', [])
+                    )
+                    metadata['total_input_value_btc'] = total_input_sats / 100_000_000
+                    metadata['total_output_value_btc'] = total_output_sats / 100_000_000
+                    
                     # Store payment and receiving addresses for verification
                     payment_addrs = set()
                     receiving_addrs = set()
@@ -156,7 +170,7 @@ class BlockchainClient:
                         timestamp=timestamp,
                         asset='BTC',
                         amount=net_amount_btc,
-                        fee=fee_btc if net_amount_btc < 0 else 0,  # Only count fee for outgoing
+                        fee=fee_btc,  # Bug 17: Preserve fee for isolated buys
                         tx_id=tx_id,
                         tx_type=tx_type,
                         source='BLOCKCHAIN',

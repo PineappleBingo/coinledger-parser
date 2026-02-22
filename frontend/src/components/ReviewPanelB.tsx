@@ -7,6 +7,7 @@ interface Props {
     selectedTxId?: string | null;
     onRowClick?: (txId: string) => void;
     runeOverrides?: Record<string, any>;
+    classificationOverrides?: Record<string, string>;
     showUSD?: boolean;
     btcPrice?: number | null;
 }
@@ -26,7 +27,7 @@ const TEMPLATE_HEADERS = [
     'TxHash',
 ];
 
-const ReviewPanelB: React.FC<Props> = ({ transactions, searchQuery, selectedTxId, onRowClick, runeOverrides = {}, showUSD, btcPrice }) => {
+const ReviewPanelB: React.FC<Props> = ({ transactions, searchQuery, selectedTxId, onRowClick, runeOverrides = {}, classificationOverrides = {}, showUSD, btcPrice }) => {
 
     const formatUSD = (amount: string, assetType: string) => {
         if (!showUSD || !btcPrice || !amount) return '';
@@ -61,10 +62,27 @@ const ReviewPanelB: React.FC<Props> = ({ transactions, searchQuery, selectedTxId
 
     // Map Source C transactions to CoinLedger template rows
     const mapToTemplates = (tx: any): any[] => {
-        const type = tx.coinledger_type || tx.tx_type || '';
-        const timestamp = tx.timestamp
-            ? new Date(tx.timestamp).toISOString().replace('T', ' ').split('.')[0]
-            : '';
+        let type = tx.coinledger_type || tx.tx_type || '';
+        let description = tx.description || tx.pattern || '';
+
+        // Manual override application
+        if (classificationOverrides[tx.tx_id || '']) {
+            type = classificationOverrides[tx.tx_id || ''];
+            description = description ? `${description} (Manually Re-classified)` : 'Manually Re-classified';
+        }
+
+        const formatDate = (ts: string) => {
+            if (!ts) return '';
+            const d = new Date(ts);
+            const mm = String(d.getUTCMonth() + 1).padStart(2, '0');
+            const dd = String(d.getUTCDate()).padStart(2, '0');
+            const yyyy = d.getUTCFullYear();
+            const hh = String(d.getUTCHours()).padStart(2, '0');
+            const min = String(d.getUTCMinutes()).padStart(2, '0');
+            const ss = String(d.getUTCSeconds()).padStart(2, '0');
+            return `${mm}/${dd}/${yyyy} ${hh}:${min}:${ss}`;
+        };
+        const timestamp = formatDate(tx.timestamp);
         const amount = Math.abs(tx.amount || 0);
         const fee = tx.fee || 0;
         const asset = tx.asset || 'BTC';
@@ -81,7 +99,7 @@ const ReviewPanelB: React.FC<Props> = ({ transactions, searchQuery, selectedTxId
             'Fee Currency': fee > 0 ? 'BTC' : '',
             'Fee Amount': fee > 0 ? fee.toFixed(8) : '',
             'Type': type,
-            'Description': tx.description || tx.pattern || '',
+            'Description': description,
             'TxHash': tx.tx_id || '',
             _needsReview: !resolvedRune && !!(tx.pattern && ['MINT_BUY', 'BULK_MINT', 'RUNE_RECEIVE', 'SALE', 'MAGIC_EDEN_BUY', 'MAGIC_EDEN_SALE'].includes(tx.pattern)),
             _isIgnored: type === 'Ignored',
@@ -93,9 +111,10 @@ const ReviewPanelB: React.FC<Props> = ({ transactions, searchQuery, selectedTxId
                 // Buying: BTC sent, NFT/Rune received
                 primaryRow['Asset Sent'] = 'BTC';
 
-                // Check for isolated buy pattern
-                if (tx.pattern === 'MAGIC_EDEN_BUY_ISOLATED') {
-                    primaryRow['Amount Sent'] = ''; // User Input Required
+                // For marketplace/mint buys where deposit is primary, use total input value as purchase price
+                const meta = tx.metadata && typeof tx.metadata === 'object' ? tx.metadata : {};
+                if ((tx.pattern === 'MAGIC_EDEN_BUY_ISOLATED' || tx.pattern === 'MINT_BUY' || tx.pattern === 'BULK_MINT') && meta.total_input_value_btc) {
+                    primaryRow['Amount Sent'] = Number(meta.total_input_value_btc).toFixed(8);
                 } else {
                     primaryRow['Amount Sent'] = amount.toFixed(8);
                 }
@@ -104,8 +123,9 @@ const ReviewPanelB: React.FC<Props> = ({ transactions, searchQuery, selectedTxId
                     primaryRow['Asset Received'] = resolvedRune.name;
                     primaryRow['Amount Received'] = resolvedRune.amount;
                 } else {
-                    const meta = tx.metadata && typeof tx.metadata === 'object' ? tx.metadata : {};
-                    if (meta.asset_type === 'ORDINAL') {
+                    const meta2 = tx.metadata && typeof tx.metadata === 'object' ? tx.metadata : {};
+                    if (meta2.asset_type === 'ORDINAL' || tx.pattern === 'MINT_BUY' || tx.pattern === 'BULK_MINT' || tx.pattern === 'MAGIC_EDEN_BUY' || tx.pattern === 'MAGIC_EDEN_BUY_ISOLATED') {
+                        // Pattern indicates ordinal/NFT purchase — even if withdrawal tx lacks ordinal metadata
                         primaryRow['Asset Received'] = 'Ordinal #';
                         primaryRow['Amount Received'] = '1';
                     } else {
@@ -127,8 +147,8 @@ const ReviewPanelB: React.FC<Props> = ({ transactions, searchQuery, selectedTxId
             }
             returnRows.push(primaryRow);
 
-            if (tx.pattern === 'MAGIC_EDEN_BUY_ISOLATED' && resolvedRune) {
-                // Return a second row for the dust deposit, since it's isolated and we need to account for it
+            // Add companion dust row for marketplace/mint buys with resolved rune info
+            if ((tx.pattern === 'MAGIC_EDEN_BUY_ISOLATED' || tx.pattern === 'MINT_BUY' || tx.pattern === 'BULK_MINT') && resolvedRune) {
                 returnRows.push({
                     'Date (UTC)': timestamp,
                     'Platform': 'Bitcoin Blockchain',
@@ -136,7 +156,7 @@ const ReviewPanelB: React.FC<Props> = ({ transactions, searchQuery, selectedTxId
                     'Amount Sent': '',
                     'Asset Received': 'BTC',
                     'Amount Received': amount.toFixed(8),
-                    'Fee Currency': '', // fee already paid in row 1
+                    'Fee Currency': '',
                     'Fee Amount': '',
                     'Type': 'Ignored',
                     'Description': 'BTC dust received with Ordinal/Rune',

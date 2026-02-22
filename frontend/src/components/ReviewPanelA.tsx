@@ -12,9 +12,11 @@ interface Props {
     btcPrice?: number | null;
     walletAddresses?: string[];
     runeOverrides?: Record<string, any>;
+    classificationOverrides?: Record<string, string>;
+    onClassificationOverride?: (txId: string, type: string) => void;
 }
 
-const ReviewPanelA: React.FC<Props> = ({ transactions, searchQuery, selectedTxId, onRowClick, onRuneFetched, showUSD, btcPrice, walletAddresses = [], runeOverrides = {} }) => {
+const ReviewPanelA: React.FC<Props> = ({ transactions, searchQuery, selectedTxId, onRowClick, onRuneFetched, showUSD, btcPrice, walletAddresses = [], runeOverrides = {}, classificationOverrides = {}, onClassificationOverride }) => {
     const formatUSD = (btcAmount: number) => {
         if (!showUSD || !btcPrice) return '';
         const usd = Math.abs(btcAmount) * btcPrice;
@@ -81,11 +83,11 @@ const ReviewPanelA: React.FC<Props> = ({ transactions, searchQuery, selectedTxId
         : transactions;
 
     const getTypeBadge = (tx: any) => {
-        let type = tx.coinledger_type || tx.tx_type || 'Unknown';
+        let type = classificationOverrides[tx.tx_id || ''] || tx.coinledger_type || tx.tx_type || 'Unknown';
 
         // Bug 11 Fix: Visually label all components of a MINT as 'Mint' in Panel A, 
         // even if they are fundamentally 'Ignored' dust deposits for tax purposes.
-        if (tx.pattern === 'MINT_BUY' || tx.pattern === 'BULK_MINT') {
+        if (!classificationOverrides[tx.tx_id || ''] && (tx.pattern === 'MINT_BUY' || tx.pattern === 'BULK_MINT')) {
             type = 'Mint';
         }
 
@@ -152,13 +154,99 @@ const ReviewPanelA: React.FC<Props> = ({ transactions, searchQuery, selectedTxId
     const formatDate = (ts: string) => {
         try {
             const d = new Date(ts);
-            return d.toISOString().replace('T', ' ').split('.')[0] + ' UTC';
+            const mm = String(d.getUTCMonth() + 1).padStart(2, '0');
+            const dd = String(d.getUTCDate()).padStart(2, '0');
+            const yyyy = d.getUTCFullYear();
+            const hh = String(d.getUTCHours()).padStart(2, '0');
+            const min = String(d.getUTCMinutes()).padStart(2, '0');
+            const ss = String(d.getUTCSeconds()).padStart(2, '0');
+            return `${mm}/${dd}/${yyyy} ${hh}:${min}:${ss} UTC`;
         } catch { return ts; }
     };
 
     const formatBTC = (amount: number) => {
         if (amount === 0) return '0';
         return amount < 0 ? `${amount.toFixed(8)}` : `+${amount.toFixed(8)}`;
+    };
+
+    const getAmountsData = (tx: any) => {
+        const type = classificationOverrides[tx.tx_id || ''] || tx.coinledger_type || tx.tx_type || 'Unknown';
+        const amount = Math.abs(tx.amount || 0);
+        const asset = tx.asset || 'BTC';
+        const runeName = getDisplayRuneName(tx);
+
+        let sentAmount = '';
+        let sentAsset = '';
+        let receivedAmount = '';
+        let receivedAsset = '';
+        let isSentUsd = false;
+        let isReceivedUsd = false;
+
+        const isBuyingNFT = tx.amount < 0 || tx.pattern === 'MINT_BUY' || tx.pattern === 'BULK_MINT' || tx.pattern === 'MAGIC_EDEN_BUY' || tx.pattern === 'MAGIC_EDEN_BUY_ISOLATED';
+
+        if (type === 'Trade' || type === 'Mint') {
+            if (isBuyingNFT) {
+                sentAsset = 'BTC';
+                isSentUsd = true;
+
+                // For marketplace/mint buys where deposit is primary, use total input value as purchase price
+                const meta = tx.metadata && typeof tx.metadata === 'object' ? tx.metadata : {};
+                if ((tx.pattern === 'MAGIC_EDEN_BUY_ISOLATED' || tx.pattern === 'MINT_BUY' || tx.pattern === 'BULK_MINT') && meta.total_input_value_btc) {
+                    sentAmount = Number(meta.total_input_value_btc).toFixed(8);
+                } else {
+                    sentAmount = amount.toFixed(8);
+                }
+
+                if (runeName) {
+                    receivedAsset = runeName;
+                    const meta2 = tx.metadata && typeof tx.metadata === 'object' ? tx.metadata : {};
+                    receivedAmount = meta2.rune_amount ? String(meta2.rune_amount) : '1';
+                } else {
+                    if (meta.asset_type === 'ORDINAL' || tx.pattern === 'MINT_BUY' || tx.pattern === 'BULK_MINT' || tx.pattern === 'MAGIC_EDEN_BUY' || tx.pattern === 'MAGIC_EDEN_BUY_ISOLATED') {
+                        // Pattern indicates ordinal/NFT purchase
+                        receivedAsset = 'Ordinal #';
+                        receivedAmount = '1';
+                    } else {
+                        receivedAsset = 'BTC';
+                        receivedAmount = amount.toFixed(8);
+                        isReceivedUsd = true;
+                    }
+                }
+            } else {
+                if (runeName) {
+                    sentAsset = runeName;
+                    const meta = tx.metadata && typeof tx.metadata === 'object' ? tx.metadata : {};
+                    sentAmount = meta.rune_amount ? String(meta.rune_amount) : '1';
+                } else {
+                    sentAsset = asset;
+                    sentAmount = amount.toFixed(8);
+                    isSentUsd = true;
+                }
+                receivedAsset = 'BTC';
+                receivedAmount = amount.toFixed(8);
+                isReceivedUsd = true;
+            }
+        } else if (type === 'Deposit' || type === 'Income' || type === 'Airdrop') {
+            receivedAsset = asset;
+            receivedAmount = amount.toFixed(8);
+            isReceivedUsd = true;
+        } else if (type === 'Withdrawal') {
+            sentAsset = asset;
+            sentAmount = amount.toFixed(8);
+            isSentUsd = true;
+        } else {
+            if (tx.amount < 0) {
+                sentAsset = asset;
+                sentAmount = amount.toFixed(8);
+                isSentUsd = true;
+            } else {
+                receivedAsset = asset;
+                receivedAmount = amount.toFixed(8);
+                isReceivedUsd = true;
+            }
+        }
+
+        return { sentAmount, sentAsset, receivedAmount, receivedAsset, isSentUsd, isReceivedUsd, amountBTC: amount, rawAmount: tx.amount };
     };
 
     return (
@@ -221,12 +309,20 @@ const ReviewPanelA: React.FC<Props> = ({ transactions, searchQuery, selectedTxId
 
                             {/* Collapsed preview line */}
                             {!isExpanded && (
-                                <div className="px-4 pb-3 flex items-center gap-4 text-sm">
-                                    {tx.amount < 0 ? (
-                                        <span className="text-red-400">Sent: {formatBTC(tx.amount)} {tx.asset}{formatUSD(tx.amount)}</span>
-                                    ) : (
-                                        <span className="text-green-400">Received: {formatBTC(tx.amount)} {tx.asset}{formatUSD(tx.amount)}</span>
-                                    )}
+                                <div className="px-4 pb-3 flex flex-wrap items-center gap-4 text-sm">
+                                    {(() => {
+                                        const { sentAmount, sentAsset, receivedAmount, receivedAsset, isSentUsd, isReceivedUsd, amountBTC } = getAmountsData(tx);
+                                        return (
+                                            <>
+                                                {sentAmount && (
+                                                    <span className="text-red-400">Sent: {sentAmount} {sentAsset}{isSentUsd ? formatUSD(-amountBTC) : ''}</span>
+                                                )}
+                                                {receivedAmount && (
+                                                    <span className="text-green-400">Received: {receivedAmount} {receivedAsset}{isReceivedUsd ? formatUSD(amountBTC) : ''}</span>
+                                                )}
+                                            </>
+                                        );
+                                    })()}
                                     {tx.fee > 0 && <span className="text-gray-500 text-xs">Fee: {tx.fee.toFixed(8)} BTC{formatUSD(tx.fee)}</span>}
                                     {isBlockchain && (
                                         <span className="text-gray-600 font-mono text-xs ml-auto">{txId.slice(0, 8)}…{txId.slice(-6)}</span>
@@ -239,20 +335,27 @@ const ReviewPanelA: React.FC<Props> = ({ transactions, searchQuery, selectedTxId
                                 <div className="px-4 pb-4 space-y-3 border-t border-gray-800/50">
                                     {/* Amounts */}
                                     <div className="grid grid-cols-3 gap-4 pt-3 mb-3">
-                                        <div>
-                                            <span className="text-xs text-gray-500 block">Sent</span>
-                                            <span className={`font-semibold flex flex-col ${tx.amount < 0 ? 'text-red-400' : 'text-gray-500'}`}>
-                                                <span>{tx.amount < 0 ? `${Math.abs(tx.amount).toFixed(8)} ${tx.asset}` : '—'}</span>
-                                                {tx.amount < 0 && <span className="text-gray-500 text-xs font-normal">{formatUSD(tx.amount)}</span>}
-                                            </span>
-                                        </div>
-                                        <div>
-                                            <span className="text-xs text-gray-500 block">Received</span>
-                                            <span className={`font-semibold flex flex-col ${tx.amount > 0 ? 'text-green-400' : 'text-gray-500'}`}>
-                                                <span>{tx.amount > 0 ? `${tx.amount.toFixed(8)} ${tx.asset}` : '—'}</span>
-                                                {tx.amount > 0 && <span className="text-gray-500 text-xs font-normal">{formatUSD(tx.amount)}</span>}
-                                            </span>
-                                        </div>
+                                        {(() => {
+                                            const { sentAmount, sentAsset, receivedAmount, receivedAsset, isSentUsd, isReceivedUsd, amountBTC } = getAmountsData(tx);
+                                            return (
+                                                <>
+                                                    <div>
+                                                        <span className="text-xs text-gray-500 block">Sent</span>
+                                                        <span className={`font-semibold flex flex-col ${sentAmount ? 'text-red-400' : 'text-gray-500'}`}>
+                                                            <span>{sentAmount ? `${sentAmount} ${sentAsset}` : '—'}</span>
+                                                            {sentAmount && isSentUsd && <span className="text-gray-500 text-xs font-normal">{formatUSD(-amountBTC)}</span>}
+                                                        </span>
+                                                    </div>
+                                                    <div>
+                                                        <span className="text-xs text-gray-500 block">Received</span>
+                                                        <span className={`font-semibold flex flex-col ${receivedAmount ? 'text-green-400' : 'text-gray-500'}`}>
+                                                            <span>{receivedAmount ? `${receivedAmount} ${receivedAsset}` : '—'}</span>
+                                                            {receivedAmount && isReceivedUsd && <span className="text-gray-500 text-xs font-normal">{formatUSD(amountBTC)}</span>}
+                                                        </span>
+                                                    </div>
+                                                </>
+                                            );
+                                        })()}
                                         <div className="text-right">
                                             <span className="text-xs text-gray-500 block">Fee</span>
                                             <span className={`font-semibold flex flex-col items-end ${tx.fee > 0 ? 'text-yellow-400' : 'text-gray-500'}`}>
@@ -268,6 +371,26 @@ const ReviewPanelA: React.FC<Props> = ({ transactions, searchQuery, selectedTxId
                                             <span className="text-gray-600">Description: </span>{tx.description}
                                         </div>
                                     )}
+
+                                    {/* Classification Override */}
+                                    <div className="flex items-center justify-between text-sm py-2 px-3 bg-gray-800/20 rounded-lg border border-gray-700/30">
+                                        <span className="text-gray-400 font-medium tracking-wide">Classification</span>
+                                        <select
+                                            value={classificationOverrides[tx.tx_id || ''] || tx.coinledger_type || tx.tx_type}
+                                            onChange={(e) => onClassificationOverride && onClassificationOverride(tx.tx_id || '', e.target.value)}
+                                            className="bg-gray-800 border border-gray-700 text-gray-200 text-xs rounded px-2 py-1.5 outline-none focus:ring-1 focus:ring-purple-500 cursor-pointer"
+                                            onClick={(e) => e.stopPropagation()}
+                                        >
+                                            <option value="Deposit">Deposit</option>
+                                            <option value="Withdrawal">Withdrawal</option>
+                                            <option value="Trade">Trade</option>
+                                            <option value="Income">Income</option>
+                                            <option value="Airdrop">Airdrop</option>
+                                            <option value="Mint">Mint</option>
+                                            <option value="Ignored">Ignored</option>
+                                            <option value="Investment Loss">Investment Loss</option>
+                                        </select>
+                                    </div>
 
                                     {/* Metadata — Asset Type Badge */}
                                     {tx.metadata && typeof tx.metadata === 'object' && tx.metadata.asset_type && tx.metadata.asset_type !== 'BTC' && (

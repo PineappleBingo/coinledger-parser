@@ -146,12 +146,6 @@ def detect_mint_buy_pattern(tx_group: List[UnifiedTransaction]) -> Optional[Dict
                 "corrections": [
                     {
                         "tx": deposits[0],
-                        "action": "IGNORE",
-                        "reason": "Dust wrapper for Ordinal/Rune (not taxable income)",
-                        "warning": "⚠️ Do NOT delete - mark as 'Ignored' in CoinLedger"
-                    },
-                    {
-                        "tx": withdrawals[0],
                         "action": "CHANGE_TO_TRADE",
                         "sent_asset": "BTC",
                         "sent_amount": abs(withdrawals[0].amount),
@@ -159,10 +153,15 @@ def detect_mint_buy_pattern(tx_group: List[UnifiedTransaction]) -> Optional[Dict
                         "received_quantity": 1,
                         "ordiscan_link": get_ordiscan_link(deposits[0].tx_id) if deposits[0].tx_id else None,
                         "requires_ordiscan": True,
-                        "transaction": deposits[0],  # Include blockchain deposit for asset tags
+                        "transaction": deposits[0],
                         "verification_links": get_ordiscan_link(deposits[0].tx_id) if deposits[0].tx_id else None,
-                        "ordiscan_link": get_ordiscan_link(deposits[0].tx_id) if deposits[0].tx_id else None,
                         "mempool_link": f"https://mempool.space/tx/{deposits[0].tx_id}" if deposits[0].tx_id else None
+                    },
+                    {
+                        "tx": withdrawals[0],
+                        "action": "IGNORE",
+                        "reason": "BTC payment for Ordinal/Rune mint (cost basis on companion row)",
+                        "warning": "⚠️ Do NOT delete - mark as 'Ignored' in CoinLedger"
                     }
                 ]
             }
@@ -193,14 +192,8 @@ def detect_bulk_mint_pattern(tx_group: List[UnifiedTransaction]) -> Optional[Dic
                 "tax_impact": "ESTABLISHES_COST_BASIS",
                 "affected_transactions": tx_group,
                 "corrections": [
-                    *[{
-                        "tx": d,
-                        "action": "IGNORE",
-                        "reason": f"Dust wrapper {i+1}/{len(deposits)} for bulk mint",
-                        "warning": "⚠️ Do NOT delete - mark as 'Ignored' in CoinLedger"
-                    } for i, d in enumerate(deposits)],
                     {
-                        "tx": withdrawals[0],
+                        "tx": blockchain_deposit,
                         "action": "CHANGE_TO_TRADE",
                         "sent_asset": "BTC",
                         "sent_amount": abs(withdrawals[0].amount),
@@ -208,10 +201,21 @@ def detect_bulk_mint_pattern(tx_group: List[UnifiedTransaction]) -> Optional[Dic
                         "received_quantity": len(deposits),
                         "ordiscan_link": get_ordiscan_link(blockchain_deposit.tx_id) if blockchain_deposit.tx_id else None,
                         "requires_ordiscan": True,
-                        "transaction": blockchain_deposit,  # Use blockchain deposit for asset tags
+                        "transaction": blockchain_deposit,
                         "verification_links": get_ordiscan_link(blockchain_deposit.tx_id) if blockchain_deposit.tx_id else None,
-                        "ordiscan_link": get_ordiscan_link(blockchain_deposit.tx_id) if blockchain_deposit.tx_id else None,
                         "mempool_link": f"https://mempool.space/tx/{blockchain_deposit.tx_id}" if blockchain_deposit.tx_id else None
+                    },
+                    *[{
+                        "tx": d,
+                        "action": "IGNORE",
+                        "reason": f"Dust wrapper {i+1}/{len(deposits)} for bulk mint",
+                        "warning": "⚠️ Do NOT delete - mark as 'Ignored' in CoinLedger"
+                    } for i, d in enumerate(deposits) if d is not blockchain_deposit],
+                    {
+                        "tx": withdrawals[0],
+                        "action": "IGNORE",
+                        "reason": "BTC payment for bulk Ordinal/Rune mint (cost basis on companion row)",
+                        "warning": "⚠️ Do NOT delete - mark as 'Ignored' in CoinLedger"
                     }
                 ]
             }

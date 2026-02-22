@@ -979,7 +979,11 @@ async def analyze_blockchain_only(request: AnalyzeBlockchainOnlyRequest):
                 }
                 
                 if action == "IGNORE":
-                    tx_dict["description"] = "Dust wrapper for Ordinal/Rune (not taxable income)"
+                    # Differentiate: withdrawal = payment, deposit = dust wrapper
+                    if tx.tx_type in ['Withdrawal', 'Send'] and pattern_name in ['MINT_BUY', 'BULK_MINT']:
+                        tx_dict["description"] = "BTC payment for Ordinal/Rune mint (cost basis on companion row)"
+                    else:
+                        tx_dict["description"] = "Dust wrapper for Ordinal/Rune (not taxable income)"
                 else:
                     tx_dict["description"] = description_map.get(pattern_name, "")
             else:

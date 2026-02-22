@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import axios from 'axios';
 import { Upload, RefreshCw, FileText, Activity, Download, ChevronDown, ChevronRight, UploadCloud, FileJson, Search } from 'lucide-react';
 import CorrectionReport from './components/CorrectionReport';
@@ -57,6 +57,7 @@ function App() {
   const [runeOverrides, setRuneOverrides] = useState<Record<string, any>>({});
   const [isFetchingAll, setIsFetchingAll] = useState(false);
   const [fetchProgress, setFetchProgress] = useState({ current: 0, total: 0, success: 0, failed: 0 });
+  const [classificationOverrides, setClassificationOverrides] = useState<Record<string, string>>({});
 
   const handleFetchAllMissingAssets = async () => {
     const nftPatterns = ['MINT_BUY', 'BULK_MINT', 'RUNE_RECEIVE', 'SALE', 'MAGIC_EDEN_BUY', 'MAGIC_EDEN_BUY_ISOLATED', 'MAGIC_EDEN_SALE', 'NFT_TRADE'];
@@ -105,6 +106,59 @@ function App() {
   const handleRuneFetched = useCallback((txId: string, runeData: any) => {
     setRuneOverrides(prev => ({ ...prev, [txId]: runeData }));
   }, []);
+
+  // Callback when Panel A manually reclassifies a type
+  const handleClassificationOverride = useCallback((txId: string, newType: string) => {
+    setClassificationOverrides(prev => ({ ...prev, [txId]: newType }));
+  }, []);
+
+  // Workspace Save/Load
+  const handleSaveWorkspace = () => {
+    const workspaceData = {
+      timestamp: new Date().toISOString(),
+      sourceB: sourceB, // raw parsed data
+      sourceC: sourceC, // post-analysis data
+      runeOverrides,
+      classificationOverrides,
+    };
+    const blob = new Blob([JSON.stringify(workspaceData, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `coinledger_workspace_${new Date().getTime()}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const handleLoadWorkspace = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      try {
+        const data = JSON.parse(event.target?.result as string);
+        if (data.sourceC && data.classificationOverrides) {
+          setSourceB(data.sourceB || []);
+          setSourceC(data.sourceC);
+          setRuneOverrides(data.runeOverrides || {});
+          setClassificationOverrides(data.classificationOverrides || {});
+          alert('Workspace loaded successfully!');
+        } else {
+          alert('Invalid workspace file format.');
+        }
+      } catch (err) {
+        alert('Failed to parse workspace JSON.');
+        console.error(err);
+      }
+    };
+    reader.readAsText(file);
+    // Reset input
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
 
   // Auto-collapse Source A when empty
   useEffect(() => {
@@ -675,27 +729,41 @@ function App() {
 
             {/* ====== Review Panel A/B (after Option C analysis) ====== */}
             {sourceC.length > 0 ? (
-              <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-                <ReviewPanelA
-                  transactions={sourceC}
-                  searchQuery={searchQuery}
-                  selectedTxId={selectedTxId}
-                  onRowClick={handleRowClick}
-                  onRuneFetched={handleRuneFetched}
-                  showUSD={showUSD}
-                  btcPrice={btcPrice}
-                  walletAddresses={wallet.split(/[,\n]+/).map(addr => addr.trim()).filter(addr => addr.length > 0)}
-                  runeOverrides={runeOverrides}
-                />
-                <ReviewPanelB
-                  transactions={sourceC}
-                  searchQuery={searchQuery}
-                  selectedTxId={selectedTxId}
-                  onRowClick={handleRowClick}
-                  runeOverrides={runeOverrides}
-                  showUSD={showUSD}
-                  btcPrice={btcPrice}
-                />
+              <div className="space-y-4">
+                <div className="flex items-center justify-end gap-3 mb-2">
+                  <input type="file" accept=".json" className="hidden" ref={fileInputRef} onChange={handleLoadWorkspace} />
+                  <button onClick={() => fileInputRef.current?.click()} className={`text-sm px-3 py-1.5 rounded-lg border font-medium transition-colors ${darkMode ? 'border-gray-700 bg-gray-800/50 hover:bg-gray-700 text-gray-300' : 'border-gray-300 bg-gray-50 hover:bg-gray-200 text-gray-700'}`}>
+                    Load Configuration
+                  </button>
+                  <button onClick={handleSaveWorkspace} className={`text-sm px-3 py-1.5 rounded-lg border font-medium transition-colors ${darkMode ? 'border-blue-500/50 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400' : 'border-blue-300 bg-blue-50 hover:bg-blue-100 text-blue-700'}`}>
+                    Save Configuration
+                  </button>
+                </div>
+                <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+                  <ReviewPanelA
+                    transactions={sourceC}
+                    searchQuery={searchQuery}
+                    selectedTxId={selectedTxId}
+                    onRowClick={handleRowClick}
+                    onRuneFetched={handleRuneFetched}
+                    showUSD={showUSD}
+                    btcPrice={btcPrice}
+                    walletAddresses={wallet.split(/[,\n]+/).map(addr => addr.trim()).filter(addr => addr.length > 0)}
+                    runeOverrides={runeOverrides}
+                    classificationOverrides={classificationOverrides}
+                    onClassificationOverride={handleClassificationOverride}
+                  />
+                  <ReviewPanelB
+                    transactions={sourceC}
+                    searchQuery={searchQuery}
+                    selectedTxId={selectedTxId}
+                    onRowClick={handleRowClick}
+                    runeOverrides={runeOverrides}
+                    classificationOverrides={classificationOverrides}
+                    showUSD={showUSD}
+                    btcPrice={btcPrice}
+                  />
+                </div>
               </div>
             ) : (
               /* ====== Raw Source Preview (before analysis) ====== */
