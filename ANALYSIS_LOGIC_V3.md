@@ -45,6 +45,7 @@ graph TD
 | P1 | **Magic Eden Buy** | Sender=`bc1q`, Output to `bc1p` + 2% fee output | An output equals exactly `0.02 × seller_amount` (±10 sats tolerance) | **Trade** (Buy) |
 | P2 | **Magic Eden Sale** | Input from `bc1p`, large BTC deposit to `bc1q` | Incoming BTC with asset outflow from Taproot address | **Trade** (Sell) |
 | P3 | **ME Batch Transfer** | 1000 sats tracking fee output | Any output with exactly `1000 sats (0.00001 BTC)` | **Transfer** |
+| P1-B| **ME Buy (Isolated)** | Single 546 sat deposit with PSBT signatures | Taproot receives asset but `bc1q` payment address is unknown/unconnected | **Trade** + **Ignored** (Dust) |
 
 ### Tier 2: Protocol-Specific (Runes & Ordinals)
 
@@ -89,6 +90,7 @@ Per `COINLEDGER_UNIVERSAL_IMPORT_GUIDELINE.md`:
 | Pattern | CoinLedger Type | Asset Sent | Asset Received |
 |---------|----------------|------------|----------------|
 | Magic Eden Buy | Trade | BTC (total spent) | [Asset Name] |
+| ME Buy (Isolated) | Trade + Ignored* | [Prompt User] | [Asset Name] |
 | Magic Eden Sale | Trade | [Asset Name] | BTC (received) |
 | Runes Mint | Trade | BTC (fees) | [Rune Name] (qty) |
 | Rune Receive | Deposit | — | [Rune Name] |

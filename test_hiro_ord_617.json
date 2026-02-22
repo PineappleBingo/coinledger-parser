@@ -1,0 +1,42 @@
+{
+  "id": "d454720aa9a33072e466ec4ce7b9cd6482268e472340b59d0a74c3036d72135ei41",
+  "number": 83331758,
+  "address": "bc1pf3n2ka7tpwv4tc4yzflclspjgq9yjvhek6cjnd4x2lzdd7k5lqfs327cql",
+  "genesis_address": "bc1pq03x3p5zz93qwvw3n7kkr0yt6ryvkl45mlpq8j602mrsxl5ud5fszftyxr",
+  "genesis_block_height": 880172,
+  "genesis_block_hash": "000000000000000000017a05ec807ed0ccf5aae72024a9b7c58e7ed5f2d1496f",
+  "genesis_tx_id": "d454720aa9a33072e466ec4ce7b9cd6482268e472340b59d0a74c3036d72135e",
+  "genesis_fee": "21052",
+  "genesis_timestamp": 1737442369000,
+  "tx_id": "617b41e6241616f7eb50b42ab9602a0a1c5fb88d61958bc79da34692faa6bcef",
+  "location": "617b41e6241616f7eb50b42ab9602a0a1c5fb88d61958bc79da34692faa6bcef:0:0",
+  "output": "617b41e6241616f7eb50b42ab9602a0a1c5fb88d61958bc79da34692faa6bcef:0",
+  "value": "330",
+  "offset": "0",
+  "sat_ordinal": "1022060742342590",
+  "sat_rarity": "common",
+  "sat_coinbase_height": 204412,
+  "mime_type": "",
+  "content_type": "",
+  "content_length": 0,
+  "timestamp": 1755870184000,
+  "curse_type": "not_in_first_input",
+  "recursive": false,
+  "recursion_refs": [],
+  "parent": null,
+  "parent_refs": [
+    "d45471b0be5cca46e36fe638029e5452d6a5df8fe26a4f59367e2e713ccd4a7ai0"
+  ],
+  "delegate": "d45471b0be5cca46e36fe638029e5452d6a5df8fe26a4f59367e2e713ccd4a7ai0",
+  "metadata": {
+    "Degen Level": "Sniper",
+    "Name": "Garbage Truck Trump",
+    "Rarity": "Uncommon",
+    "Trump Mode": "Trolling",
+    "Vibe": "Daddy Snipes A Lot"
+  },
+  "meta_protocol": null,
+  "charms": [
+    "vindicated"
+  ]
+}

@@ -352,6 +352,7 @@ async def get_results():
 class FetchRuneRequest(BaseModel):
     tx_id: str
     api_source: str = "unisat"  # default to unisat, optional
+    wallet_addresses: Optional[List[str]] = None
 
 @app.post("/api/fetch-rune-info")
 async def fetch_rune_info(request: FetchRuneRequest):
@@ -388,6 +389,11 @@ async def fetch_rune_info(request: FetchRuneRequest):
                 
                 if 'vout' in tx_data:
                     for vout in tx_data['vout']:
+                        # Feature 8: Filter by wallet address if provided
+                        vout_address = vout.get('scriptPubKey', {}).get('address')
+                        if request.wallet_addresses and vout_address not in request.wallet_addresses:
+                            continue
+
                         # Check for Runes
                         if 'runes' in vout and vout['runes']:
                             for r in vout['runes']:
@@ -439,6 +445,19 @@ async def fetch_rune_info(request: FetchRuneRequest):
                                             elif m_data.get('collectionName'):
                                                 collection = m_data.get('collectionName')
 
+                                            if not name or name.startswith("Inscription #"):
+                                                try:
+                                                    from src.config import HIRO_API_KEY
+                                                    if HIRO_API_KEY and ins_id:
+                                                        h_url = f"https://api.hiro.so/ordinals/v1/inscriptions/{ins_id}"
+                                                        h_res = requests.get(h_url, headers={"Accept": "application/json", "x-hiro-api-key": HIRO_API_KEY}, timeout=5)
+                                                        if h_res.status_code == 200:
+                                                            h_meta = h_res.json().get("metadata", {})
+                                                            if isinstance(h_meta, dict) and h_meta.get("Name"):
+                                                                name = h_meta.get("Name")
+                                                except Exception:
+                                                    pass
+
                                             if not name:
                                                 num = m_data.get('inscriptionNumber')
                                                 name = f"Inscription #{num}" if num is not None else "Ordinal Inscription"
@@ -453,6 +472,7 @@ async def fetch_rune_info(request: FetchRuneRequest):
                                         "name": name,
                                         "collection": collection,
                                         "inscription_id": ins_id,
+                                        "inscription_number": num,
                                         "amount": "1",
                                         "divisibility": 0,
                                         "content_type": content_type,
@@ -485,15 +505,68 @@ async def fetch_rune_info(request: FetchRuneRequest):
                     results = hiro_data.get('results', [])
                     found_runes = []
                     for item in results:
-                        name = item.get('content_type', 'Inscription')
+                        content_type = item.get('content_type', 'Inscription')
                         number = item.get('number')
                         insc_id = item.get('id', '')
                         if number is not None:
+                            name = f"Inscription #{number}"
+                            content_url = f"https://ordinals.com/content/{insc_id}" if insc_id else ""
+                            collection = None
+                            
+                            if insc_id:
+                                try:
+                                    # Still enrich via UniSat if possible
+                                    meta_url = f"https://open-api.unisat.io/v1/indexer/inscription/info/{insc_id}"
+                                    headers = {"Accept": "application/json"}
+                                    from src.config import UNISAT_API_KEY
+                                    if UNISAT_API_KEY: headers['Authorization'] = f"Bearer {UNISAT_API_KEY}"
+                                    meta_res = requests.get(meta_url, headers=headers, timeout=5)
+                                    if meta_res.status_code == 200:
+                                        m_data = meta_res.json().get('data', {})
+                                        
+                                        if m_data.get('hasDeligate') and m_data.get('deligate'):
+                                            deligate_id = m_data.get('deligate')
+                                            del_url = f"https://open-api.unisat.io/v1/indexer/inscription/info/{deligate_id}"
+                                            del_res = requests.get(del_url, headers=headers, timeout=5)
+                                            if del_res.status_code == 200:
+                                                m_data = del_res.json().get('data', m_data)
+                                        
+                                        meta_obj = m_data.get('meta', {}) or {}
+                                        fetched_name = meta_obj.get('name') or m_data.get('inscriptionName')
+                                        if not fetched_name or fetched_name.startswith("Inscription #"):
+                                            try:
+                                                from src.config import HIRO_API_KEY
+                                                if HIRO_API_KEY and insc_id:
+                                                    h_url = f"https://api.hiro.so/ordinals/v1/inscriptions/{insc_id}"
+                                                    h_res = requests.get(h_url, headers={"Accept": "application/json", "x-hiro-api-key": HIRO_API_KEY}, timeout=5)
+                                                    if h_res.status_code == 200:
+                                                        h_meta = h_res.json().get("metadata", {})
+                                                        if isinstance(h_meta, dict) and h_meta.get("Name"):
+                                                            fetched_name = h_meta.get("Name")
+                                            except Exception:
+                                                pass
+                                        if fetched_name: name = fetched_name
+                                        
+                                        if isinstance(meta_obj.get('collection'), dict):
+                                            collection = meta_obj['collection'].get('name')
+                                        elif isinstance(meta_obj.get('collection'), str):
+                                            collection = meta_obj['collection']
+                                        elif m_data.get('collectionName'):
+                                            collection = m_data.get('collectionName')
+                                            
+                                        m_content_type = m_data.get('contentType')
+                                        if m_content_type: content_type = m_content_type
+                                except Exception as e:
+                                    print(f"Failed to fetch rich ordinal info in Hiro fallback: {e}")
+                                    
                             found_runes.append({
-                                "name": f"Inscription #{number}",
+                                "name": name,
                                 "amount": "1",
                                 "inscription_id": insc_id,
-                                "content_type": name,
+                                "inscription_number": number,
+                                "collection": collection,
+                                "content_type": content_type,
+                                "content_url": content_url,
                                 "divisibility": 0
                             })
                     if found_runes:
@@ -511,15 +584,31 @@ async def fetch_rune_info(request: FetchRuneRequest):
                     runes_data = runes_response.json()
                     results = runes_data.get('results', [])
                     found_runes = []
+                    rune_balances = {}
+                    
                     for item in results:
-                        rune_name = item.get('rune', {}).get('name') or item.get('rune', {}).get('spaced_name', '')
-                        amount = item.get('amount', '0')
-                        if rune_name:
-                            found_runes.append({
-                                "name": rune_name,
-                                "amount": str(amount),
-                                "divisibility": item.get('rune', {}).get('divisibility', 0)
-                            })
+                        if item.get('operation') == 'receive':
+                            receiver = item.get('receiver_address') or item.get('address')
+                            if request.wallet_addresses and receiver not in request.wallet_addresses:
+                                continue
+                                
+                            rune_name = item.get('rune', {}).get('name') or item.get('rune', {}).get('spaced_name', '')
+                            amount_val = float(item.get('amount', '0'))
+                            divisibility = item.get('rune', {}).get('divisibility', 0)
+                            
+                            if rune_name:
+                                if rune_name not in rune_balances:
+                                    rune_balances[rune_name] = {'amount': 0.0, 'divisibility': divisibility}
+                                rune_balances[rune_name]['amount'] += amount_val
+
+                    for name, data in rune_balances.items():
+                        # Format avoiding scientific notation for floats
+                        amt_str = f"{data['amount']:.8f}".rstrip('0').rstrip('.')
+                        found_runes.append({
+                            "name": name,
+                            "amount": amt_str,
+                            "divisibility": data['divisibility']
+                        })
                     if found_runes:
                         return {
                             "success": True,
@@ -552,10 +641,61 @@ async def fetch_rune_info(request: FetchRuneRequest):
                         content_type = transfer.get('contentType', '')
                         
                         if insc_number is not None or insc_id:
+                            name = f"Inscription #{insc_number}" if insc_number is not None else "Ordinal Inscription"
+                            content_url = f"https://ordinals.com/content/{insc_id}" if insc_id else ""
+                            collection = None
+                            
+                            if insc_id:
+                                try:
+                                    meta_url = f"https://open-api.unisat.io/v1/indexer/inscription/info/{insc_id}"
+                                    meta_res = requests.get(meta_url, headers=headers, timeout=5)
+                                    if meta_res.status_code == 200:
+                                        m_data = meta_res.json().get('data', {})
+                                        
+                                        if m_data.get('hasDeligate') and m_data.get('deligate'):
+                                            deligate_id = m_data.get('deligate')
+                                            del_url = f"https://open-api.unisat.io/v1/indexer/inscription/info/{deligate_id}"
+                                            del_res = requests.get(del_url, headers=headers, timeout=5)
+                                            if del_res.status_code == 200:
+                                                m_data = del_res.json().get('data', m_data)
+                                        
+                                        meta_obj = m_data.get('meta', {}) or {}
+                                        fetched_name = meta_obj.get('name') or m_data.get('inscriptionName')
+                                        if not fetched_name or fetched_name.startswith("Inscription #"):
+                                            try:
+                                                from src.config import HIRO_API_KEY
+                                                if HIRO_API_KEY and insc_id:
+                                                    h_url = f"https://api.hiro.so/ordinals/v1/inscriptions/{insc_id}"
+                                                    h_res = requests.get(h_url, headers={"Accept": "application/json", "x-hiro-api-key": HIRO_API_KEY}, timeout=5)
+                                                    if h_res.status_code == 200:
+                                                        h_meta = h_res.json().get("metadata", {})
+                                                        if isinstance(h_meta, dict) and h_meta.get("Name"):
+                                                            fetched_name = h_meta.get("Name")
+                                            except Exception:
+                                                pass
+                                        if fetched_name:
+                                            name = fetched_name
+                                            
+                                        if isinstance(meta_obj.get('collection'), dict):
+                                            collection = meta_obj['collection'].get('name')
+                                        elif isinstance(meta_obj.get('collection'), str):
+                                            collection = meta_obj['collection']
+                                        elif m_data.get('collectionName'):
+                                            collection = m_data.get('collectionName')
+                                            
+                                        m_content_type = m_data.get('contentType')
+                                        if m_content_type:
+                                            content_type = m_content_type
+                                except Exception as e:
+                                    print(f"Failed to fetch rich ordinal info in fallback: {e}")
+
                             found_inscriptions.append({
-                                "name": f"Inscription #{insc_number}" if insc_number is not None else f"Inscription",
+                                "name": name,
+                                "collection": collection,
                                 "inscription_id": insc_id or '',
+                                "inscription_number": insc_number,
                                 "content_type": content_type,
+                                "content_url": content_url,
                                 "amount": "1"
                             })
                     

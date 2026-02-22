@@ -55,6 +55,51 @@ function App() {
   const [searchQuery, setSearchQuery] = useState('');
   const [analysisSummary, setAnalysisSummary] = useState<any>(null);
   const [runeOverrides, setRuneOverrides] = useState<Record<string, any>>({});
+  const [isFetchingAll, setIsFetchingAll] = useState(false);
+  const [fetchProgress, setFetchProgress] = useState({ current: 0, total: 0, success: 0, failed: 0 });
+
+  const handleFetchAllMissingAssets = async () => {
+    const nftPatterns = ['MINT_BUY', 'BULK_MINT', 'RUNE_RECEIVE', 'SALE', 'MAGIC_EDEN_BUY', 'MAGIC_EDEN_BUY_ISOLATED', 'MAGIC_EDEN_SALE', 'NFT_TRADE'];
+    const txsToFetch = sourceC.filter(tx =>
+      tx.pattern && nftPatterns.includes(tx.pattern) && !runeOverrides[tx.tx_id] && !(tx.metadata?.rune_name)
+    );
+
+    if (txsToFetch.length === 0) return;
+
+    setIsFetchingAll(true);
+    setFetchProgress({ current: 0, total: txsToFetch.length, success: 0, failed: 0 });
+    const walletAddresses = wallet.split(/[,\n]+/).map(addr => addr.trim()).filter(addr => addr.length > 0);
+
+    let currentProgress = 0;
+    let currentSuccess = 0;
+    let currentFailed = 0;
+    for (const tx of txsToFetch) {
+      try {
+        const res = await axios.post('http://localhost:8000/api/fetch-rune-info', {
+          tx_id: tx.tx_id,
+          wallet_addresses: walletAddresses
+        });
+
+        if (res.data) {
+          handleRuneFetched(tx.tx_id, res.data);
+          if (res.data.error || res.data.not_found) {
+            currentFailed++;
+          } else {
+            currentSuccess++;
+          }
+        } else {
+          currentFailed++;
+        }
+      } catch (err) {
+        console.error(`Failed to fetch for ${tx.tx_id}`, err);
+        handleRuneFetched(tx.tx_id, { error: 'Failed to fetch' });
+        currentFailed++;
+      }
+      currentProgress++;
+      setFetchProgress({ current: currentProgress, total: txsToFetch.length, success: currentSuccess, failed: currentFailed });
+    }
+    setIsFetchingAll(false);
+  };
 
   // Callback when Panel A fetches rune info — propagates to Panel B
   const handleRuneFetched = useCallback((txId: string, runeData: any) => {
@@ -602,11 +647,30 @@ function App() {
                 />
               </div>
               {/* USD Toggle */}
-              <label className="inline-flex items-center cursor-pointer shrink-0">
-                <span className={`mr-2 text-sm ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Display USD Value</span>
-                <input type="checkbox" checked={showUSD} onChange={() => setShowUSD(!showUSD)} className="sr-only peer" />
-                <div className="relative w-10 h-5 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-blue-600 dark:bg-gray-600"></div>
-              </label>
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={handleFetchAllMissingAssets}
+                    disabled={isFetchingAll}
+                    className={`px-3 py-1.5 rounded-lg text-sm font-medium flex items-center gap-2 transition-colors ${darkMode ? 'bg-indigo-500/20 text-indigo-300 hover:bg-indigo-500/30 border border-indigo-500/30' : 'bg-indigo-50 text-indigo-700 hover:bg-indigo-100 border border-indigo-200'} disabled:opacity-50`}
+                  >
+                    <RefreshCw className={`w-3.5 h-3.5 ${isFetchingAll ? 'animate-spin' : ''}`} />
+                    {isFetchingAll ? `Fetching (${fetchProgress.current}/${fetchProgress.total})...` : 'Fetch All Missing Assets'}
+                  </button>
+                  {!isFetchingAll && fetchProgress.total > 0 && (
+                    <span className="text-sm font-medium pl-2 bg-gray-900/50 py-1.5 px-3 rounded-lg border border-gray-700/50">
+                      <span className="text-green-400">{fetchProgress.success} Succeeded</span>
+                      <span className="text-gray-500 mx-2">|</span>
+                      <span className="text-red-400">{fetchProgress.failed} Failed</span>
+                    </span>
+                  )}
+                </div>
+                <label className="inline-flex items-center cursor-pointer shrink-0">
+                  <span className={`mr-2 text-sm ${darkMode ? 'text-gray-300' : 'text-gray-700'}`}>Display USD Value</span>
+                  <input type="checkbox" checked={showUSD} onChange={() => setShowUSD(!showUSD)} className="sr-only peer" />
+                  <div className="relative w-10 h-5 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-blue-600 dark:bg-gray-600"></div>
+                </label>
+              </div>
             </div>
 
             {/* ====== Review Panel A/B (after Option C analysis) ====== */}
@@ -620,6 +684,8 @@ function App() {
                   onRuneFetched={handleRuneFetched}
                   showUSD={showUSD}
                   btcPrice={btcPrice}
+                  walletAddresses={wallet.split(/[,\n]+/).map(addr => addr.trim()).filter(addr => addr.length > 0)}
+                  runeOverrides={runeOverrides}
                 />
                 <ReviewPanelB
                   transactions={sourceC}

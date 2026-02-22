@@ -45,7 +45,10 @@ const ReviewPanelB: React.FC<Props> = ({ transactions, searchQuery, selectedTxId
         const override = runeOverrides[txId];
         if (override && override.runes?.length > 0) {
             const r = override.runes[0];
-            const displayName = r.collection ? `${r.collection} - ${r.name}` : r.name;
+            let displayName = r.collection ? `${r.collection} - ${r.name}` : r.name;
+            if (r.inscription_number && !displayName.includes(String(r.inscription_number))) {
+                displayName = `${displayName} (Inscription #${r.inscription_number})`;
+            }
             return { name: displayName, amount: r.amount };
         }
         // Check metadata

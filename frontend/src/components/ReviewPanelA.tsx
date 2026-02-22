@@ -10,9 +10,11 @@ interface Props {
     onRuneFetched?: (txId: string, runeData: any) => void;
     showUSD?: boolean;
     btcPrice?: number | null;
+    walletAddresses?: string[];
+    runeOverrides?: Record<string, any>;
 }
 
-const ReviewPanelA: React.FC<Props> = ({ transactions, searchQuery, selectedTxId, onRowClick, onRuneFetched, showUSD, btcPrice }) => {
+const ReviewPanelA: React.FC<Props> = ({ transactions, searchQuery, selectedTxId, onRowClick, onRuneFetched, showUSD, btcPrice, walletAddresses = [], runeOverrides = {} }) => {
     const formatUSD = (btcAmount: number) => {
         if (!showUSD || !btcPrice) return '';
         const usd = Math.abs(btcAmount) * btcPrice;
@@ -39,7 +41,10 @@ const ReviewPanelA: React.FC<Props> = ({ transactions, searchQuery, selectedTxId
         if (!txId || runeInfo[txId]) return;
         setLoadingRune(prev => ({ ...prev, [txId]: true }));
         try {
-            const res = await axios.post('http://localhost:8000/api/fetch-rune-info', { tx_id: txId });
+            const res = await axios.post('http://localhost:8000/api/fetch-rune-info', {
+                tx_id: txId,
+                wallet_addresses: walletAddresses
+            });
             if (res.data.success === false) {
                 // Not found on any API — show info message, not error
                 setRuneInfo(prev => ({ ...prev, [txId]: { not_found: true, message: res.data.message || 'No data found' } }));
@@ -76,7 +81,14 @@ const ReviewPanelA: React.FC<Props> = ({ transactions, searchQuery, selectedTxId
         : transactions;
 
     const getTypeBadge = (tx: any) => {
-        const type = tx.coinledger_type || tx.tx_type || 'Unknown';
+        let type = tx.coinledger_type || tx.tx_type || 'Unknown';
+
+        // Bug 11 Fix: Visually label all components of a MINT as 'Mint' in Panel A, 
+        // even if they are fundamentally 'Ignored' dust deposits for tax purposes.
+        if (tx.pattern === 'MINT_BUY' || tx.pattern === 'BULK_MINT') {
+            type = 'Mint';
+        }
+
         const config: Record<string, { bg: string; text: string }> = {
             'Trade': { bg: 'bg-blue-500/20', text: 'text-blue-400' },
             'Deposit': { bg: 'bg-green-500/20', text: 'text-green-400' },
@@ -85,6 +97,7 @@ const ReviewPanelA: React.FC<Props> = ({ transactions, searchQuery, selectedTxId
             'Income': { bg: 'bg-emerald-500/20', text: 'text-emerald-400' },
             'Investment Loss': { bg: 'bg-orange-500/20', text: 'text-orange-400' },
             'Airdrop': { bg: 'bg-cyan-500/20', text: 'text-cyan-400' },
+            'Mint': { bg: 'bg-purple-500/20', text: 'text-purple-400' },
         };
         const c = config[type] || { bg: 'bg-gray-500/20', text: 'text-gray-400' };
         return <span className={`px-2 py-0.5 rounded text-xs font-bold ${c.bg} ${c.text}`}>{type}</span>;
@@ -123,9 +136,10 @@ const ReviewPanelA: React.FC<Props> = ({ transactions, searchQuery, selectedTxId
 
     const getDisplayRuneName = (tx: any) => {
         const txId = tx.tx_id || '';
+        const info = runeOverrides[txId] || runeInfo[txId];
         // If we fetched real info, use that
-        if (runeInfo[txId] && !runeInfo[txId].error && runeInfo[txId].runes?.length > 0) {
-            return runeInfo[txId].runes[0].name;
+        if (info && !info.error && info.runes?.length > 0) {
+            return info.runes[0].name;
         }
         // Otherwise check metadata
         const meta = tx.metadata;
@@ -224,31 +238,29 @@ const ReviewPanelA: React.FC<Props> = ({ transactions, searchQuery, selectedTxId
                             {isExpanded && (
                                 <div className="px-4 pb-4 space-y-3 border-t border-gray-800/50">
                                     {/* Amounts */}
-                                    <div className="grid grid-cols-2 gap-4 pt-3">
+                                    <div className="grid grid-cols-3 gap-4 pt-3 mb-3">
                                         <div>
                                             <span className="text-xs text-gray-500 block">Sent</span>
-                                            <span className={`font-semibold ${tx.amount < 0 ? 'text-red-400' : 'text-gray-500'}`}>
-                                                {tx.amount < 0 ? `${Math.abs(tx.amount).toFixed(8)} ${tx.asset}` : '—'}
+                                            <span className={`font-semibold flex flex-col ${tx.amount < 0 ? 'text-red-400' : 'text-gray-500'}`}>
+                                                <span>{tx.amount < 0 ? `${Math.abs(tx.amount).toFixed(8)} ${tx.asset}` : '—'}</span>
                                                 {tx.amount < 0 && <span className="text-gray-500 text-xs font-normal">{formatUSD(tx.amount)}</span>}
                                             </span>
                                         </div>
                                         <div>
                                             <span className="text-xs text-gray-500 block">Received</span>
-                                            <span className={`font-semibold ${tx.amount > 0 ? 'text-green-400' : 'text-gray-500'}`}>
-                                                {tx.amount > 0 ? `${tx.amount.toFixed(8)} ${tx.asset}` : '—'}
+                                            <span className={`font-semibold flex flex-col ${tx.amount > 0 ? 'text-green-400' : 'text-gray-500'}`}>
+                                                <span>{tx.amount > 0 ? `${tx.amount.toFixed(8)} ${tx.asset}` : '—'}</span>
                                                 {tx.amount > 0 && <span className="text-gray-500 text-xs font-normal">{formatUSD(tx.amount)}</span>}
                                             </span>
                                         </div>
-                                    </div>
-
-                                    {/* Fee */}
-                                    {tx.fee > 0 && (
-                                        <div className="bg-gray-800/30 rounded-lg px-3 py-2 flex items-center gap-2">
-                                            <span className="text-yellow-400">⚡</span>
-                                            <span className="text-xs text-gray-400">Fee</span>
-                                            <span className="text-sm font-medium text-gray-300">{tx.fee.toFixed(8)} BTC{formatUSD(tx.fee)}</span>
+                                        <div className="text-right">
+                                            <span className="text-xs text-gray-500 block">Fee</span>
+                                            <span className={`font-semibold flex flex-col items-end ${tx.fee > 0 ? 'text-yellow-400' : 'text-gray-500'}`}>
+                                                <span>{tx.fee > 0 ? `${tx.fee.toFixed(8)} BTC` : '—'}</span>
+                                                {tx.fee > 0 && <span className="text-gray-500 text-xs font-normal">{formatUSD(tx.fee)}</span>}
+                                            </span>
                                         </div>
-                                    )}
+                                    </div>
 
                                     {/* Description */}
                                     {tx.description && (
@@ -310,49 +322,87 @@ const ReviewPanelA: React.FC<Props> = ({ transactions, searchQuery, selectedTxId
                                     )}
 
                                     {/* On-demand Ordinal/Rune fetch — shown for ALL NFT/Rune related txs */}
-                                    {hasOrdRune && isBlockchain && (
-                                        <div className="border-t border-gray-800/50 pt-3">
-                                            {runeInfo[txId] ? (
-                                                runeInfo[txId].not_found ? (
-                                                    <div className="bg-gray-500/10 border border-gray-500/20 rounded-lg p-3 text-sm text-gray-400">
-                                                        ℹ️ {runeInfo[txId].message}
-                                                    </div>
-                                                ) : runeInfo[txId].error ? (
-                                                    <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-3">
-                                                        <span className="text-red-400 text-sm">{runeInfo[txId].error}</span>
-                                                    </div>
-                                                ) : (
-                                                    <div className="bg-purple-500/10 border border-purple-500/20 rounded-lg p-3 space-y-1">
-                                                        <div className="text-xs text-gray-500">Fetched from {runeInfo[txId].source}</div>
-                                                        {runeInfo[txId].runes?.map((r: any, i: number) => (
-                                                            <div key={i} className="flex items-center gap-2">
-                                                                {r.content_url && r.content_type?.includes('image') && (
-                                                                    <img src={r.content_url} alt="ordinal" className="w-6 h-6 rounded object-cover bg-black/20" />
+                                    {hasOrdRune && isBlockchain && (() => {
+                                        const info = runeOverrides[txId] || runeInfo[txId];
+                                        return (
+                                            <div className="border-t border-gray-800/50 pt-3">
+                                                {info ? (
+                                                    info.not_found ? (
+                                                        <div className="space-y-2">
+                                                            <button
+                                                                onClick={(e) => { e.stopPropagation(); fetchRuneOrOrdinalInfo(txId); }}
+                                                                disabled={loadingRune[txId]}
+                                                                className="w-full px-3 py-2 rounded-lg text-sm font-medium bg-purple-500/10 text-purple-300 hover:bg-purple-500/20 border border-purple-500/20 flex items-center justify-center gap-2 disabled:opacity-50"
+                                                            >
+                                                                {loadingRune[txId] ? (
+                                                                    <><Search className="w-3.5 h-3.5 animate-spin" /> Fetching…</>
+                                                                ) : (
+                                                                    <><Download className="w-3.5 h-3.5" /> Fetch Ordinal / Rune Info</>
                                                                 )}
-                                                                <div className="flex flex-col">
-                                                                    <span className="text-orange-400 font-bold">{r.name}</span>
-                                                                    {r.collection && <span className="text-xs text-gray-500 leading-tight">{r.collection}</span>}
-                                                                </div>
-                                                                <span className="text-gray-300 ml-auto">{r.amount}</span>
+                                                            </button>
+                                                            <div className="bg-gray-500/10 border border-gray-500/20 rounded-lg p-3 text-sm text-gray-400">
+                                                                ℹ️ {info.message || 'No data found'}
                                                             </div>
-                                                        ))}
-                                                    </div>
-                                                )
-                                            ) : (
-                                                <button
-                                                    onClick={(e) => { e.stopPropagation(); fetchRuneOrOrdinalInfo(txId); }}
-                                                    disabled={loadingRune[txId]}
-                                                    className="w-full px-3 py-2 rounded-lg text-sm font-medium bg-purple-500/10 text-purple-300 hover:bg-purple-500/20 border border-purple-500/20 flex items-center justify-center gap-2 disabled:opacity-50"
-                                                >
-                                                    {loadingRune[txId] ? (
-                                                        <><Search className="w-3.5 h-3.5 animate-spin" /> Fetching…</>
+                                                        </div>
+                                                    ) : info.error ? (
+                                                        <div className="space-y-2">
+                                                            <button
+                                                                onClick={(e) => { e.stopPropagation(); fetchRuneOrOrdinalInfo(txId); }}
+                                                                disabled={loadingRune[txId]}
+                                                                className="w-full px-3 py-2 rounded-lg text-sm font-medium bg-purple-500/10 text-purple-300 hover:bg-purple-500/20 border border-purple-500/20 flex items-center justify-center gap-2 disabled:opacity-50"
+                                                            >
+                                                                {loadingRune[txId] ? (
+                                                                    <><Search className="w-3.5 h-3.5 animate-spin" /> Fetching…</>
+                                                                ) : (
+                                                                    <><Download className="w-3.5 h-3.5" /> Fetch Ordinal / Rune Info</>
+                                                                )}
+                                                            </button>
+                                                            <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-3">
+                                                                <span className="text-red-400 text-sm">{info.error}</span>
+                                                            </div>
+                                                        </div>
                                                     ) : (
-                                                        <><Download className="w-3.5 h-3.5" /> Fetch Ordinal / Rune Info</>
-                                                    )}
-                                                </button>
-                                            )}
-                                        </div>
-                                    )}
+                                                        <div className="bg-purple-500/10 border border-purple-500/20 rounded-lg p-3 space-y-1">
+                                                            <div className="text-xs text-gray-500">Fetched from {info.source}</div>
+                                                            {info.runes?.map((r: any, i: number) => (
+                                                                <div key={i} className="flex items-center gap-2">
+                                                                    {r.content_url && r.content_type?.includes('image') && (
+                                                                        <img src={r.content_url} alt="ordinal" className="w-6 h-6 rounded object-cover bg-black/20" />
+                                                                    )}
+                                                                    <div className="flex flex-col flex-1 pl-1">
+                                                                        <span className="text-orange-400 font-bold">{r.name}</span>
+                                                                        {r.inscription_number && !r.name.includes(String(r.inscription_number)) && (
+                                                                            <span className="text-xs text-gray-400">Inscription #{r.inscription_number}</span>
+                                                                        )}
+                                                                        {r.collection && <span className="text-xs text-gray-500 leading-tight">Collection: {r.collection}</span>}
+                                                                        {r.inscription_number && (
+                                                                            <a href={`https://ordiscan.com/inscription/${r.inscription_number}`} target="_blank" rel="noopener noreferrer"
+                                                                                className="mt-1 inline-flex items-center gap-1 w-fit px-2 py-0.5 rounded text-[10px] bg-purple-500/10 text-purple-400 hover:bg-purple-500/20 border border-purple-500/20">
+                                                                                <ExternalLink className="w-2.5 h-2.5" /> Ordiscan Verify
+                                                                            </a>
+                                                                        )}
+                                                                    </div>
+                                                                    <span className="text-gray-300 ml-auto whitespace-nowrap text-sm">qty: {r.amount}</span>
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    )
+                                                ) : (
+                                                    <button
+                                                        onClick={(e) => { e.stopPropagation(); fetchRuneOrOrdinalInfo(txId); }}
+                                                        disabled={loadingRune[txId]}
+                                                        className="w-full px-3 py-2 rounded-lg text-sm font-medium bg-purple-500/10 text-purple-300 hover:bg-purple-500/20 border border-purple-500/20 flex items-center justify-center gap-2 disabled:opacity-50"
+                                                    >
+                                                        {loadingRune[txId] ? (
+                                                            <><Search className="w-3.5 h-3.5 animate-spin" /> Fetching…</>
+                                                        ) : (
+                                                            <><Download className="w-3.5 h-3.5" /> Fetch Ordinal / Rune Info</>
+                                                        )}
+                                                    </button>
+                                                )}
+                                            </div>
+                                        );
+                                    })()}
 
                                     {/* Wallet info */}
                                     {tx.Wallet && (

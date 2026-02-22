@@ -1,0 +1,69 @@
+{
+  "code": 0,
+  "msg": "ok",
+  "data": {
+    "utxo": {
+      "txid": "617b41e6241616f7eb50b42ab9602a0a1c5fb88d61958bc79da34692faa6bcef",
+      "vout": 0,
+      "satoshi": 330,
+      "scriptType": "5120",
+      "scriptPk": "51204c66ab77cb0b9955e2a4127f8fc032400a4932f9b6b129b6a657c4d6fad4f813",
+      "codeType": 9,
+      "address": "bc1pf3n2ka7tpwv4tc4yzflclspjgq9yjvhek6cjnd4x2lzdd7k5lqfs327cql",
+      "height": 911187,
+      "idx": 2858,
+      "isOpInRBF": false,
+      "isSpent": false,
+      "isLowFee": false,
+      "inscriptionsCount": 1,
+      "inscriptions": [
+        {
+          "inscriptionNumber": 83331758,
+          "inscriptionId": "d454720aa9a33072e466ec4ce7b9cd6482268e472340b59d0a74c3036d72135ei41",
+          "offset": 0,
+          "isStrip": false,
+          "moved": true,
+          "sequence": 3,
+          "isCursed": false,
+          "isVindicate": true,
+          "isBRC20Tran": false,
+          "isBRC20Mint": false,
+          "isBRC20Ext": false,
+          "isBRC20": false,
+          "contentType": ""
+        }
+      ]
+    },
+    "address": "bc1pf3n2ka7tpwv4tc4yzflclspjgq9yjvhek6cjnd4x2lzdd7k5lqfs327cql",
+    "offset": 0,
+    "inscriptionIndex": 0,
+    "inscriptionNumber": 83331758,
+    "inscriptionId": "d454720aa9a33072e466ec4ce7b9cd6482268e472340b59d0a74c3036d72135ei41",
+    "isStrip": false,
+    "hasPointer": true,
+    "hasParent": true,
+    "hasDeligate": true,
+    "hasMetaProtocal": false,
+    "hasMetadata": true,
+    "hasContentEncoding": false,
+    "pointer": 13860,
+    "parents": [
+      "d45471b0be5cca46e36fe638029e5452d6a5df8fe26a4f59367e2e713ccd4a7ai0"
+    ],
+    "deligate": "d45471b0be5cca46e36fe638029e5452d6a5df8fe26a4f59367e2e713ccd4a7ai0",
+    "metaprotocol": "",
+    "metadata": "\ufffddNamesGarbage Truck TrumpfRarityhUncommonkDegen LevelfSniperjTrump ModehTrollingdViberDaddy Snipes A Lot",
+    "contentEncoding": "",
+    "contentType": "",
+    "contentLength": 0,
+    "contentBody": "",
+    "height": 880172,
+    "idxInBlock": 4845,
+    "timestamp": 1737442369,
+    "inSatoshi": 3834720,
+    "outSatoshi": 3813668,
+    "brc20": null,
+    "brc20BestHeight": 937627,
+    "detail": null
+  }
+}
